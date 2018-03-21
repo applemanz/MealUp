@@ -1,22 +1,23 @@
 import { Notifications } from 'expo';
 import React from 'react';
-import { StackNavigator } from 'react-navigation';
+import { StackNavigator, SwitchNavigator } from 'react-navigation';
 
 import MainTabNavigator from './MainTabNavigator';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
+import SignInScreen from '../screens/SignInScreen';
 
-const RootStackNavigator = StackNavigator(
+
+const AuthStack = StackNavigator({ SignIn: SignInScreen });
+
+const RootStackNavigator = SwitchNavigator(
   {
     Main: {
       screen: MainTabNavigator,
     },
+    Auth: AuthStack,
   },
   {
-    navigationOptions: () => ({
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
-    }),
+    initialRouteName: 'Auth',
   }
 );
 
