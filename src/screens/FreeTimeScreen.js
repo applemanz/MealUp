@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList} from 'react-native';
 import { Button } from 'react-native-elements';
-
+import NavigationBar from 'navigationbar-react-native';
 export default class FreeTimeScreen extends React.Component {
 
   static navigationOptions = {
@@ -29,6 +29,7 @@ export default class FreeTimeScreen extends React.Component {
   render() {
     return (
       <View style={{flex: 1, justifyContent: 'center'}}>
+        <NavigationBar componentCenter={<Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>Free Time</Text>}/>
         <FlatList
           data={[{key: '7:30'}, {key: '8:00'}, {key: '8:30'},
                  {key: '9:00'}, {key: '9:30'}, {key: '10:00'}, {key: '10:30'},
