@@ -20,7 +20,7 @@ Tasks:<br>
   <li>Learn how to get list of friends from Facebook API</li>
   <li>Create project website</li>
 </ul></p>
-<p>Week 2 (3/25 - 3/31): Weekly TA meetings start this week<br>
+<p>Week 2 (3/25 - 3/31): Weekly TA meetings start this week <br>
 Goals: Rough UI, figuring out how to read and write to our database, figure out basic idea of the Cloud Functions we need<br>
 Tasks:<br>
 <ul>
