@@ -1,7 +1,7 @@
 # MealUp - Meal Scheduling App
 COS 333 Spring 2018
 
-<p><b>Team Members:</b>
+<p><b>Team Members:</b><br>
 Andrew Zeng (andrewz@princeton.edu) - LEADER<br>
 Annie Zou (azou@princeton.edu)<br>
 Chi Yu (cfyu@princeton.edu)<br>
@@ -10,7 +10,7 @@ May Jiang (mayjiang@princeton.edu)</p>
 <p><b>Design Document:</b><br>
 <a href="https://docs.google.com/document/d/1GPfhzhxrPHMtjBBoCb7iB1u68ViAyvan_g5S9pweFVA/edit?usp=sharing" target="_blank">click here</a></p>
 
-<b>Timeline:</b> <br>
+<p><b>Timeline:</b></p>
 <p>Week 1 (3/17 - 3/24 [spring break]):<br>
 Goals: do all the necessary learning, get a better idea of how our app will be created<br>
 Tasks:<br>
