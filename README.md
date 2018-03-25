@@ -15,7 +15,7 @@ May Jiang (mayjiang@princeton.edu)</p>
 Goals: do all the necessary learning, get a better idea of how our app will be created<br>
 Tasks:<br>
 <ul>
-  <li>Learn React-Native (JS, React), Redux, How NoSQL works, Firebase Authentication, Database, and Cloud Functions, CSS Flexbox</li
+  <li>Learn React-Native (JS, React), Redux, How NoSQL works, Firebase Authentication, Database, and Cloud Functions, CSS Flexbox</li>
   <li>Set up project repository on GitHub</li>
   <li>Learn how to get list of friends from Facebook API</li>
   <li>Create project website</li>
