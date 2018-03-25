@@ -1,17 +1,19 @@
 # MealUp - Meal Scheduling App
 COS 333 Spring 2018
 
-<p><b>Team Members:</b><br>
+<p>jump to section: <a href="#TEAM_MEMBERS">the team</a>, <a href="#DESIGN_DOC">design doc</a>, <a href="#TIMELINE">timeline</a>, <a href="#ELEVATOR_SPEECH">elevator speech</a></p>
+
+<p><b><a id="TEAM_MEMBERS">Team Members:</a></b><br>
 Andrew Zeng (andrewz@princeton.edu) - LEADER<br>
 Annie Zou (azou@princeton.edu)<br>
 Chi Yu (cfyu@princeton.edu)<br>
 May Jiang (mayjiang@princeton.edu)</p>
 
-<p><b>Design Document:</b><br>
+<p><b><a id="DESIGN_DOC">Design Document:</a></b><br>
 <a href="https://docs.google.com/document/d/1GPfhzhxrPHMtjBBoCb7iB1u68ViAyvan_g5S9pweFVA/edit?usp=sharing" target="_blank">click here</a></p>
 
-<p><b>Timeline:</b></p>
-<p>Week 1 (3/17 - 3/24 [spring break]):<br>
+<p><b><a id="TIMELINE">Timeline:</a></b><br>
+Week 1 (3/17 - 3/24 [spring break]):<br>
 Goals: do all the necessary learning, get a better idea of how our app will be created<br>
 Tasks:<br>
 <ul>
@@ -65,3 +67,7 @@ Tasks: <br>
   <li>Continue to test and debug</li>
 <li>Test on real users</li>
 </ul>
+
+
+<p><b><a id="ELEVATOR_SPEECH">Elevator Speech:</a></b>
+  <i>MealUp</i> is a mobile app that helps Princeton students schedule meals with their friends. Each user inputs their availability for meals over the next two weeks and then the app will help schedule meals between users through a request system. Users can easily keep track of who they plan to eat with for the week and easily request meals with friends through a user-friendly interface, and the app will find a time that works for both by matching the available times of the users. The app will support Facebook login and import Facebook friends for the user’s convenience.</p>
