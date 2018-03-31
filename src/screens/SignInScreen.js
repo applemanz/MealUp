@@ -12,10 +12,13 @@ import {Button, SocialIcon, Divider} from 'react-native-elements';
 
 import firebase from "../config/firebase";
 require("firebase/firestore");
+const db = firebase.firestore();
 
-const auth = firebase.auth();
-const provider = firebase.auth.FacebookAuthProvider();
 
+// const auth = firebase.auth();
+var provider = new firebase.auth.FacebookAuthProvider();
+var userID;
+var userName;
 export default class SignInScreen extends React.Component {
   static navigationOptions = {
     title: 'MealUp Login',
@@ -33,7 +36,6 @@ export default class SignInScreen extends React.Component {
       }
   }
 
-
   //get users permission authorization (ret: facebook token)
   onSignInWithFacebook = async () => {
       const options = {permissions: ['public_profile', 'email', 'user_friends'],}
@@ -45,27 +47,31 @@ export default class SignInScreen extends React.Component {
           const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,friends`);
           const userData = await response.json();
           const friendsList = userData.friends.data;
-          const userName = userData.name;
-          const userID = userData.id;
+          console.log(friendsList);
+          userName = userData.name;
+          userID = userData.id;
           console.log(userName);
           console.log(userID);
 
           AsyncStorage.setItem('loggedIn', 'true');
-          const credential = provider.credential(token);
-          auth.signInWithCredential(credential);
-
-          const database = firebase.firestore();
-
-          database.collection('newUsers').add({
-            id: userID,
-            name: userName,
+          // const credential = provider.credential(token);
+          // auth.signInWithCredential(credential);
+          db.collection('users').doc(userID).update({
+            Name: userName,
           })
-          .then(function(docRef) {
-            console.log("Document wrriten with ID", docRef.iD);
+          .then(function() {
+          console.log("Document successfully updated!");
           })
           .catch(function(error) {
-          console.error("Error adding document: ", error);
+          // The document probably doesn't exist.
+          console.error("Error updating document: ", error);
           });
+
+          for (var friend of friendsList) {
+            db.collection('users').doc(userID).collection('Friends').doc(friend.id).set({
+              Name: friend.name,
+            })
+          }
 
           this.props.navigation.navigate('Main');
 
@@ -106,3 +112,6 @@ export default class SignInScreen extends React.Component {
     );
   }
 }
+
+export {userName};
+export {userID};

@@ -4488,6 +4488,10 @@ natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
 
+navigationbar-react-native@0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/navigationbar-react-native/-/navigationbar-react-native-0.0.3.tgz#b41d701318cb8204a9e6beea7c7c148020edcf81"
+
 negotiator@0.5.3:
   version "0.5.3"
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.5.3.tgz#269d5c476810ec92edbe7b6c2f28316384f9a7e8"
@@ -5286,6 +5290,12 @@ react-native-size-matters@^0.1.0:
   dependencies:
     color "^2.0.1"
     lodash "^4.16.6"
+
+react-native-swiper@^1.5.13:
+  version "1.5.13"
+  resolved "https://registry.yarnpkg.com/react-native-swiper/-/react-native-swiper-1.5.13.tgz#fa695cd4ab77b9a9df2d2bfee38ea7274dd07a2e"
+  dependencies:
+    prop-types "^15.5.10"
 
 react-native-tab-view@^0.0.70:
   version "0.0.70"
