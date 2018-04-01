@@ -7,10 +7,13 @@ import Colors from '../constants/Colors';
 
 import HomeScreen from '../screens/HomeScreen';
 import FriendsScreen from '../screens/FriendsScreen';
-import RequestsScreen from '../screens/RequestStackScreens/RequestsScreen';
+import RequestsScreen from '../screens/RequestsScreen';
 import FreeTimeScreen from '../screens/FreeTimeScreen';
 import RequestByFriendScreen from '../screens/RequestByFriendScreen';
 import RequestByTimeScreen from '../screens/RequestByTimeScreen';
+import FinalRequestScreen from '../screens/FinalRequestScreen';
+import FriendChosenScreen from '../screens/FriendChosenScreen';
+import TimeChosenScreen from '../screens/TimeChosenScreen';
 
 export const RequestsStack = StackNavigator({
   Requests: {
@@ -33,10 +36,25 @@ export const RequestsStack = StackNavigator({
       tabBarVisible: false
     }
   },
+  FriendChosen: {
+    screen: FriendChosenScreen,
+    navigationOptions: {
+      header: null,
+      tabBarVisible: false
+    }
+  },
+  TimeChosen: {
+    screen: TimeChosenScreen,
+    navigationOptions: {
+      header: null,
+      tabBarVisible: false
+    }
+  },
   FinalRequest: {
     screen: FinalRequestScreen,
     navigationOptions: {
       header: null,
+      tabBarVisible: false
     }
   },
 },
