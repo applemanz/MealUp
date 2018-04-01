@@ -36,15 +36,15 @@ export const RequestsStack = StackNavigator({
     initialRouteName: 'Requests',
 });
 
-const RequestsStack = StackNavigator({
-  Requests: { screen: RequestsScreen },
-  RequestOptions: {screen: RequestOptionsScreen },
-  RequestbyFriend: { screen: RequestbyFriendScreen },
-  RequestbyTime: { screen: RequestbyTimeScreen },
-  FriendChosen: {screen:FriendChosenScreen },
-  TimeChosen: {screen:TimeChosenScreen},
-  FinalRequest: {screen:FinalRequestScreen}
-});
+// const RequestsStack = StackNavigator({
+//   Requests: { screen: RequestsScreen },
+//   RequestOptions: {screen: RequestOptionsScreen },
+//   RequestbyFriend: { screen: RequestbyFriendScreen },
+//   RequestbyTime: { screen: RequestbyTimeScreen },
+//   FriendChosen: {screen:FriendChosenScreen },
+//   TimeChosen: {screen:TimeChosenScreen},
+//   FinalRequest: {screen:FinalRequestScreen}
+// });
 
 export default TabNavigator(
   {

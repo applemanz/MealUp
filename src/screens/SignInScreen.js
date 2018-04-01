@@ -56,9 +56,9 @@ export default class SignInScreen extends React.Component {
           AsyncStorage.setItem('loggedIn', 'true');
           // const credential = provider.credential(token);
           // auth.signInWithCredential(credential);
-          db.collection('users').doc(userID).update({
+          db.collection('users').doc(userID).set({
             Name: userName,
-          })
+          }, { merge: true })
           .then(function() {
           console.log("Document successfully updated!");
           })

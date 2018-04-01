@@ -15,7 +15,7 @@ export default class FriendsScreen extends React.Component {
 
   componentWillMount() {
     friends = []
-    db.collection("users").doc('10202814445912572').collection('Friends').get().then(function(querySnapshot) {
+    db.collection("users").doc(userID).collection('Friends').get().then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
             friends.push({Name: doc.data().Name, url:`http://graph.facebook.com/${doc.id}/picture?type=square`})
         });

@@ -28,7 +28,7 @@ class MyListItem extends React.PureComponent {
 
 export default class FlatListSelector extends React.PureComponent {
   state = {selected: Array.from(Array(25), () => false)};
-  userRef = db.collection('users').doc('10202814445912572').collection('Freetime').doc(this.props.dayOfWeek);
+  userRef = db.collection('users').doc(userID).collection('Freetime').doc(this.props.dayOfWeek);
 
   constructor(props) {
     super(props);
@@ -48,6 +48,7 @@ export default class FlatListSelector extends React.PureComponent {
     // updater functions are preferred for transactional updates
     this.setState(this.updateState(id), () => {
       console.log(this.state.selected);
+      console.log(userID);
       var setWithMerge = this.userRef.set({
       Freetime: this.state.selected
       }, { merge: true });
