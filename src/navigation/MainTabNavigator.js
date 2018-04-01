@@ -50,14 +50,6 @@ export const RequestsStack = StackNavigator({
       tabBarVisible: false
     }
   },
-<<<<<<< HEAD
-  // FinalRequest: {
-  //   screen: FinalRequestScreen,
-  //   navigationOptions: {
-  //     header: null,
-  //   }
-  // },
-=======
   FinalRequest: {
     screen: FinalRequestScreen,
     navigationOptions: {
@@ -65,21 +57,10 @@ export const RequestsStack = StackNavigator({
       tabBarVisible: false
     }
   },
->>>>>>> 64101e9975099751408005be0521a0adb497d30f
 },
 {
     initialRouteName: 'Requests',
 });
-
-// const RequestsStack = StackNavigator({
-//   Requests: { screen: RequestsScreen },
-//   RequestOptions: {screen: RequestOptionsScreen },
-//   RequestbyFriend: { screen: RequestbyFriendScreen },
-//   RequestbyTime: { screen: RequestbyTimeScreen },
-//   FriendChosen: {screen:FriendChosenScreen },
-//   TimeChosen: {screen:TimeChosenScreen},
-//   FinalRequest: {screen:FinalRequestScreen}
-// });
 
 export default TabNavigator(
   {
