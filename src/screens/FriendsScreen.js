@@ -13,12 +13,15 @@ export default class FriendsScreen extends React.Component {
     title: 'Friends',
   };
 
-  componentWillMount() {
-    friends = []
-    db.collection("users").doc(userID).collection('Friends').get().then(function(querySnapshot) {
+  state = {friends: []};
+
+  componentDidMount() {
+    friend = this.state.friends.slice(0);
+    db.collection("users").doc('1852690164775994').collection('Friends').get().then((querySnapshot) => {
         querySnapshot.forEach(function(doc) {
-            friends.push({Name: doc.data().Name, url:`http://graph.facebook.com/${doc.id}/picture?type=square`})
+            friend.push({Name: doc.data().Name, url:`http://graph.facebook.com/${doc.id}/picture?type=square`})
         });
+        this.setState({friends:friend});
     });
   }
 
@@ -28,7 +31,7 @@ export default class FriendsScreen extends React.Component {
       <NavigationBar componentCenter={<Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>Friends</Text>}/>
       <Card containerStyle={{padding: 0}} >
        {
-         friends.map((u, i) => {
+         this.state.friends.map((u, i) => {
            return (
              <ListItem
                key={i}

@@ -28,7 +28,7 @@ class MyListItem extends React.PureComponent {
 
 export default class FlatListSelector extends React.PureComponent {
   state = {selected: Array.from(Array(25), () => false)};
-  userRef = db.collection('users').doc(userID).collection('Freetime').doc(this.props.dayOfWeek);
+  userRef = db.collection('users').doc('1893368474007587').collection('Freetime').doc(this.props.dayOfWeek);
 
   constructor(props) {
     super(props);

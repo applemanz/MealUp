@@ -31,12 +31,12 @@ export const RequestsStack = StackNavigator({
       header: null,
     }
   },
-  FinalRequest: {
-    screen: FinalRequestScreen,
-    navigationOptions: {
-      header: null,
-    }
-  },
+  // FinalRequest: {
+  //   screen: FinalRequestScreen,
+  //   navigationOptions: {
+  //     header: null,
+  //   }
+  // },
 },
 {
     initialRouteName: 'Requests',
