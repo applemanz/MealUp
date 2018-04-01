@@ -12,6 +12,8 @@ import FreeTimeScreen from '../screens/FreeTimeScreen';
 import RequestByFriendScreen from '../screens/RequestByFriendScreen';
 import RequestByTimeScreen from '../screens/RequestByTimeScreen';
 import FinalRequestScreen from '../screens/FinalRequestScreen';
+import FriendChosenScreen from '../screens/FriendChosenScreen';
+import TimeChosenScreen from '../screens/TimeChosenScreen';
 
 export const RequestsStack = StackNavigator({
   Requests: {
@@ -24,18 +26,35 @@ export const RequestsStack = StackNavigator({
     screen: RequestByFriendScreen,
     navigationOptions: {
       header: null,
+      tabBarVisible: false
     }
   },
   RequestByTime: {
     screen: RequestByTimeScreen,
     navigationOptions: {
       header: null,
+      tabBarVisible: false
+    }
+  },
+  FriendChosen: {
+    screen: FriendChosenScreen,
+    navigationOptions: {
+      header: null,
+      tabBarVisible: false
+    }
+  },
+  TimeChosen: {
+    screen: TimeChosenScreen,
+    navigationOptions: {
+      header: null,
+      tabBarVisible: false
     }
   },
   FinalRequest: {
     screen: FinalRequestScreen,
     navigationOptions: {
       header: null,
+      tabBarVisible: false
     }
   },
 },
