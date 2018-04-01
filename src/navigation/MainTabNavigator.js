@@ -23,12 +23,14 @@ export const RequestsStack = StackNavigator({
     screen: RequestByFriendScreen,
     navigationOptions: {
       header: null,
+      tabBarVisible: false
     }
   },
   RequestByTime: {
     screen: RequestByTimeScreen,
     navigationOptions: {
       header: null,
+      tabBarVisible: false
     }
   },
 },
