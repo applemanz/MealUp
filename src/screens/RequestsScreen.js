@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Button, Text, FlatList, Modal, TouchableHighlight } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
-import { ListItem } from 'react-native-elements';
+import { ListItem, ButtonGroup } from 'react-native-elements';
 
 const ComponentCenter = () => {
   return(
@@ -10,7 +10,6 @@ const ComponentCenter = () => {
     </View>
   );
 };
- 
 
 export default class RequestsScreen extends React.Component {
   static navigationOptions = {
@@ -19,7 +18,8 @@ export default class RequestsScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {modalVisible: false};
+    this.state = {modalVisible: false, index: 1};
+    this.updateIndex = this.updateIndex.bind(this);
   }
 
   RequestByFriend = () => {
@@ -44,6 +44,21 @@ export default class RequestsScreen extends React.Component {
     this.setState({modalVisible: false});
   }
 
+  updateIndex = (index) => {
+    this.setState({index})
+  }
+
+  renderBottom() {
+    if (this.state.index == 0) 
+        return <FlatList
+          data={[{key: 'Request to Friend 1'}, {key: 'Request to Friend 2'}, {key: 'Request to Friend 3'}]}
+          renderItem={this.renderItem}
+        />;
+    return <FlatList
+      data={[{key: 'Request from Friend 1'}, {key: 'Request from Friend 2'}]}
+      renderItem={this.renderItem}
+    />;
+  }
 
   render() {
     return (
@@ -52,11 +67,13 @@ export default class RequestsScreen extends React.Component {
                        componentRight    =     {<View style={{ flex: 1, alignItems: 'center'}}>
                        <TouchableHighlight onPress={this.setModalVisible}><Text style={{fontSize: 30, fontWeight: 'bold', color: 'white'}}>+</Text></TouchableHighlight>
                     </View>}/>
+        <ButtonGroup
+        onPress={this.updateIndex}
+        selectedIndex={this.state.index}
+        buttons={['Sent', 'Received']}
+        containerStyle={{height: 30}} />
      
-        <FlatList
-          data={[{key: 'Meal with Friend 1'}, {key: 'Meal with Friend 2'}, {key: 'Meal with Friend 3'}]}
-          renderItem={this.renderItem}
-        />
+        {this.renderBottom()}
         <View style={{flex: 1}}>
      <Modal
           transparent={true}
