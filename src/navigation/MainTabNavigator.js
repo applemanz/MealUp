@@ -7,10 +7,11 @@ import Colors from '../constants/Colors';
 
 import HomeScreen from '../screens/HomeScreen';
 import FriendsScreen from '../screens/FriendsScreen';
-import RequestsScreen from '../screens/RequestStackScreens/RequestsScreen';
+import RequestsScreen from '../screens/RequestsScreen';
 import FreeTimeScreen from '../screens/FreeTimeScreen';
 import RequestByFriendScreen from '../screens/RequestByFriendScreen';
 import RequestByTimeScreen from '../screens/RequestByTimeScreen';
+import FinalRequestScreen from '../screens/FinalRequestScreen';
 
 export const RequestsStack = StackNavigator({
   Requests: {
