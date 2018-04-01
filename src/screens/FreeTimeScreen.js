@@ -81,50 +81,6 @@ export default class FreeTimeScreen extends React.Component {
   }
 }
 
-class FreeTimes extends React.Component {
-  static navigationOptions = {
-    title: 'Free Time',
-  };
-
-  constructor(props) {
-    super(props);
-    this.state = {FreeArray: new Array(25).fill(0)};
-  }
-
-  onPressTime(time) {
-    var arr = this.state.selected;
-    var index = arr.indexOf(time);
-    if (index > -1) arr.splice(index, 1);
-    else arr.push(time);
-    this.setState({selected: arr});
-  }
-
-  renderItem = ({item, index}) => {
-    if (this.state.selected.includes(item.time)) return <Button backgroundColor='green' onPress={this.onPressTime.bind(this, item.time)} title={item.time}/>
-    else return <Button onPress={this.onPressTime.bind(this, item.time)} title={item.time}/>
-  }
-
-  render() {
-    return (
-    <View style={{flex: 1, justifyContent: 'center'}}>
-      <NavigationBar componentCenter={<Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>Free Time</Text>}/>
-      <Swiper style={styles.wrapper} showsButtons={true}>
-        <View>
-          <Text>Monday</Text>
-          <FlatListSelector data={data} />
-        </View>
-        <View style={styles.slkeye2}>
-          <Text style={styles.text}>Beautiful</Text>
-        </View>
-        <View style={styles.slkeye3}>
-          <Text style={styles.text}>And simple</Text>
-        </View>
-      </Swiper>
-    </View>
-    );
-  }
-}
-
 const styles = StyleSheet.create({
   wrapper: {
   },

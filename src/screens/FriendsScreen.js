@@ -1,17 +1,45 @@
 import React from 'react';
 import { View, Image, Text } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
+import { Avatar, Card, ListItem, Button } from 'react-native-elements';
+import firebase from "../config/firebase";
+import { userName, userID } from '../screens/SignInScreen';
+
+
+const db = firebase.firestore();
+
 export default class FriendsScreen extends React.Component {
   static navigationOptions = {
     title: 'Friends',
   };
 
+  componentWillMount() {
+    friends = []
+    db.collection("users").doc('10202814445912572').collection('Friends').get().then(function(querySnapshot) {
+        querySnapshot.forEach(function(doc) {
+            friends.push({Name: doc.data().Name, url:`http://graph.facebook.com/${doc.id}/picture?type=square`})
+        });
+    });
+  }
+
   render() {
     return (
       <View>
-        <NavigationBar componentCenter={<Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>Friends</Text>}/>
-        <Image source={{uri: 'https://graph.facebook.com/2042768522715597/picture?type=square'}}
-                style={{width:50, height: 50}} />
+      <NavigationBar componentCenter={<Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>Friends</Text>}/>
+      <Card containerStyle={{padding: 0}} >
+       {
+         friends.map((u, i) => {
+           return (
+             <ListItem
+               key={i}
+               roundAvatar
+               title={u.Name}
+               avatar={{uri:u.url}}
+             />
+           );
+         })
+       }
+      </Card>
       </View>
     );
   }

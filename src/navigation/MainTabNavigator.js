@@ -7,8 +7,18 @@ import Colors from '../constants/Colors';
 
 import HomeScreen from '../screens/HomeScreen';
 import FriendsScreen from '../screens/FriendsScreen';
-import RequestsScreen from '../screens/RequestsScreen';
+import RequestsScreen from '../screens/RequestStackScreens/RequestsScreen';
 import FreeTimeScreen from '../screens/FreeTimeScreen';
+
+const RequestsStack = StackNavigator({
+  Requests: { screen: RequestsScreen },
+  RequestOptions: {screen: RequestOptionsScreen },
+  RequestbyFriend: { screen: RequestbyFriendScreen },
+  RequestbyTime: { screen: RequestbyTimeScreen },
+  FriendChosen: {screen:FriendChosenScreen },
+  TimeChosen: {screen:TimeChosenScreen},
+  FinalRequest: {screen:FinalRequestScreen}
+});
 
 export default TabNavigator(
   {
@@ -16,7 +26,7 @@ export default TabNavigator(
       screen: HomeScreen,
     },
     Requests: {
-      screen: RequestsScreen,
+      screen: RequestsStack,
     },
     Friends: {
       screen: FriendsScreen,
