@@ -1,7 +1,7 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { TabNavigator, TabBarBottom } from 'react-navigation';
+import { TabNavigator, TabBarBottom, StackNavigator } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 
@@ -9,6 +9,32 @@ import HomeScreen from '../screens/HomeScreen';
 import FriendsScreen from '../screens/FriendsScreen';
 import RequestsScreen from '../screens/RequestStackScreens/RequestsScreen';
 import FreeTimeScreen from '../screens/FreeTimeScreen';
+import RequestByFriendScreen from '../screens/RequestByFriendScreen';
+import RequestByTimeScreen from '../screens/RequestByTimeScreen';
+
+export const RequestsStack = StackNavigator({
+  Requests: {
+    screen: RequestsScreen,
+    navigationOptions: {
+      header: null,
+    }
+  },
+  RequestByFriend: {
+    screen: RequestByFriendScreen,
+    navigationOptions: {
+      header: null,
+    }
+  },
+  RequestByTime: {
+    screen: RequestByTimeScreen,
+    navigationOptions: {
+      header: null,
+    }
+  },
+},
+{
+    initialRouteName: 'Requests',
+});
 
 const RequestsStack = StackNavigator({
   Requests: { screen: RequestsScreen },
