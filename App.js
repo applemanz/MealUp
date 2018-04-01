@@ -16,18 +16,6 @@ export default class App extends React.Component {
     }
   }
 
-  // componentWillMount() {
-  //   const config = {
-  //     apiKey: "AIzaSyC0KLW-drjokUAv1gjTKLfObmGmQmB5tx8",
-  //     authDomain: "auth-f86eb.firebaseapp.com",
-  //     databaseURL: "https://auth-f86eb.firebaseio.com",
-  //     projectId: "auth-f86eb",
-  //     storageBucket: "auth-f86eb.appspot.com",
-  //     messagingSenderId: "874574211968"
-  //   };
-  //   firebase.initializeApp(config);
-  // }
-
   render() {
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
       return (
@@ -39,13 +27,11 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        <Provider store={createStore(reducers)}>
-          <View style={styles.container}>
-            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-            {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
-            <RootNavigation />
-          </View>
-      </Provider>
+        <View style={styles.container}>
+          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+          {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
+          <RootNavigation />
+        </View>
       );
     }
   }

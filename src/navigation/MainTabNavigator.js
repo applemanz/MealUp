@@ -7,7 +7,7 @@ import Colors from '../constants/Colors';
 
 import HomeScreen from '../screens/HomeScreen';
 import FriendsScreen from '../screens/FriendsScreen';
-import RequestsScreen from '../screens/RequestsScreen';
+import RequestsScreen from '../screens/RequestStackScreens/RequestsScreen';
 import FreeTimeScreen from '../screens/FreeTimeScreen';
 import RequestByFriendScreen from '../screens/RequestByFriendScreen';
 import RequestByTimeScreen from '../screens/RequestByTimeScreen';
@@ -33,10 +33,26 @@ export const RequestsStack = StackNavigator({
       tabBarVisible: false
     }
   },
+  FinalRequest: {
+    screen: FinalRequestScreen,
+    navigationOptions: {
+      header: null,
+    }
+  },
 },
 {
     initialRouteName: 'Requests',
 });
+
+// const RequestsStack = StackNavigator({
+//   Requests: { screen: RequestsScreen },
+//   RequestOptions: {screen: RequestOptionsScreen },
+//   RequestbyFriend: { screen: RequestbyFriendScreen },
+//   RequestbyTime: { screen: RequestbyTimeScreen },
+//   FriendChosen: {screen:FriendChosenScreen },
+//   TimeChosen: {screen:TimeChosenScreen},
+//   FinalRequest: {screen:FinalRequestScreen}
+// });
 
 export default TabNavigator(
   {
