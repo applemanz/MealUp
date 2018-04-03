@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList,StyleSheet} from 'react-native';
+import { View, Text, FlatList,StyleSheet, ScrollView} from 'react-native';
 import { Button } from 'react-native-elements';
 import NavigationBar from 'navigationbar-react-native';
 import Swiper from 'react-native-swiper';
@@ -45,7 +45,7 @@ export default class FreeTimeScreen extends React.Component {
     return (
       <View style={{flex: 1, justifyContent: 'center'}}>
         <NavigationBar componentCenter={<Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>Free Time</Text>}/>
-        <Swiper style={styles.wrapper} showsButtons={true}>
+        <ScrollView style={styles.wrapper} horizontal={true} >
           <View>
             <Text>Monday</Text>
             <FlatListSelector data={data} dayOfWeek={'Monday'}/>
@@ -74,7 +74,7 @@ export default class FreeTimeScreen extends React.Component {
             <Text>Sunday</Text>
             <FlatListSelector data={data} dayOfWeek={'Sunday'}/>
           </View>
-        </Swiper>
+        </ScrollView>
 
       </View>
     );

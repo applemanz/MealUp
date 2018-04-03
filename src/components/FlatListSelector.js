@@ -9,9 +9,10 @@ import {
 } from 'react-native';
 import { Button } from 'react-native-elements';
 import firebase from "../config/firebase";
-import { userName, userID } from '../screens/SignInScreen';
+import { userName } from '../screens/SignInScreen';
 require("firebase/firestore");
 const db = firebase.firestore();
+const userID = '10210889686788547'
 
 class MyListItem extends React.PureComponent {
   _onPress = () => {
@@ -27,12 +28,26 @@ class MyListItem extends React.PureComponent {
 }
 
 export default class FlatListSelector extends React.PureComponent {
-  state = {selected: Array.from(Array(25), () => false)};
-  userRef = db.collection('users').doc('1893368474007587').collection('Freetime').doc(this.props.dayOfWeek);
+  userRef = db.collection('users').doc(userID).collection('Freetime').doc(this.props.dayOfWeek);
 
   constructor(props) {
     super(props);
-  }
+    this.state = {selected: []}
+    userRef = db.collection('users').doc(userID).collection('Freetime').doc(this.props.dayOfWeek);
+    userRef.get().then(doc => {
+      if (doc.exists) {
+          console.log("Document data:", doc.data().Freetime);
+          this.setState(previousState => {
+        return { selected: doc.data().Freetime };
+      });
+      } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+      }
+  }).catch(function(error) {
+      console.log("Error getting document:", error);
+  });
+}
 
 
 

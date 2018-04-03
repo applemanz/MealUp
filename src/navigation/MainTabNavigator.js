@@ -36,36 +36,27 @@ export const RequestsStack = StackNavigator({
       tabBarVisible: false
     }
   },
-  FriendChosen: {
-    screen: FriendChosenScreen,
-    navigationOptions: {
-      header: null,
-      tabBarVisible: false
-    }
-  },
-  TimeChosen: {
-    screen: TimeChosenScreen,
-    navigationOptions: {
-      header: null,
-      tabBarVisible: false
-    }
-  },
-<<<<<<< HEAD
+  // FriendChosen: {
+  //   screen: FriendChosenScreen,
+  //   navigationOptions: {
+  //     header: null,
+  //     tabBarVisible: false
+  //   }
+  // },
+  // TimeChosen: {
+  //   screen: TimeChosenScreen,
+  //   navigationOptions: {
+  //     header: null,
+  //     tabBarVisible: false
+  //   }
+  // },
   // FinalRequest: {
   //   screen: FinalRequestScreen,
   //   navigationOptions: {
   //     header: null,
+  //     tabBarVisible: false
   //   }
   // },
-=======
-  FinalRequest: {
-    screen: FinalRequestScreen,
-    navigationOptions: {
-      header: null,
-      tabBarVisible: false
-    }
-  },
->>>>>>> 64101e9975099751408005be0521a0adb497d30f
 },
 {
     initialRouteName: 'Requests',
@@ -80,6 +71,38 @@ export const RequestsStack = StackNavigator({
 //   TimeChosen: {screen:TimeChosenScreen},
 //   FinalRequest: {screen:FinalRequestScreen}
 // });
+export const FriendsStack = StackNavigator({
+  Friends: {
+    screen: FriendsScreen,
+    navigationOptions: {
+      header: null,
+    }
+  },
+  FriendChosen: {
+    screen: FriendChosenScreen,
+    navigationOptions: {
+      header: null,
+      tabBarVisible: false
+    }
+  },
+  TimeChosen: {
+    screen: TimeChosenScreen,
+    navigationOptions: {
+      header: null,
+      tabBarVisible: false
+    }
+  },
+  FinalRequest: {
+    screen: FinalRequestScreen,
+    navigationOptions: {
+      header: null,
+      tabBarVisible: false
+    }
+  },
+},
+{
+    initialRouteName: 'Friends',
+});
 
 export default TabNavigator(
   {
@@ -90,7 +113,7 @@ export default TabNavigator(
       screen: RequestsStack,
     },
     Friends: {
-      screen: FriendsScreen,
+      screen: FriendsStack,
     },
     FreeTime: {
       screen: FreeTimeScreen
