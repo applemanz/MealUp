@@ -3,7 +3,6 @@ import { View, Image, Text, TouchableHighlight, SectionList, StyleSheet } from '
 import NavigationBar from 'navigationbar-react-native';
 import {ListItem, Button, Avatar, ButtonGroup} from 'react-native-elements';
 import firebase from "../config/firebase";
-import Swiper from 'react-native-swiper';
 import { userName } from '../screens/SignInScreen';
 
 const userID = '10210889686788547'
@@ -82,6 +81,11 @@ export default class FriendChosenScreen extends React.Component {
   }
 
   renderBottom() {
+    const { params } = this.props.navigation.state;
+    const id = params ? params.id : "1893368474007587";
+    const url = params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=square`;
+    const name = params ? params.name : "Chi Yu";
+
     match1 = []; 
     match2 = [];
 
@@ -140,9 +144,8 @@ export default class FriendChosenScreen extends React.Component {
 
   render() {
     const { params } = this.props.navigation.state;
-    const id = params ? params.id : "1893368474007587";
-    const url = params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=square`;
     const name = params ? params.name : "Chi Yu";
+    const url = params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=square`;
 
     if (this.state.matches1) {
       match1 = []; 
@@ -169,7 +172,6 @@ export default class FriendChosenScreen extends React.Component {
       }
 
       return(
-    //    <Swiper showsButtons={false}>
           <View>
           <NavigationBar
             componentLeft={
@@ -201,47 +203,6 @@ export default class FriendChosenScreen extends React.Component {
         containerStyle={{height: 30}} />
           {this.renderBottom()}
         </View>
-        //  <View>
-        //   <NavigationBar
-        //     componentLeft={
-        //       <View style={{flex: 1}}>
-        //         <TouchableHighlight onPress={() => this.props.navigation.goBack()}>
-        //           <Text style={{fontSize: 15, color: 'white'}}>
-        //             Back
-        //           </Text>
-        //         </TouchableHighlight>
-        //       </View>}
-        //     componentCenter={
-        //       <View style={{flex: 1}}>
-        //         <Text style={{fontSize: 20, color: 'white'}}>
-        //           Meal Request {name.split(" ")[0]}, 1 hr
-        //         </Text>
-        //       </View>}
-        //   />
-        //   <Avatar
-        //     small
-        //     rounded
-        //     source={{uri: url}}
-        //     onPress={() => console.log("Works!")}
-        //     activeOpacity={0.7}
-        //   />
-        // <SectionList
-        //     sections={match2}
-        //     renderItem={({item}) =>
-        //     <ListItem
-        //       title={item}
-        //       onPress={() => this.props.navigation.navigate('FinalRequest', {
-        //         name: name,
-        //         id: id,
-        //         url: url,
-        //         time: item,
-        //       })}
-        //     />}
-        //     renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-        //     keyExtractor={(item, index) => index}
-        //   />
-        // </View> 
-      // </Swiper>
       ); 
     }
     else 
