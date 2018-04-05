@@ -3,47 +3,55 @@ import { View, Image, Text, TouchableHighlight } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
 import { Avatar, Card, ListItem, Button } from 'react-native-elements';
 import firebase from "../config/firebase";
-import { userName, userID } from '../screens/SignInScreen';
+import { userName } from '../screens/SignInScreen';
+
+const userID = '10210889686788547'
+const db = firebase.firestore();
+
+export default class RequestByFriendScreen extends React.Component {
+
+  state = {friends: []};
+
+  componentDidMount() {
+    friend = this.state.friends.slice(0);
+    db.collection("users").doc(userID).collection('Friends').get().then((querySnapshot) => {
+        querySnapshot.forEach(function(doc) {
+            friend.push({Name: doc.data().Name, url:`http://graph.facebook.com/${doc.id}/picture?type=square`, id: doc.id})
+        });
+        this.setState({friends:friend});
+    });
+  }
 
 
-// const db = firebase.firestore();
+  _onPress = (name, id, url) => {
+    this.props.navigation.navigate('FriendChosen', {
+      name: name,
+      id: id,
+      url:url
+    });
+  }
 
-export default class RequestByFriendFriendScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Friends',
-  };
+ 
+render() {
 
-//   componentWillMount() {
-//     friends = []
-//     db.collection("users").doc(userID).collection('Friends').get().then(function(querySnapshot) {
-//         querySnapshot.forEach(function(doc) {
-//             friends.push({Name: doc.data().Name, url:`http://graph.facebook.com/${doc.id}/picture?type=square`})
-//         });
-//     });
-//   }
-
-  render() {
     return (
-      <View> 
-      <NavigationBar componentLeft={<View style={{flex: 1}}><TouchableHighlight onPress={() => this.props.navigation.goBack()}><Text style={{fontSize: 15, color: 'white'}}>Back</Text></TouchableHighlight></View>} componentCenter={<View style={{flex: 1}}><Text style={{fontSize: 14, color: 'white'}}>Request By Friend</Text></View>}/>
-      <TouchableHighlight onPress={() => this.props.navigation.navigate('FriendChosen')}><ListItem title={"Friend 1"}/></TouchableHighlight>
-      <TouchableHighlight onPress={() => this.props.navigation.navigate('FriendChosen')}><ListItem title={"Friend 2"}/></TouchableHighlight>
-      {/* <Card containerStyle={{padding: 0}} >
+      <View>
+      <NavigationBar componentLeft={<View style={{flex: 1}}><TouchableHighlight onPress={() => this.props.navigation.goBack()}><Text style={{fontSize: 15, color: 'white'}}>Back</Text></TouchableHighlight></View>} componentCenter={<View style={{flex: 1}}><Text style={{fontSize: 14, color: 'white'}}>Request By Friend</Text></View>}/>      
+      <Card containerStyle={{padding: 0}} >
        {
-         friends.map((u, i) => {
+         this.state.friends.map((u, i) => {
            return (
-             <TouchableHighlight onPress={() => this.props.navigation.navigate('FriendChosen')}>
              <ListItem
                key={i}
                roundAvatar
                title={u.Name}
                avatar={{uri:u.url}}
+               onPress={() => this._onPress(u.Name,u.id, u.url)}
              />
-             </TouchableHighlight>
            );
          })
        }
-      </Card> */}
+      </Card>
       </View>
     );
   }
