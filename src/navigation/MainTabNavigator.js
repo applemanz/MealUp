@@ -36,27 +36,27 @@ export const RequestsStack = StackNavigator({
       tabBarVisible: false
     }
   },
-  // FriendChosen: {
-  //   screen: FriendChosenScreen,
-  //   navigationOptions: {
-  //     header: null,
-  //     tabBarVisible: false
-  //   }
-  // },
-  // TimeChosen: {
-  //   screen: TimeChosenScreen,
-  //   navigationOptions: {
-  //     header: null,
-  //     tabBarVisible: false
-  //   }
-  // },
-  // FinalRequest: {
-  //   screen: FinalRequestScreen,
-  //   navigationOptions: {
-  //     header: null,
-  //     tabBarVisible: false
-  //   }
-  // },
+  FriendChosen: {
+    screen: FriendChosenScreen,
+    navigationOptions: {
+      header: null,
+      tabBarVisible: false
+    }
+  },
+  TimeChosen: {
+    screen: TimeChosenScreen,
+    navigationOptions: {
+      header: null,
+      tabBarVisible: false
+    }
+  },
+  FinalRequest: {
+    screen: FinalRequestScreen,
+    navigationOptions: {
+      header: null,
+      tabBarVisible: false
+    }
+  },
 },
 {
     initialRouteName: 'Requests',
