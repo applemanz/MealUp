@@ -57,9 +57,9 @@ export default class TimeChosenScreen extends React.Component {
     <ListItem
       title={item}
       onPress={() => this.props.navigation.navigate('FinalRequest', {
-      //  name: name,
-      //  id: id,
-      //  url: url,
+       name: name,
+       id: id,
+       url: url,
         time: item,
       })}
     />}

@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/Cellar/yarn/1.5.1_1/libexec/bin/yarn.js add
+  /usr/local/bin/node /usr/local/Cellar/yarn/1.5.1_1/libexec/bin/yarn.js add --save react-native-calendars
 
 PATH: 
   /usr/local/bin:/Users/andrewz/.nvm/versions/node/v8.9.3/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin:/opt/X11/bin:/Users/andrewz/Library/Android/sdk/tools:/Users/andrewz/Library/Android/sdk/platform-tools
