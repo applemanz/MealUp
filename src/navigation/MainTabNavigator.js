@@ -23,7 +23,7 @@ export const RequestsStack = StackNavigator({
     }
   },
   RequestByFriend: {
-    screen: RequestByFriendScreen,
+    screen: FriendsScreen,
     navigationOptions: {
       header: null,
       tabBarVisible: false
@@ -62,15 +62,6 @@ export const RequestsStack = StackNavigator({
     initialRouteName: 'Requests',
 });
 
-// const RequestsStack = StackNavigator({
-//   Requests: { screen: RequestsScreen },
-//   RequestOptions: {screen: RequestOptionsScreen },
-//   RequestbyFriend: { screen: RequestbyFriendScreen },
-//   RequestbyTime: { screen: RequestbyTimeScreen },
-//   FriendChosen: {screen:FriendChosenScreen },
-//   TimeChosen: {screen:TimeChosenScreen},
-//   FinalRequest: {screen:FinalRequestScreen}
-// });
 export const FriendsStack = StackNavigator({
   Friends: {
     screen: FriendsScreen,
