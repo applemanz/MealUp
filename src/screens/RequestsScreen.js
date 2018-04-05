@@ -3,6 +3,10 @@ import { View, Button, Text, FlatList, Modal, TouchableHighlight } from 'react-n
 import NavigationBar from 'navigationbar-react-native';
 import { ListItem, ButtonGroup } from 'react-native-elements';
 
+import firebase from "../config/firebase";
+const userID = '10210889686788547'
+const db = firebase.firestore();
+
 const ComponentCenter = () => {
   return(
     <View style={{ flex: 1, }}>
@@ -18,8 +22,27 @@ export default class RequestsScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {modalVisible: false, index: 1};
+    this.state = {modalVisible: false, index: 1, sentRequests: [], receivedRequests: []};
     this.updateIndex = this.updateIndex.bind(this);
+  }
+
+  componentDidMount() {
+    db.collection("users").doc(userID).collection('Sent Requests').onSnapshot((querySnapshot) => {
+      requestS = [];
+        querySnapshot.forEach(function(doc) {
+            requestS.push({name: doc.data().FriendName, url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`, id: doc.data().FriendID,
+                           DateTime: doc.data().DateTime, Location: doc.data().Location})
+        });
+        this.setState({sentRequests: requestS});
+    });
+    db.collection("users").doc(userID).collection('Received Requests').onSnapshot((querySnapshot) => {
+      requestR = [];
+        querySnapshot.forEach(function(doc) {
+            requestR.push({name: doc.data().FriendName, url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`, id: doc.data().FriendID,
+                           DateTime: doc.data().DateTime, Location: doc.data().Location})
+        });
+        this.setState({receivedRequests: requestR});
+    });
   }
 
   RequestByFriend = () => {
@@ -36,6 +59,22 @@ export default class RequestsScreen extends React.Component {
     return <ListItem key={item.key} title={item.key}/>;
   }
 
+  renderRequest = ({item, index}) => {
+    return <ListItem
+    key={index}
+    roundAvatar
+    title={item.name}
+    subtitle={item.DateTime + " at " + item.Location}
+    avatar={{uri:item.url}}
+    onPress={() => this._onPress(item.name,item.id, item.url)}
+    />;
+  }
+
+  _keyExtractor = (item, index) => item.name + item.DateTime;
+  _onPress = (name, id, url) => {
+    
+  }
+
   setModalVisible = () => {
     this.setState({modalVisible: true});
   }
@@ -50,13 +89,13 @@ export default class RequestsScreen extends React.Component {
 
   renderBottom() {
     if (this.state.index == 0)
-        return <FlatList
-          data={[{key: 'Request to Friend 1'}, {key: 'Request to Friend 2'}, {key: 'Request to Friend 3'}]}
-          renderItem={this.renderItem}
+        return <FlatList keyExtractor={this._keyExtractor}
+          data={this.state.sentRequests}
+          renderItem={this.renderRequest}
         />;
-    return <FlatList
-      data={[{key: 'Request from Friend 1'}, {key: 'Request from Friend 2'}]}
-      renderItem={this.renderItem}
+    return <FlatList keyExtractor={this._keyExtractor}
+      data={this.state.receivedRequests}
+      renderItem={this.renderRequest}
     />;
   }
 
