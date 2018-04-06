@@ -19,7 +19,9 @@ export default class FinalRequestScreen extends React.Component {
 		const name = params ? params.name : null;
 		const friendID = params ? params.id : null;
 		const url = params ? params.url : null;
-		const time = params ? params.time : null;
+    const time = params ? params.time : null;
+    const dateobj = params ? params.dateobj : null;
+    const date = params ? params.date : null;
 		const firstName = name.split(' ')[0];
 
 		return (

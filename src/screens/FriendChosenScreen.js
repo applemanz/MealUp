@@ -108,8 +108,6 @@ export default class FriendChosenScreen extends React.Component {
     month = d.getMonth();
     date = d.getDate();
     day = d.getDay();
-    //hour = d.getHour();
-    //min = d.getMin();
 
     for (thisday in this.state.matches1) {
       temp = [];
@@ -154,15 +152,23 @@ export default class FriendChosenScreen extends React.Component {
     if (this.state.index == 0)
         return <SectionList
         sections={match1}
-        renderItem={({item}) => 
+        renderItem={({item,section}) =>
         <ListItem
           title={item}
-          onPress={() => this.props.navigation.navigate('FinalRequest', {
+          onPress={() => {
+            t = section.title.split(", ");
+            month = months.indexOf(t[1].slice(0, 3));
+            date = t[1].slice(-1);
+            // Year is hardcoded at\s 2018
+            ymd = new Date(2018,month,date)
+            this.props.navigation.navigate('FinalRequest', {
             name: name,
             id: id,
             url: url,
+            dateobj: ymd.toString(),
             time: item,
-          })}
+            date: t[1],
+          })}}
         />}
         renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
         keyExtractor={(item, index) => index}
