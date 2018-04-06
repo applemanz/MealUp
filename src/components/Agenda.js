@@ -12,11 +12,19 @@ const db = firebase.firestore();
 
 export default class AgendaScreen extends Component {
   constructor(props) {
+    var test = new Date('April 7, 2018 13:30:00 GMT+00:00');
+
+    console.log(test.getTime());
+
     today = new Date()
     console.log(today.getTime())
     super(props);
     this.state = {
-      items: {}
+      items: {"2018-04-06": [{
+      "height": 25,
+      "subtext": "5:30 PM at Wucox",
+      "text": "Meal with Chi Yu",
+    }]}
     };
     db.collection("users").doc(userID).collection('Meals')
     .onSnapshot((querySnapshot) => {
@@ -47,8 +55,8 @@ export default class AgendaScreen extends Component {
   updateItems(meals) {
     items = new Object();
     for (meal of meals) {
-      day = new Date(meal['Day'])
-      console.log(day)
+      day = meal['Day']
+      // console.log(day)
       dateID = day.toISOString().substring(0,10)
       if (dateID in items) {
         mealItems = items[dateID]
@@ -67,7 +75,7 @@ export default class AgendaScreen extends Component {
 
       mealEntry = new Object()
       mealEntry['text'] = `Meal with ${friend}`
-      // mealEntry['subtext'] = `${timeStr} at ${location}`
+      mealEntry['subtext'] = `${timeStr} at ${location}`
       mealEntry['height'] = height
       mealItems.push(mealEntry)
 
@@ -79,7 +87,8 @@ export default class AgendaScreen extends Component {
 
     updatedItems = Object.assign({}, this.state.items, items)
     console.log(updatedItems)
-    this.setState((prevState) => {items:updatedItems});
+    this.setState((prevState) => { return{items:items}});
+    console.log(this.state.items)
   }
 
   // getMeals = (id) => {
@@ -163,7 +172,7 @@ export default class AgendaScreen extends Component {
 
   renderItem(item) {
     return (
-      <View style={[styles.item, {height: item.height}]}><Text>{item.text}</Text></View>
+      <View style={[styles.item, {height: item.height}]}><Text>{item.text}</Text><Text>{item.subtext}</Text></View>
     );
   }
 
