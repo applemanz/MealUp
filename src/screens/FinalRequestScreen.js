@@ -4,10 +4,10 @@ import NavigationBar from 'navigationbar-react-native';
 import {Button} from 'react-native-elements';
 import { StackNavigator } from 'react-navigation';
 import firebase from "../config/firebase";
-// import { userName } from '../screens/SignInScreen';
+import { userName, userID } from '../screens/SignInScreen';
 
-const userID = '10210889686788547'
-const userName = 'Andrew Zeng'
+// const userID = '10210889686788547'
+// const userName = 'Andrew Zeng'
 const db = firebase.firestore();
 
 export default class FinalRequestScreen extends React.Component {
@@ -33,8 +33,8 @@ export default class FinalRequestScreen extends React.Component {
          		style={{width: 100, height: 100, borderRadius: 50}}
          		source={{uri: `http://graph.facebook.com/${friendID}/picture?type=large`}}
        		/>
-			<Text>{'\nname:'} {name}</Text>
-			<Text>time: {time}</Text>
+			<Text>{name}</Text>
+			<Text>{time}</Text>
 			</View>
 			<View style={{justifyContent: "center",alignItems: "center"}}>
 			<Text>select a location:</Text>

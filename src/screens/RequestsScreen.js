@@ -2,14 +2,16 @@ import React from 'react';
 import { View, Button, Text, FlatList, Modal, TouchableHighlight, Image } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
 import { ListItem, ButtonGroup } from 'react-native-elements';
+import { userName, userID } from '../screens/SignInScreen';
 
 import firebase from "../config/firebase";
-const userID = '10210889686788547'
+// const userID = '10210889686788547'
+// const userName = 'Andrew Zeng'
 const db = firebase.firestore();
 
 const ComponentCenter = () => {
   return(
-    <View style={{ flex: 1, }}>
+    <View style={{ flex: 1, alignItems: 'center'}}>
        <Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>Requests</Text>
     </View>
   );
@@ -31,7 +33,7 @@ export default class RequestsScreen extends React.Component {
       requestS = [];
         querySnapshot.forEach(function(doc) {
             requestS.push({name: doc.data().FriendName, url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`, id: doc.data().FriendID,
-                           DateTime: doc.data().DateTime, Location: doc.data().Location})
+                           DateTime: doc.data().DateTime, Location: doc.data().Location, docID: doc.id})
         });
         this.setState({sentRequests: requestS});
     });
@@ -39,7 +41,7 @@ export default class RequestsScreen extends React.Component {
       requestR = [];
         querySnapshot.forEach(function(doc) {
             requestR.push({name: doc.data().FriendName, url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`, id: doc.data().FriendID,
-                           DateTime: doc.data().DateTime, Location: doc.data().Location})
+                           DateTime: doc.data().DateTime, Location: doc.data().Location, docID: doc.id})
         });
         this.setState({receivedRequests: requestR});
     });
@@ -83,14 +85,14 @@ export default class RequestsScreen extends React.Component {
 
   _keyExtractor = (item, index) => item.name + item.DateTime;
   _onPressSent = (item) => {
-    this.setState({undoVisible: true, curUser: {name: item.name, id: item.id, 
-      DateTime: item.DateTime.toDateString() + " " + (item.DateTime.getHours() % 12 || 12) + ":" + ("0" + item.DateTime.getMinutes()).slice(-2), 
-      Location: item.Location}});
+    this.setState({undoVisible: true, curUser: {name: item.name, id: item.id,
+      DateTime: item.DateTime.toDateString() + " " + (item.DateTime.getHours() % 12 || 12) + ":" + ("0" + item.DateTime.getMinutes()).slice(-2),
+      Location: item.Location, docID: item.docID, DateObj: item.DateTime}});
   }
   _onPressReceived = (item) => {
-    this.setState({respondVisible: true, curUser: {name: item.name, id: item.id, 
-      DateTime: item.DateTime.toDateString() + " " + (item.DateTime.getHours() % 12 || 12) + ":" + ("0" + item.DateTime.getMinutes()).slice(-2), 
-      Location: item.Location}});
+    this.setState({respondVisible: true, curUser: {name: item.name, id: item.id,
+      DateTime: item.DateTime.toDateString() + " " + (item.DateTime.getHours() % 12 || 12) + ":" + ("0" + item.DateTime.getMinutes()).slice(-2),
+      Location: item.Location, docID: item.docID,  DateObj: item.DateTime}});
   }
 
   updateIndex = (index) => {
@@ -138,13 +140,13 @@ export default class RequestsScreen extends React.Component {
         </View>
         <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#5cb85c", borderRadius: 5}}
-            onPress={() => this.setState({respondVisible: false})}>
+            onPress={this.acceptRequest}>
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Accept</Text>
           </TouchableHighlight>
         </View>
         <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
-            onPress={() => this.setState({respondVisible: false})}>
+            onPress={this.declineRequest}>
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Decline</Text>
           </TouchableHighlight>
         </View>
@@ -158,6 +160,45 @@ export default class RequestsScreen extends React.Component {
         </View>
     </Modal>
   </View>;
+  }
+
+  acceptRequest = () => {
+    // put document in meals
+    console.log(this.state.curUser.docID)
+    data = new Object()
+    data['Day'] = this.state.curUser.DateObj
+    data['FriendID'] = this.state.curUser.id
+    data['FriendName'] = this.state.curUser.name
+    data['Length'] = 0.5
+    data['Location'] = this.state.curUser.Location
+    db.collection("users").doc(userID).collection('Meals').add(data)
+        .then((docRef) => {
+            console.log("Document written with ID: ", docRef.id);
+            data['FriendName'] = userName
+            data['FriendID'] = userID
+            db.collection("users").doc(this.state.curUser.id).collection('Meals').doc(docRef.id).set(data)
+        })
+        .catch(function(error) {
+            console.error("Error adding document: ", error);
+        });
+    // remove document from requests
+    db.collection("users").doc(userID).collection('Received Requests').doc(this.state.curUser.docID).delete().then(() => {
+      console.log("Document successfully deleted!");
+      db.collection("users").doc(this.state.curUser.id).collection('Sent Requests').doc(this.state.curUser.docID).delete()
+    }).catch(function(error) {
+      console.error("Error removing document: ", error);
+    });
+    this.setState({respondVisible: false})
+  }
+
+  declineRequest = () => {
+    db.collection("users").doc(userID).collection('Received Requests').doc(this.state.curUser.docID).delete().then(() => {
+      console.log("Document successfully deleted!");
+      db.collection("users").doc(this.state.curUser.id).collection('Sent Requests').doc(this.state.curUser.docID).delete()
+    }).catch(function(error) {
+      console.error("Error removing document: ", error);
+    });
+    this.setState({respondVisible: false})
   }
 
   undoModal() {
@@ -210,7 +251,7 @@ export default class RequestsScreen extends React.Component {
       <View style={{flex: 1}}>
         <NavigationBar componentCenter   =     {<ComponentCenter />}
                        componentRight    =     {<View style={{ flex: 1, alignItems: 'center'}}>
-                       <TouchableHighlight onPress={() => this.setState({modalVisible: true})}><Text style={{fontSize: 30, fontWeight: 'bold', color: 'white'}}>+</Text></TouchableHighlight>
+                       <TouchableHighlight style={{padding: 20}} onPress={() => this.setState({modalVisible: true})}><Text style={{fontSize: 30, fontWeight: 'bold', color: 'white'}}>+</Text></TouchableHighlight>
                     </View>}/>
         <ButtonGroup
         onPress={this.updateIndex}
