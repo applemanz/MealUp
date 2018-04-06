@@ -11,7 +11,6 @@ import { Facebook } from 'expo';
 import {Button, SocialIcon, Divider} from 'react-native-elements';
 
 import firebase from "../config/firebase";
-require("firebase/firestore");
 const db = firebase.firestore();
 
 

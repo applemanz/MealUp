@@ -2,11 +2,11 @@ import React from 'react';
 import { View, Button, Text, FlatList, Modal, TouchableHighlight, Image } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
 import { ListItem, ButtonGroup } from 'react-native-elements';
-import { userName, userID } from '../screens/SignInScreen';
+// import { userName, userID } from '../screens/SignInScreen';
 
 import firebase from "../config/firebase";
-// const userID = '10210889686788547'
-// const userName = 'Andrew Zeng'
+const userID = '10210889686788547'
+const userName = 'Andrew Zeng'
 const db = firebase.firestore();
 
 const ComponentCenter = () => {

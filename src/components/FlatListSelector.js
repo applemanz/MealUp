@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Button } from 'react-native-elements';
 import firebase from "../config/firebase";
-import { userName } from '../screens/SignInScreen';
+// import { userName, userID } from '../screens/SignInScreen';
 require("firebase/firestore");
 const db = firebase.firestore();
 const userID = '10210889686788547'

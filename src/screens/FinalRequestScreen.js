@@ -4,10 +4,10 @@ import NavigationBar from 'navigationbar-react-native';
 import {Button} from 'react-native-elements';
 import { StackNavigator } from 'react-navigation';
 import firebase from "../config/firebase";
-import { userName, userID } from '../screens/SignInScreen';
+// import { userName, userID } from '../screens/SignInScreen';
 
-// const userID = '10210889686788547'
-// const userName = 'Andrew Zeng'
+const userID = '10210889686788547'
+const userName = 'Andrew Zeng'
 const db = firebase.firestore();
 
 export default class FinalRequestScreen extends React.Component {
