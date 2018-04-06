@@ -23,7 +23,7 @@ export const RequestsStack = StackNavigator({
     }
   },
   RequestByFriend: {
-    screen: FriendsScreen,
+    screen: RequestByFriendScreen,
     navigationOptions: {
       header: null,
       tabBarVisible: false
