@@ -3,9 +3,9 @@ import { View, Image, Text, TouchableHighlight, SectionList, StyleSheet } from '
 import NavigationBar from 'navigationbar-react-native';
 import {ListItem, Button, Avatar, ButtonGroup} from 'react-native-elements';
 import firebase from "../config/firebase";
-import { userName } from '../screens/SignInScreen';
+import { userName, userID } from '../screens/SignInScreen';
 
-const userID = '10210889686788547'
+// const userID = '10210889686788547'
 const db = firebase.firestore();
 const numdays = [31,28,31,30,31,30,31,31,30,31,30,31];
 const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -102,7 +102,7 @@ export default class FriendChosenScreen extends React.Component {
     const url = params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=square`;
     const name = params ? params.name : "Chi Yu";
 
-    match1 = []; 
+    match1 = [];
     match2 = [];
     d = new Date();
     month = d.getMonth();
@@ -122,7 +122,7 @@ export default class FriendChosenScreen extends React.Component {
 
       diff = days.indexOf(thisday) - day;
       if (diff < 0) diff += 7;
-      
+
       if (temp.length > 0) match1.push({title: diff, data: temp})
     }
 
@@ -146,15 +146,15 @@ export default class FriendChosenScreen extends React.Component {
     for (i of match1) {
       i.title = this.printDate(month,date,day,i.title)
     }
-    
+
     for (i of match2) {
       i.title = this.printDate(month,date,day,i.title)
     }
-    
+
     if (this.state.index == 0)
         return <SectionList
         sections={match1}
-        renderItem={({item}) => 
+        renderItem={({item}) =>
         <ListItem
           title={item}
           onPress={() => this.props.navigation.navigate('FinalRequest', {
@@ -170,7 +170,7 @@ export default class FriendChosenScreen extends React.Component {
     return <SectionList
             sections={match2}
             renderItem={({item}) =>
-            
+
               <ListItem
               title={item}
               onPress={() => this.props.navigation.navigate('FinalRequest', {
@@ -180,7 +180,7 @@ export default class FriendChosenScreen extends React.Component {
                 time: item,
               })}
             />}
-            
+
             renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
             keyExtractor={(item, index) => index}
           />;
@@ -191,7 +191,7 @@ export default class FriendChosenScreen extends React.Component {
     const name = params ? params.name : "Chi Yu";
     const url = params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=square`;
     if (this.state.matches1) {
-      match1 = []; 
+      match1 = [];
       match2 = [];
 
       for (day in this.state.matches1) {
@@ -246,9 +246,9 @@ export default class FriendChosenScreen extends React.Component {
         containerStyle={{height: 30}} />
           {this.renderBottom()}
         </View>
-      ); 
+      );
     }
-    else 
+    else
     return (<View>
       <NavigationBar
             componentLeft={

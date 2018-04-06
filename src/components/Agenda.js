@@ -6,8 +6,8 @@ import {
 } from 'react-native';
 import {Agenda} from 'react-native-calendars';
 import firebase from "../config/firebase";
-import { userName } from '../screens/SignInScreen';
-const userID = '10210889686788547'
+import { userName, userID } from '../screens/SignInScreen';
+// const userID = '10210889686788547'
 const db = firebase.firestore();
 
 export default class AgendaScreen extends Component {
@@ -26,6 +26,10 @@ export default class AgendaScreen extends Component {
       "text": "Meal with Chi Yu",
     }]}
     };
+
+  }
+
+  componentDidMount() {
     db.collection("users").doc(userID).collection('Meals')
     .onSnapshot((querySnapshot) => {
         meals = [];
