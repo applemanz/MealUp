@@ -22,7 +22,7 @@ export default class RequestsScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {modalVisible: false, index: 1, sentRequests: [], receivedRequests: [], respondVisible: false, curUser: {}};
+    this.state = {modalVisible: false, index: 1, sentRequests: [], receivedRequests: [], respondVisible: false, curUser: {}, undoVisible: false};
     this.updateIndex = this.updateIndex.bind(this);
   }
 
@@ -66,7 +66,7 @@ export default class RequestsScreen extends React.Component {
     title={item.name}
     subtitle={item.DateTime + " at " + item.Location}
     avatar={{uri:item.url}}
-    onPress={() => this._onPressSent(item.name,item.id, item.url)}
+    onPress={() => this._onPressSent(item)}
     />;
   }
 
@@ -82,11 +82,15 @@ export default class RequestsScreen extends React.Component {
   }
 
   _keyExtractor = (item, index) => item.name + item.DateTime;
-  _onPressSent = (name, id, url) => {
-    
+  _onPressSent = (item) => {
+    this.setState({undoVisible: true, curUser: {name: item.name, id: item.id, 
+      DateTime: item.DateTime.toDateString() + " " + (item.DateTime.getHours() % 12 || 12) + ":" + ("0" + item.DateTime.getMinutes()).slice(-2), 
+      Location: item.Location}});
   }
   _onPressReceived = (item) => {
-    this.setState({respondVisible: true, curUser: item})
+    this.setState({respondVisible: true, curUser: {name: item.name, id: item.id, 
+      DateTime: item.DateTime.toDateString() + " " + (item.DateTime.getHours() % 12 || 12) + ":" + ("0" + item.DateTime.getMinutes()).slice(-2), 
+      Location: item.Location}});
   }
 
   updateIndex = (index) => {
@@ -129,7 +133,7 @@ export default class RequestsScreen extends React.Component {
         <Text>{this.state.curUser.name}</Text>
         </View>
         <View style={{padding: 10}}>
-        <Text>at {this.state.curUser.Location}</Text>
+        <Text>{this.state.curUser.DateTime} at {this.state.curUser.Location}</Text>
         </View>
         </View>
         <View style={{padding: 10}}>
@@ -147,6 +151,51 @@ export default class RequestsScreen extends React.Component {
         <View style={{padding: 15, alignItems: 'center'}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
             onPress={() => this.setState({respondVisible: false})}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Cancel</Text>
+          </TouchableHighlight>
+        </View>
+        </View>
+        </View>
+    </Modal>
+  </View>;
+  }
+
+  undoModal() {
+    return <View style={{flex: 1}}>
+    <Modal transparent={true} visible={this.state.undoVisible}>
+      <View style={{
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000080'}}>
+      <View style={{
+        width: 300,
+        height: 350,
+        backgroundColor: '#fff', padding: 20}}>
+        <View style={{alignItems: 'center'}}>
+        <View style={{padding: 10}}>
+        <Image
+          style={{width: 100, height: 100, borderRadius: 50}}
+          source={{uri: `http://graph.facebook.com/${this.state.curUser.id}/picture?type=large`}}
+        />
+        </View>
+        <View style={{padding: 10}}>
+        <Text>{this.state.curUser.name}</Text>
+        </View>
+        <View style={{padding: 10}}>
+        <Text>{this.state.curUser.DateTime} at {this.state.curUser.Location}</Text>
+        </View>
+        </View>
+        <View style={{padding: 10}}>
+          <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
+            onPress={() => this.setState({undoVisible: false})}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Undo Request</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={{padding: 15, alignItems: 'center'}}>
+          <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
+            onPress={() => this.setState({undoVisible: false})}>
             <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Cancel</Text>
           </TouchableHighlight>
         </View>
@@ -200,6 +249,7 @@ export default class RequestsScreen extends React.Component {
       </View>
 
       {this.respondModal()}
+      {this.undoModal()}
 
     </View>
     );
