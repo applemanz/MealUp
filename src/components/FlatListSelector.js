@@ -10,7 +10,7 @@ import {
 import { Button } from 'react-native-elements';
 import firebase from "../config/firebase";
 // import { userName, userID } from '../screens/SignInScreen';
-require("firebase/firestore");
+// require("firebase/firestore");
 const db = firebase.firestore();
 const userID = '10210889686788547'
 
