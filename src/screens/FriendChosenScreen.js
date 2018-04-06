@@ -7,12 +7,28 @@ import { userName } from '../screens/SignInScreen';
 
 const userID = '10210889686788547'
 const db = firebase.firestore();
-
+const numdays = [31,28,31,30,31,30,31,31,30,31,30,31];
+const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
 export default class FriendChosenScreen extends React.Component {
 
   state = {index: 0}
+
   updateIndex = (index) => {
     this.setState({index})
+  }
+
+  printDate = (month, date, day, next) => {
+    day += next;
+    if (day >= 7) day -= 7;
+
+    date += next;
+    if (date > numdays[month]) {
+      date -= numdays[month];
+      month++;
+    }
+    month = month % 12;
+    return days[day] + ", " + months[month] + " " + date;
   }
 
   printTime = (num, ampm = false) => {
@@ -88,31 +104,57 @@ export default class FriendChosenScreen extends React.Component {
 
     match1 = []; 
     match2 = [];
+    d = new Date();
+    month = d.getMonth();
+    date = d.getDate();
+    day = d.getDay();
+    //hour = d.getHour();
+    //min = d.getMin();
 
-    for (day in this.state.matches1) {
+    for (thisday in this.state.matches1) {
       temp = [];
+      cur = days.indexOf(thisday);
       for (j = 0; j < 25; j++) {
-        if (this.state.matches1[day][j]) {
+        if (this.state.matches1[thisday][j]) {
           temp.push(this.printTime(j) + "-" + this.printTime(j+1,true))
         }
       }
-      if (temp.length > 0) match1.push({title: day, data: temp})
+
+      diff = days.indexOf(thisday) - day;
+      if (diff < 0) diff += 7;
+      
+      if (temp.length > 0) match1.push({title: diff, data: temp})
     }
 
-    for (day in this.state.matches2) {
+    for (thisday in this.state.matches2) {
       temp = [];
       for (j = 0; j < 25; j++) {
-        if (this.state.matches2[day][j]) {
+        if (this.state.matches2[thisday][j]) {
           temp.push(this.printTime(j) + "-" + this.printTime(j+2,true))
         }
       }
-      if (temp.length > 0) match2.push({title: day, data: temp})
+
+      diff = days.indexOf(thisday) - day;
+      if (diff < 0) diff += 7;
+
+      if (temp.length > 0) match2.push({title: diff, data: temp})
+    }
+
+    match1.sort((a,b) => a.title - b.title)
+    match2.sort((a,b) => a.title - b.title)
+
+    for (i of match1) {
+      i.title = this.printDate(month,date,day,i.title)
+    }
+    
+    for (i of match2) {
+      i.title = this.printDate(month,date,day,i.title)
     }
     
     if (this.state.index == 0)
         return <SectionList
         sections={match1}
-        renderItem={({item}) =>
+        renderItem={({item}) => 
         <ListItem
           title={item}
           onPress={() => this.props.navigation.navigate('FinalRequest', {
@@ -128,7 +170,8 @@ export default class FriendChosenScreen extends React.Component {
     return <SectionList
             sections={match2}
             renderItem={({item}) =>
-            <ListItem
+            
+              <ListItem
               title={item}
               onPress={() => this.props.navigation.navigate('FinalRequest', {
                 name: name,
@@ -137,6 +180,7 @@ export default class FriendChosenScreen extends React.Component {
                 time: item,
               })}
             />}
+            
             renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
             keyExtractor={(item, index) => index}
           />;
@@ -146,7 +190,6 @@ export default class FriendChosenScreen extends React.Component {
     const { params } = this.props.navigation.state;
     const name = params ? params.name : "Chi Yu";
     const url = params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=square`;
-
     if (this.state.matches1) {
       match1 = []; 
       match2 = [];
