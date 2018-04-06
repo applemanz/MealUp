@@ -14,7 +14,10 @@ export default class HomeScreen extends React.Component {
 
   render() {
     return (
+      <View style={{flex: 1}}>
+      <NavigationBar componentCenter={<Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>Meals</Text>}/>
         <Agenda/>
+        </View>
     );
   }
 }

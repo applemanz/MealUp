@@ -31,8 +31,8 @@ export default class FinalRequestScreen extends React.Component {
          		style={{width: 100, height: 100, borderRadius: 50}}
          		source={{uri: `http://graph.facebook.com/${friendID}/picture?type=large`}}
        		/>
-			<Text>{'\nname:'} {name}</Text>
-			<Text>time: {time}</Text>
+			<Text>{name}</Text>
+			<Text>{time}</Text>
 			</View>
 			<View style={{justifyContent: "center",alignItems: "center"}}>
 			<Text>select a location:</Text>

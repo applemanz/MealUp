@@ -9,7 +9,7 @@ const db = firebase.firestore();
 
 const ComponentCenter = () => {
   return(
-    <View style={{ flex: 1, }}>
+    <View style={{ flex: 1, alignItems: 'center'}}>
        <Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>Requests</Text>
     </View>
   );
@@ -210,7 +210,7 @@ export default class RequestsScreen extends React.Component {
       <View style={{flex: 1}}>
         <NavigationBar componentCenter   =     {<ComponentCenter />}
                        componentRight    =     {<View style={{ flex: 1, alignItems: 'center'}}>
-                       <TouchableHighlight onPress={() => this.setState({modalVisible: true})}><Text style={{fontSize: 30, fontWeight: 'bold', color: 'white'}}>+</Text></TouchableHighlight>
+                       <TouchableHighlight style={{padding: 20}} onPress={() => this.setState({modalVisible: true})}><Text style={{fontSize: 30, fontWeight: 'bold', color: 'white'}}>+</Text></TouchableHighlight>
                     </View>}/>
         <ButtonGroup
         onPress={this.updateIndex}
