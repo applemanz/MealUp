@@ -36,6 +36,7 @@ export default class AgendaScreen extends Component {
         querySnapshot.forEach((doc) => {
             meals.push(doc.data())
         });
+        console.log(meals)
         this.updateItems(meals);
     });
   }
