@@ -12,75 +12,94 @@ const db = firebase.firestore();
 
 export default class AgendaScreen extends Component {
   constructor(props) {
-    var test = new Date('April 7, 2018 13:30:00 GMT+00:00');
-
-    console.log(test.getTime());
-
-    today = new Date()
-    console.log(today.getTime())
     super(props);
+    today = new Date()
+    items = new Object()
+    for (i=0; i < 7; i++) {
+      items[this.addDays(today, i)] = []
+    }
     this.state = {
-      items: {"2018-04-06": [{
-      "height": 25,
-      "subtext": "5:30 PM at Wucox",
-      "text": "Meal with Chi Yu",
-    }]}
-    };
+      items: items
+    }
+  }
 
+  addDays = (date, days) => {
+  var dat = new Date(date);
+  dat.setDate(dat.getDate() + days);
+  return this.convertDate(dat.toLocaleDateString());
   }
 
   componentDidMount() {
     db.collection("users").doc(userID).collection('Meals')
     .onSnapshot((querySnapshot) => {
         meals = [];
-        querySnapshot.forEach(function(doc) {
-            console.log(doc.data())
+        querySnapshot.forEach((doc) => {
             meals.push(doc.data())
         });
         this.updateItems(meals);
     });
   }
 
-  formatTimeString(date) {
-    min = date.getMinutes()
-    if (min == 0) {min = ':00'}
-    else {min = ':30'}
-    hr = date.getHours()
-    timeStr = ""
-    if (hr > 12) {
-      timeStr = (hr - 12) + min + ' PM'
-    } else if (hr == 12) {
+  // formatTimeString(date, length) {
+    // timeStr = ""
+    // entries = date.split(" ")
+    // amPM = entries[1]
+    // times = entries[0].split(":")
+    // if times[0]
+    // times[1]
+    // if (length == 1) {
+    //
+    //   timeStr = time[0]+":"+times[1]+"-"+
+    // } else {
+    //
+    // }
+
+  //   min = date.getMinutes()
+  //   if (min == 0) {min = ':00'}
+  //   else {min = ':30'}
+  //   hr = date.getHours()
+  //   timeStr = ""
+  //   if (hr > 12) {
+  //     timeStr = (hr - 12) + min + ' PM'
+  //   } else if (hr == 12) {
+  //   } else {
+  //     timeStr = hr+min+' AM'
+  //   }
+  //   return timeStr
+  // }
+
+  convertDate = (date) => {
+    entries = date.split("/")
+    if (entries[0] < 10) {
+      month = '0'+entries[0]
     } else {
-      timeStr = hr+min+' AM'
+      month = entries[0]
     }
-    return timeStr
+    if (entries[1] < 10) {
+      day = '0'+entries[1]
+    } else {
+      day = entries[1]
+    }
+    return (entries[2] + '-'+month+'-'+day)
   }
 
   updateItems(meals) {
     items = new Object();
     for (meal of meals) {
       day = meal['Day']
-      // console.log(day)
-      dateID = day.toISOString().substring(0,10)
+      console.log(day)
+      dateID = this.convertDate(day.toLocaleDateString())
+      console.log(dateID)
       if (dateID in items) {
         mealItems = items[dateID]
       } else {
         mealItems = []
       }
 
-      friend = meal['FriendName']
-      if (meal['Length'] == '0.5') {
-        height = 25
-      } else {
-        height = 50
-      }
-      location = meal['Location']
-      timeStr = this.formatTimeString(day)
-
       mealEntry = new Object()
-      mealEntry['text'] = `Meal with ${friend}`
-      mealEntry['subtext'] = `${timeStr} at ${location}`
-      mealEntry['height'] = height
+      mealEntry['text'] = `Meal with ${meal['FriendName']}`
+      mealEntry['subtext'] = `${meal['Time']} at ${meal['Location']}`
+      // mealEntry['height'] = height
       mealItems.push(mealEntry)
 
       items[dateID] = mealItems
@@ -88,10 +107,17 @@ export default class AgendaScreen extends Component {
     }
     // console.log(items)
     // console.log(this.state.items)
-
-    updatedItems = Object.assign({}, this.state.items, items)
+    updatedItems = new Object()
+    for (dateID in this.state.items) {
+      if (dateID in items) {
+        updatedItems[dateID] = items[dateID]
+      } else {
+      updatedItems[dateID] = this.state.items[dateID]
+      }
+    }
+    // Object.assign({}, this.state.items, items)
     console.log(updatedItems)
-    this.setState((prevState) => { return{items:items}});
+    this.setState((prevState) => { return{items:updatedItems}});
     console.log(this.state.items)
   }
 
@@ -112,24 +138,31 @@ export default class AgendaScreen extends Component {
 
 
   render() {
+    today = new Date()
+    minDate = today.toISOString().substring(0,10)
+    maxDate = this.addDays(today, 6)
     return (
       <Agenda
         items={this.state.items}
         // loadItemsForMonth={this.loadMeals.bind(this)}
-        selected={'2018-04-05'}
+        selected={minDate}
         // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
-        minDate={'2018-04-05'}
+        minDate={minDate}
         // Maximum date that can be selected, dates after maxDate will be grayed out. Default = undefined
-        maxDate={'2018-04-19'}
+        maxDate={maxDate}
         // Max amount of months allowed to scroll to the past. Default = 50
         pastScrollRange={1}
         // Max amount of months allowed to scroll to the future. Default = 50
         futureScrollRange={1}
         renderItem={this.renderItem.bind(this)}
         renderEmptyDate={this.renderEmptyDate.bind(this)}
+        // renderDay={(day, item) => {return (<View />);}}
+        // renderEmptyData = {() => {return (<View />);}}
         rowHasChanged={this.rowHasChanged.bind(this)}
         onDayPress={(day)=>{console.log('day pressed')}}
         onDayChange={(day)=>{console.log('day changed')}}
+        hideKnob={true}
+
         // markingType={'period'}
         // markedDates={{
         //    '2017-05-08': {textColor: '#666'},
