@@ -240,10 +240,32 @@ export default class FriendChosenScreen extends React.Component {
       }
 
       return(
+<<<<<<< HEAD
         <View>
           <View style={{alignItems:'center'}}>
           {/* <Avatar
             large
+=======
+          <View>
+          <NavigationBar
+            componentLeft={
+              <View style={{flex: 1}}>
+                <TouchableHighlight underlayColor='transparent' style={{padding: 20}} onPress={() => this.props.navigation.goBack()}>
+                  <Text style={{fontSize: 15, color: 'white'}}>
+                    Back
+                  </Text>
+                </TouchableHighlight>
+              </View>}
+            componentCenter={
+              <View style={{flex: 1}}>
+                <Text style={{fontSize: 20, color: 'white'}}>
+                  Meal Request {name.split(" ")[0]}
+                </Text>
+              </View>}
+          />
+          <Avatar
+            small
+>>>>>>> b57b5c6bf1f6cff882621b55596346f78eb96fe3
             rounded
             source={{uri: url}}
             onPress={() => console.log("Works!")}

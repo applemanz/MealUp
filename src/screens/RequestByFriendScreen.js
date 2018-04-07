@@ -36,6 +36,7 @@ render() {
 
     return (
       <View>
+<<<<<<< HEAD
       <NavigationBar componentLeft={<View style={{flex: 1}}><TouchableHighlight onPress={() => this.props.navigation.goBack()}><Text style={{fontSize: 15, color: 'white'}}>Back</Text></TouchableHighlight></View>} componentCenter={<View style={{flex: 1}}><Text style={{fontSize: 14, color: 'white'}}>Request By Friend</Text></View>}/>
       <Card containerStyle={{padding: 0}} >
        {
@@ -52,6 +53,10 @@ render() {
          })
        }
       </Card>
+=======
+        <NavigationBar componentLeft={<View style={{flex: 1}}><TouchableHighlight underlayColor='transparent' style={{padding: 20}} onPress={() => this.props.navigation.goBack()}><Text style={{fontSize: 15, color: 'white'}}>Back</Text></TouchableHighlight></View>} componentCenter={<View style={{flex: 1}}><Text style={{fontSize: 14, color: 'white'}}>Request By Friend</Text></View>}/>
+        <Card containerStyle={{padding: 0}}> {friendItems} </Card>
+>>>>>>> b57b5c6bf1f6cff882621b55596346f78eb96fe3
       </View>
     );
   }

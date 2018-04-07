@@ -33,7 +33,7 @@ export default class FinalRequestScreen extends React.Component {
 
 		return (
 			<View style = {{flex:1}}>
-			<NavigationBar componentLeft={<View style={{flex: 1}}><TouchableHighlight onPress={() => this.props.navigation.goBack()}><Text style={{fontSize: 15, color: 'white'}}>Back</Text></TouchableHighlight></View>} componentCenter={<View style={{flex: 1}}><Text style={{fontSize: 20, color: 'white'}}>Meal Request with {firstName}</Text></View>}/>
+			<NavigationBar componentLeft={<View style={{flex: 1}}><TouchableHighlight underlayColor='transparent' style={{padding: 20}} onPress={() => this.props.navigation.goBack()}><Text style={{fontSize: 15, color: 'white'}}>Back</Text></TouchableHighlight></View>} componentCenter={<View style={{flex: 1}}><Text style={{fontSize: 20, color: 'white'}}>Meal Request with {firstName}</Text></View>}/>
 
 			<View style={{justifyContent: "center",alignItems: "center",padding:30}}>
 			<Image
