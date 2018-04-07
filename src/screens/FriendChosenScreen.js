@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Text, TouchableHighlight, SectionList, StyleSheet } from 'react-native';
+import { View, Image, Text, TouchableHighlight, SectionList, StyleSheet, ActivityIndicator } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
 import {ListItem, Button, Avatar, ButtonGroup} from 'react-native-elements';
 import firebase from "../config/firebase";
@@ -9,7 +9,6 @@ const db = firebase.firestore();
 const numdays = [31,28,31,30,31,30,31,31,30,31,30,31];
 const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
-<<<<<<< HEAD
 
 export default class FriendChosenScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -22,9 +21,6 @@ export default class FriendChosenScreen extends React.Component {
      },
    }
  };
-=======
-export default class FriendChosenScreen extends React.Component {
->>>>>>> a939711bc84a770aea6c6632cc01c6a49a6163fd
 
   state = {index: 0}
 
@@ -303,23 +299,7 @@ export default class FriendChosenScreen extends React.Component {
     }
     else
     return (<View>
-      <NavigationBar
-            componentLeft={
-              <View style={{flex: 1}}>
-                <TouchableHighlight onPress={() => this.props.navigation.goBack()}>
-                  <Text style={{fontSize: 15, color: 'white'}}>
-                    Back
-                  </Text>
-                </TouchableHighlight>
-              </View>}
-            componentCenter={
-              <View style={{flex: 1}}>
-                <Text style={{fontSize: 20, color: 'white'}}>
-                  Meal Request {name.split(" ")[0]}
-                </Text>
-              </View>}
-          />
-          <Text>I am a fancy loading screen</Text>
+          <ActivityIndicator size="large" color="#0000ff" />
     </View>
     );
   }
