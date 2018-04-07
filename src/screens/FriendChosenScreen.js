@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Text, TouchableHighlight, SectionList, StyleSheet } from 'react-native';
+import { View, Image, Text, TouchableHighlight, SectionList, StyleSheet, ActivityIndicator } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
 import {ListItem, Button, Avatar, ButtonGroup} from 'react-native-elements';
 import firebase from "../config/firebase";
@@ -10,7 +10,26 @@ const db = firebase.firestore();
 const numdays = [31,28,31,30,31,30,31,31,30,31,30,31];
 const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
+
+
+
+
 export default class FriendChosenScreen extends React.Component {
+  static navigationOptions = ({ navigation }) => {
+   const { params } = navigation.state;
+
+   return {
+     // headerTitle: <LogoTitle
+     //                title = {params ? 'Meal with ' + params.name.split(" ")[0] : 'Meal with Unknown'}
+     //                url = {params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=square`}
+     //              />,
+     title: params ? 'Meal Request with ' + params.name.split(" ")[0] : 'Meal with Unknown',
+     headerTitleStyle: {
+       fontWeight: '300',
+     },
+   }
+ };
+
 
   state = {index: 0}
 
@@ -221,59 +240,33 @@ export default class FriendChosenScreen extends React.Component {
       }
 
       return(
-          <View>
-          <NavigationBar
-            componentLeft={
-              <View style={{flex: 1}}>
-                <TouchableHighlight onPress={() => this.props.navigation.goBack()}>
-                  <Text style={{fontSize: 15, color: 'white'}}>
-                    Back
-                  </Text>
-                </TouchableHighlight>
-              </View>}
-            componentCenter={
-              <View style={{flex: 1}}>
-                <Text style={{fontSize: 20, color: 'white'}}>
-                  Meal Request {name.split(" ")[0]}
-                </Text>
-              </View>}
-          />
-          <Avatar
-            small
+        <View>
+          <View style={{alignItems:'center'}}>
+          {/* <Avatar
+            large
             rounded
             source={{uri: url}}
             onPress={() => console.log("Works!")}
             activeOpacity={0.7}
-          />
+          /> */}
+          <Image
+                style={{width: 100, height: 100, borderRadius: 50}}
+                source={{uri: url}}
+              />
+          </View>
           <ButtonGroup
-        onPress={this.updateIndex}
-        selectedIndex={this.state.index}
-        buttons={['30 min', '1 hr']}
-        containerStyle={{height: 30}} />
+            onPress={this.updateIndex}
+            selectedIndex={this.state.index}
+            buttons={['30 min', '1 hr']}
+            containerStyle={{height: 30}} />
           {this.renderBottom()}
         </View>
       );
-    }
-    else
-    return (<View>
-      <NavigationBar
-            componentLeft={
-              <View style={{flex: 1}}>
-                <TouchableHighlight onPress={() => this.props.navigation.goBack()}>
-                  <Text style={{fontSize: 15, color: 'white'}}>
-                    Back
-                  </Text>
-                </TouchableHighlight>
-              </View>}
-            componentCenter={
-              <View style={{flex: 1}}>
-                <Text style={{fontSize: 20, color: 'white'}}>
-                  Meal Request {name.split(" ")[0]}
-                </Text>
-              </View>}
-          />
-          <Text>I am a fancy loading screen</Text>
-    </View>
+    } else
+    return (
+      <View>
+        <ActivityIndicator size="large" color="#000000" />
+      </View>
     );
   }
 }

@@ -5383,6 +5383,12 @@ react-native-vector-icons@4.5.0:
     xmldoc "^0.4.0"
     yargs "^9.0.0"
 
+react-navigation-header-buttons@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/react-navigation-header-buttons/-/react-navigation-header-buttons-0.0.7.tgz#0f8c4adde9a0301145e9d6313c6987a8f4d2e808"
+  dependencies:
+    react-native-platform-touchable "^1.1.1"
+
 react-navigation@1.0.0-beta.22:
   version "1.0.0-beta.22"
   resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-1.0.0-beta.22.tgz#be7a7a066f94a37d4eeeff01bacffabdc66c57e7"

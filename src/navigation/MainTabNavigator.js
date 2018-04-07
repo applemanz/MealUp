@@ -15,90 +15,120 @@ import FinalRequestScreen from '../screens/FinalRequestScreen';
 import FriendChosenScreen from '../screens/FriendChosenScreen';
 import TimeChosenScreen from '../screens/TimeChosenScreen';
 
-export const RequestsStack = StackNavigator({
+const RequestsStack = StackNavigator({
   Requests: {
     screen: RequestsScreen,
-    navigationOptions: {
-      header: null,
-    }
   },
   RequestByFriend: {
     screen: RequestByFriendScreen,
     navigationOptions: {
-      header: null,
       tabBarVisible: false
     }
   },
   RequestByTime: {
     screen: RequestByTimeScreen,
     navigationOptions: {
-      header: null,
       tabBarVisible: false
     }
   },
   FriendChosen: {
     screen: FriendChosenScreen,
     navigationOptions: {
-      header: null,
       tabBarVisible: false
     }
   },
   TimeChosen: {
     screen: TimeChosenScreen,
     navigationOptions: {
-      header: null,
       tabBarVisible: false
     }
   },
   FinalRequest: {
     screen: FinalRequestScreen,
     navigationOptions: {
-      header: null,
       tabBarVisible: false
     }
   },
 },
 {
     initialRouteName: 'Requests',
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: '#f4511e',
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    },
 });
 
-export const FriendsStack = StackNavigator({
+const FriendsStack = StackNavigator({
   Friends: {
     screen: FriendsScreen,
     navigationOptions: {
-      header: null,
     }
   },
   FriendChosen: {
     screen: FriendChosenScreen,
     navigationOptions: {
-      header: null,
-      tabBarVisible: false
-    }
-  },
-  TimeChosen: {
-    screen: TimeChosenScreen,
-    navigationOptions: {
-      header: null,
       tabBarVisible: false
     }
   },
   FinalRequest: {
     screen: FinalRequestScreen,
     navigationOptions: {
-      header: null,
       tabBarVisible: false
     }
   },
 },
 {
     initialRouteName: 'Friends',
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: '#f4511e',
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    },
 });
+
+const FreeTimeStack = StackNavigator({
+  FreeTime: {
+    screen: FreeTimeScreen,
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: '#f4511e',
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    },
+  }
+})
+
+const MealsStack = StackNavigator({
+  Meals: {
+    screen: HomeScreen,
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: '#f4511e',
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    },
+  }
+})
 
 export default TabNavigator(
   {
     Meals: {
-      screen: HomeScreen,
+      screen: MealsStack,
     },
     Requests: {
       screen: RequestsStack,
@@ -107,7 +137,7 @@ export default TabNavigator(
       screen: FriendsStack,
     },
     FreeTime: {
-      screen: FreeTimeScreen
+      screen: FreeTimeStack
     }
   },
   {
@@ -145,6 +175,5 @@ export default TabNavigator(
     tabBarPosition: 'bottom',
     animationEnabled: false,
     swipeEnabled: false,
-    headerTitleStyle: {fontWeight: 'bold'},
   }
 );

@@ -14,12 +14,12 @@ const data = [
 {key:20, time: '5:30 PM'}, {key:21, time: '6:00 PM'}, {key:22, time: '6:30 PM'}, {key:23, time: '7:00 PM'}, {key:24, time: '7:30 PM'}
 ]
 
-
 export default class FreeTimeScreen extends React.Component {
 
   static navigationOptions = {
     title: 'Free Time',
   };
+
   constructor(props) {
     super(props);
     this.state = {selected: []};
@@ -44,7 +44,6 @@ export default class FreeTimeScreen extends React.Component {
   render() {
     return (
       <View style={{flex: 1, justifyContent: 'center'}}>
-        <NavigationBar componentCenter={<Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>Free Time</Text>}/>
         <ScrollView style={styles.wrapper} horizontal={true} >
           <View>
             <Text>Monday</Text>
@@ -75,7 +74,6 @@ export default class FreeTimeScreen extends React.Component {
             <FlatListSelector data={data} dayOfWeek={'Sunday'}/>
           </View>
         </ScrollView>
-
       </View>
     );
   }

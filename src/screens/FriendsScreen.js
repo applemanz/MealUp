@@ -13,17 +13,16 @@ export default class FriendsScreen extends React.Component {
     title: 'Friends',
   };
 
-  state = {friends: {}};
+  state = {friends: []};
 
   componentDidMount() {
-    queryFriends = {};
-    db.collection("users").doc(userID).collection('Friends')
-      .onSnapshot((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-            queryFriends[doc.id] = {Name: doc.data().Name, url:`http://graph.facebook.com/${doc.id}/picture?type=square`, id: doc.id}
-          });
-        this.setState({friends:queryFriends});
-      });
+    friend = this.state.friends.slice(0);
+    db.collection("users").doc(userID).collection('Friends').onSnapshot((querySnapshot) => {
+        querySnapshot.forEach(function(doc) {
+            friend.push({Name: doc.data().Name, url:`http://graph.facebook.com/${doc.id}/picture?type=normal`, id: doc.id})
+        });
+        this.setState({friends:friend});
+    });
   }
 
   _onPress = (name, id, url) => {
@@ -35,23 +34,25 @@ export default class FriendsScreen extends React.Component {
   }
 
   render() {
-    friendItems = []
-    for (friendID in this.state.friends) {
-      friend = this.state.friends[friendID]
-      friendItems.push(
-        <ListItem
-          key={friend.id}
-          roundAvatar
-          title={friend.Name}
-          avatar={{uri:friend.url}}
-          onPress={() => this._onPress(friend.Name,friend.id, friend.url)}
-        />
-      );
-    }
+
     return (
       <View>
-        <NavigationBar componentCenter={<Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>Friends</Text>}/>
-        <Card containerStyle={{padding: 0}}> {friendItems} </Card>
+      {/* <NavigationBar componentCenter={<Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>Friends</Text>}/> */}
+      <Card containerStyle={{padding: 0}} >
+       {
+         this.state.friends.map((u, i) => {
+           return (
+             <ListItem
+               key={i}
+               roundAvatar
+               title={u.Name}
+               avatar={{uri:u.url}}
+               onPress={() => this._onPress(u.Name,u.id, u.url)}
+             />
+           );
+         })
+       }
+      </Card>
       </View>
     );
   }

@@ -13,14 +13,13 @@ export default class RequestByFriendScreen extends React.Component {
   state = {friends: []};
 
   componentDidMount() {
-    queryFriends = {};
-    db.collection("users").doc(userID).collection('Friends')
-      .onSnapshot((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-            queryFriends[doc.id] = {Name: doc.data().Name, url:`http://graph.facebook.com/${doc.id}/picture?type=square`, id: doc.id}
-          });
-        this.setState({friends:queryFriends});
-      });
+    friend = this.state.friends.slice(0);
+    db.collection("users").doc(userID).collection('Friends').get().then((querySnapshot) => {
+        querySnapshot.forEach(function(doc) {
+            friend.push({Name: doc.data().Name, url:`http://graph.facebook.com/${doc.id}/picture?type=square`, id: doc.id})
+        });
+        this.setState({friends:friend});
+    });
   }
 
 
@@ -34,23 +33,25 @@ export default class RequestByFriendScreen extends React.Component {
 
 
 render() {
-  friendItems = []
-  for (friendID in this.state.friends) {
-    friend = this.state.friends[friendID]
-    friendItems.push(
-      <ListItem
-        key={friend.id}
-        roundAvatar
-        title={friend.Name}
-        avatar={{uri:friend.url}}
-        onPress={() => this._onPress(friend.Name,friend.id, friend.url)}
-      />
-    );
-  }
+
     return (
       <View>
-        <NavigationBar componentLeft={<View style={{flex: 1}}><TouchableHighlight onPress={() => this.props.navigation.goBack()}><Text style={{fontSize: 15, color: 'white'}}>Back</Text></TouchableHighlight></View>} componentCenter={<View style={{flex: 1}}><Text style={{fontSize: 14, color: 'white'}}>Request By Friend</Text></View>}/>
-        <Card containerStyle={{padding: 0}}> {friendItems} </Card>
+      <NavigationBar componentLeft={<View style={{flex: 1}}><TouchableHighlight onPress={() => this.props.navigation.goBack()}><Text style={{fontSize: 15, color: 'white'}}>Back</Text></TouchableHighlight></View>} componentCenter={<View style={{flex: 1}}><Text style={{fontSize: 14, color: 'white'}}>Request By Friend</Text></View>}/>
+      <Card containerStyle={{padding: 0}} >
+       {
+         this.state.friends.map((u, i) => {
+           return (
+             <ListItem
+               key={i}
+               roundAvatar
+               title={u.Name}
+               avatar={{uri:u.url}}
+               onPress={() => this._onPress(u.Name,u.id, u.url)}
+             />
+           );
+         })
+       }
+      </Card>
       </View>
     );
   }

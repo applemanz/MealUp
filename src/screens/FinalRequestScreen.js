@@ -11,7 +11,14 @@ const userName = 'Andrew Zeng'
 const db = firebase.firestore();
 
 export default class FinalRequestScreen extends React.Component {
+  static navigationOptions = ({ navigation }) => {
+   const { params } = navigation.state;
 
+   return {
+     title: params ? 'Meal with ' + params.name.split(" ")[0] : 'Meal with Unknown',
+   }
+ };
+ 
 	state = {location: ""}
 
 	render() {
