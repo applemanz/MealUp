@@ -195,6 +195,7 @@ export default class FriendChosenScreen extends React.Component {
         keyExtractor={(item, index) => index}
       />
     return <SectionList
+            style = {{flex:1}}
             sections={match2}
             renderItem={({item,section}) =>
 
@@ -264,7 +265,7 @@ export default class FriendChosenScreen extends React.Component {
       }
 
       return(
-          <View>
+          <View style={{flex:1}}>
           <Avatar
             small
             rounded

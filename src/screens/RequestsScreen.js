@@ -107,7 +107,7 @@ export default class RequestsScreen extends React.Component {
     />;
   }
 
-  _keyExtractor = (item, index) => item.name + item.DateTime;
+  _keyExtractor = (item, index) => item.docID;
 
   _onPressSent = (item) => {
     this.setState({

@@ -15,25 +15,36 @@ class MyListItem extends React.PureComponent {
   };
 
   render() {
+    if (this.props.editOn) {
+      return (
+        <ListItem
+          roundAvatar
+          title={this.props.name}
+          avatar={{ uri: this.props.url}}
+          rightIcon = {
+            <Icon
+              name={this.props.CanViewMe ? 'md-eye' : 'md-eye-off'}
+              iconStyle = {{padding:10}}
+              type = 'ionicon'
+              color='#000'
+              onPress = {() => {this.changeViewPermissions(this.props.id, !this.props.CanViewMe)}}
+            />
+          }
+        />
+      );
+    } else {
     return (
       <ListItem
         roundAvatar
         title={this.props.name}
         avatar={{ uri: this.props.url}}
-        onPress = {this._onPress}
+        onPress = {this.props.editOn ? ()=>{} : this._onPress}
         // switchButton
         // badge={{ value: 3, textStyle: { color: 'white' }, containerStyle: { marginTop: 0, marginRight: 10 } }}
-        rightIcon = {this.props.editOn ?
-          <Icon
-            name={this.props.CanViewMe ? 'md-eye' : 'md-eye-off'}
-            type = 'ionicon'
-            color='#000'
-            onPress = {() => {this.changeViewPermissions(this.props.id, !this.props.CanViewMe)}}
-          /> :
-          {name: 'chevron-right'}
-        }
+        rightIcon = {{name: 'chevron-right'}}
       />
     );
+  }
   }
 
   changeViewPermissions = (id, bool) => {
