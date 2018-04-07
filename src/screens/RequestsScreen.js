@@ -181,7 +181,7 @@ export default class RequestsScreen extends React.Component {
   declineRequest = () => {
     db.collection("users").doc(userID).collection('Received Requests').doc(this.state.curUser.docID).delete().then(() => {
       console.log("Document successfully deleted!");
-      db.collection("users").doc(this.state.curUser.id).collection('Sent Requests').doc(this.state.curUser.docID).delete()
+      // db.collection("users").doc(this.state.curUser.id).collection('Sent Requests').doc(this.state.curUser.docID).delete()
     }).catch(function(error) {
       console.error("Error removing document: ", error);
     });
@@ -255,58 +255,28 @@ export default class RequestsScreen extends React.Component {
     this.props.navigation.navigate('FriendChosen', {
       name: this.state.curUser.name,
       id: this.state.curUser.id,
-      url: `http://graph.facebook.com/${this.state.curUser.id}/picture?type=square`
+      url: `http://graph.facebook.com/${this.state.curUser.id}/picture?type=large`
+    });
+  }
+
+  rescheduleSentRequest = () => {
+    db.collection("users").doc(userID).collection('Sent Requests').doc(this.state.curUser.docID).delete().then(() => {
+      console.log("Document successfully deleted!");
+      db.collection("users").doc(this.state.curUser.id).collection('Received Requests').doc(this.state.curUser.docID).delete()
+    }).catch(function(error) {
+      console.error("Error removing document: ", error);
+    });
+    this.setState({undoVisible: false})
+    this.props.navigation.navigate('FriendChosen', {
+      name: this.state.curUser.name,
+      id: this.state.curUser.id,
+      url: `http://graph.facebook.com/${this.state.curUser.id}/picture?type=large`
     });
   }
 
   undoModal() {
     return <View style={{flex: 1}}>
     <Modal transparent={true} visible={this.state.undoVisible}>
-      <View style={{
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#00000080'}}>
-      <View style={{
-        width: 300,
-        height: 350,
-        backgroundColor: '#fff', padding: 20}}>
-        <View style={{alignItems: 'center'}}>
-        <View style={{padding: 10}}>
-        <Image
-          style={{width: 100, height: 100, borderRadius: 50}}
-          source={{uri: `http://graph.facebook.com/${this.state.curUser.id}/picture?type=large`}}
-        />
-        </View>
-        <View style={{padding: 10}}>
-        <Text>{this.state.curUser.name}</Text>
-        </View>
-        <View style={{padding: 10}}>
-        <Text>{this.state.curUser.DateTime} at {this.state.curUser.Location}</Text>
-        </View>
-        </View>
-        <View style={{padding: 10}}>
-          <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
-            onPress={this.undoRequest}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Undo Request</Text>
-          </TouchableHighlight>
-        </View>
-        <View style={{padding: 15, alignItems: 'center'}}>
-          <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
-            onPress={() => this.setState({undoVisible: false})}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Cancel</Text>
-          </TouchableHighlight>
-        </View>
-        </View>
-        </View>
-    </Modal>
-  </View>;
-  }
-
-  respondModal() {
-    return <View style={{flex: 1}}>
-    <Modal transparent={true} visible={this.state.respondVisible}>
       <View style={{
         flex: 1,
         flexDirection: 'column',
@@ -332,15 +302,72 @@ export default class RequestsScreen extends React.Component {
         </View>
         </View>
         <View style={{padding: 10}}>
+          <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
+            onPress={this.undoRequest}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Undo Request</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={{padding: 10}}>
+          <TouchableHighlight style={{padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
+            onPress={this.rescheduleSentRequest}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Reschedule</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={{padding: 15, alignItems: 'center'}}>
+          <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
+            onPress={() => this.setState({undoVisible: false})}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Cancel</Text>
+          </TouchableHighlight>
+        </View>
+        </View>
+        </View>
+    </Modal>
+  </View>;
+  }
+
+  respondModal() {
+    return <View style={{flex: 1}}>
+    <Modal transparent={true} visible={this.state.respondVisible}>
+      <View style={{
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000080'}}>
+      <View style={{
+        width: 300,
+        height: 460,
+        backgroundColor: '#fff', padding: 20}}>
+        <View style={{alignItems: 'center'}}>
+        <View style={{padding: 10}}>
+        <Image
+          style={{width: 100, height: 100, borderRadius: 50}}
+          source={{uri: `http://graph.facebook.com/${this.state.curUser.id}/picture?type=large`}}
+        />
+        </View>
+        <View style={{padding: 10}}>
+        <Text>{this.state.curUser.name}</Text>
+        </View>
+        <View style={{padding: 10}}>
+        <Text>{this.state.curUser.DateTime} at {this.state.curUser.Location}</Text>
+        </View>
+        </View>
+        <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#5cb85c", borderRadius: 5}}
             onPress={this.acceptRequest}>
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Accept</Text>
           </TouchableHighlight>
         </View>
         <View style={{padding: 10}}>
+          <TouchableHighlight style={{padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
+            onPress={this.rescheduleRequest}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Reschedule</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
             onPress={this.declineRequest}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Decline</Text>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Ignore</Text>
           </TouchableHighlight>
         </View>
         <View style={{padding: 15, alignItems: 'center'}}>

@@ -218,7 +218,7 @@ export default class FriendChosenScreen extends React.Component {
   render() {
     const { params } = this.props.navigation.state;
     const name = params ? params.name : "Chi Yu";
-    const url = params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=square`;
+    const url = params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=large`;
     if (this.state.matches1) {
       match1 = [];
       match2 = [];
