@@ -69,6 +69,7 @@ const FriendsStack = StackNavigator({
   Friends: {
     screen: FriendsScreen,
     navigationOptions: {
+      // header: null
     }
   },
   FriendChosen: {
@@ -101,6 +102,9 @@ const FriendsStack = StackNavigator({
     navigationOptions: {
       headerStyle: {
         backgroundColor: '#f4511e',
+        shadowColor: 'transparent',
+        elevation:0,
+        borderBottomWidth: 0,
       },
       headerTintColor: '#fff',
       headerTitleStyle: {

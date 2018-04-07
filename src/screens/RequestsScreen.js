@@ -6,11 +6,10 @@ import HeaderButtons from 'react-navigation-header-buttons'
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Ionicons } from '@expo/vector-icons';
 
-// import { userName, userID } from '../screens/SignInScreen';
+import { userName, userID } from '../screens/SignInScreen';
 
 import firebase from "../config/firebase";
-const userID = '10210889686788547'
-const userName = 'Andrew Zeng'
+
 const db = firebase.firestore();
 
 export default class RequestsScreen extends React.Component {

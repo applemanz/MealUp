@@ -9,10 +9,8 @@ import {
 } from 'react-native';
 import { Button } from 'react-native-elements';
 import firebase from "../config/firebase";
-// import { userName, userID } from '../screens/SignInScreen';
-// require("firebase/firestore");
+import { userName, userID } from '../screens/SignInScreen';
 const db = firebase.firestore();
-const userID = '10210889686788547'
 
 class MyListItem extends React.PureComponent {
   _onPress = () => {

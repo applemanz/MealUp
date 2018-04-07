@@ -8,9 +8,8 @@ import Swiper from 'react-native-swiper';
 import FriendList from '../components/FriendList';
 import GroupList from '../components/GroupList';
 import ScrollableTabView, {DefaultTabBar, } from 'react-native-scrollable-tab-view';
-// import { userName, userID } from '../screens/SignInScreen';
+import { userName, userID } from '../screens/SignInScreen';
 
-const userID = '10210889686788547'
 const db = firebase.firestore();
 
 export default class FriendsScreen extends React.Component {

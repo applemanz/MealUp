@@ -6,10 +6,8 @@ import firebase from "../config/firebase";
 import HeaderButtons from 'react-navigation-header-buttons'
 import Swiper from 'react-native-swiper';
 import FriendList from '../components/FriendList';
+import { userName, userID } from '../screens/SignInScreen';
 
-// import { userName, userID } from '../screens/SignInScreen';
-
-const userID = '10210889686788547'
 const db = firebase.firestore();
 
 export default class EditFriendsScreen extends React.Component {

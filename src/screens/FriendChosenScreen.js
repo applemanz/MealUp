@@ -3,9 +3,8 @@ import { View, Image, Text, TouchableHighlight, SectionList, StyleSheet, Activit
 import NavigationBar from 'navigationbar-react-native';
 import {ListItem, Button, Avatar, ButtonGroup} from 'react-native-elements';
 import firebase from "../config/firebase";
-// import { userName, userID } from '../screens/SignInScreen';
+import { userName, userID } from '../screens/SignInScreen';
 
-const userID = '10210889686788547'
 const db = firebase.firestore();
 const numdays = [31,28,31,30,31,30,31,31,30,31,30,31];
 const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -22,7 +21,7 @@ export default class FriendChosenScreen extends React.Component {
      },
    }
  };
- 
+
   state = {index: 0}
 
   updateIndex = (index) => {

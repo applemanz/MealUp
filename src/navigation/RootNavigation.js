@@ -19,7 +19,7 @@ const RootStackNavigator = SwitchNavigator(
     Auth: AuthStack,
   },
   {
-    initialRouteName: 'Main',
+    initialRouteName: 'Auth',
   }
 );
 

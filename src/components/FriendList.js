@@ -5,7 +5,8 @@ import { Avatar, Card, ListItem, Button, ButtonGroup, Icon } from 'react-native-
 import firebase from "../config/firebase";
 import Swiper from 'react-native-swiper';
 import { Ionicons } from '@expo/vector-icons';
-const userID = '10210889686788547'
+import { userName, userID } from '../screens/SignInScreen';
+
 const db = firebase.firestore();
 
 class MyListItem extends React.PureComponent {
