@@ -201,6 +201,16 @@ export default class RequestsScreen extends React.Component {
     this.setState({respondVisible: false})
   }
 
+  undoRequest = () => {
+    db.collection("users").doc(userID).collection('Sent Requests').doc(this.state.curUser.docID).delete().then(() => {
+      console.log("Document successfully deleted!");
+      db.collection("users").doc(this.state.curUser.id).collection('Received Requests').doc(this.state.curUser.docID).delete()
+    }).catch(function(error) {
+      console.error("Error removing document: ", error);
+    });
+    this.setState({undoVisible: false})
+  }
+
   undoModal() {
     return <View style={{flex: 1}}>
     <Modal transparent={true} visible={this.state.undoVisible}>
@@ -230,7 +240,7 @@ export default class RequestsScreen extends React.Component {
         </View>
         <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
-            onPress={() => this.setState({undoVisible: false})}>
+            onPress={this.undoRequest}>
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Undo Request</Text>
           </TouchableHighlight>
         </View>
@@ -251,7 +261,7 @@ export default class RequestsScreen extends React.Component {
       <View style={{flex: 1}}>
         <NavigationBar componentCenter   =     {<ComponentCenter />}
                        componentRight    =     {<View style={{ flex: 1, alignItems: 'center'}}>
-                       <TouchableHighlight style={{padding: 20}} onPress={() => this.setState({modalVisible: true})}><Text style={{fontSize: 30, fontWeight: 'bold', color: 'white'}}>+</Text></TouchableHighlight>
+                       <TouchableHighlight underlayColor='transparent' style={{padding: 20}} onPress={() => this.setState({modalVisible: true})}><Text style={{fontSize: 30, fontWeight: 'bold', color: 'white'}}>+</Text></TouchableHighlight>
                     </View>}/>
         <ButtonGroup
         onPress={this.updateIndex}
