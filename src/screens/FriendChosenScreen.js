@@ -11,26 +11,18 @@ const numdays = [31,28,31,30,31,30,31,31,30,31,30,31];
 const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
 
-
-
-
 export default class FriendChosenScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
    const { params } = navigation.state;
 
    return {
-     // headerTitle: <LogoTitle
-     //                title = {params ? 'Meal with ' + params.name.split(" ")[0] : 'Meal with Unknown'}
-     //                url = {params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=square`}
-     //              />,
      title: 'Meal Request',
      headerTitleStyle: {
        fontWeight: 'bold',
      },
    }
  };
-
-
+ 
   state = {index: 0}
 
   updateIndex = (index) => {
@@ -215,6 +207,16 @@ export default class FriendChosenScreen extends React.Component {
     const { params } = this.props.navigation.state;
     const name = params ? params.name : "Chi Yu";
     const url = params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=large`;
+    if (params.CanViewFriend == false) {
+      return (
+        <View style={{alignItems:'center'}}>
+          <Image
+              style={{width: 80, height: 80, borderRadius: 40}}
+              source={{uri: url}}/>
+          <Text>{name.split(" ")[0]} is not available for a meal this week</Text>
+        </View>
+      )
+    }
     if (this.state.matches1) {
       match1 = [];
       match2 = [];

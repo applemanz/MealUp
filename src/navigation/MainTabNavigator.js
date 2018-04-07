@@ -14,6 +14,8 @@ import RequestByTimeScreen from '../screens/RequestByTimeScreen';
 import FinalRequestScreen from '../screens/FinalRequestScreen';
 import FriendChosenScreen from '../screens/FriendChosenScreen';
 import TimeChosenScreen from '../screens/TimeChosenScreen';
+import EditFriendsScreen from '../screens/EditFriendsScreen';
+import EditGroupsScreen from '../screens/EditGroupsScreen';
 
 const RequestsStack = StackNavigator({
   Requests: {
@@ -81,6 +83,18 @@ const FriendsStack = StackNavigator({
       tabBarVisible: false
     }
   },
+  EditFriends: {
+    screen: EditFriendsScreen,
+    navigationOptions: {
+      tabBarVisible: false
+    }
+  },
+  EditGroups: {
+    screen: EditGroupsScreen,
+    navigationOptions: {
+      tabBarVisible: false
+    }
+  }
 },
 {
     initialRouteName: 'Friends',

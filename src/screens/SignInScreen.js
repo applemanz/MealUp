@@ -69,6 +69,8 @@ export default class SignInScreen extends React.Component {
           for (var friend of friendsList) {
             db.collection('users').doc(userID).collection('Friends').doc(friend.id).set({
               Name: friend.name,
+              CanViewMe: true,
+              CanViewFriend: true,
             })
           }
           daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday','Sunday'];

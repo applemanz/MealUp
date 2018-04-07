@@ -7,7 +7,9 @@ import registerForPushNotificationsAsync from '../api/registerForPushNotificatio
 import SignInScreen from '../screens/SignInScreen';
 
 
-const AuthStack = StackNavigator({ SignIn: SignInScreen });
+const AuthStack = StackNavigator(
+  { SignIn: SignInScreen }
+);
 
 const RootStackNavigator = SwitchNavigator(
   {
