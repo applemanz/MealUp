@@ -8,6 +8,12 @@ import { userName, userID } from '../screens/SignInScreen';
 const db = firebase.firestore();
 
 export default class TimeChosenScreen extends React.Component {
+  static navigationOptions = ({ navigation }) => {
+      const params = navigation.state.params || {};
+      return {
+        title: 'Choose a Friend',
+      };
+    };
 
   state = {}
 
@@ -75,34 +81,20 @@ export default class TimeChosenScreen extends React.Component {
         renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
         keyExtractor={(item, index) => index}
       />
-    return <View>
-      <Text> I'm a fancy loading screen... </Text>
+    return(
+      <View>
+        <ActivityIndicator size="large" color="#0000ff" />
       </View>
+    )
   }
 
   render() {
-      return(
-          <View>
-          <NavigationBar
-            componentLeft={
-              <View style={{flex: 1}}>
-                <TouchableHighlight onPress={() => this.props.navigation.goBack()}>
-                  <Text style={{fontSize: 15, color: 'white'}}>
-                    Back
-                  </Text>
-                </TouchableHighlight>
-              </View>}
-            componentCenter={
-              <View style={{flex: 1}}>
-                <Text style={{fontSize: 20, color: 'white'}}>
-                  Select Friend
-                </Text>
-              </View>}
-          />
-          {this.renderBottom()}
-        </View>
-      );
-    }
+    return(
+      <View>
+        {this.renderBottom()}
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({

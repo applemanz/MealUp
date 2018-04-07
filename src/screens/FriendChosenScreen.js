@@ -230,7 +230,7 @@ export default class FriendChosenScreen extends React.Component {
     const { params } = this.props.navigation.state;
     const name = params ? params.name : "Chi Yu";
     const url = params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=large`;
-    if (params.CanViewFriend == false) {
+    if (params.CanViewFriend == false || (matches1.len==0 && matches2.len==0)) {
       return (
         <View style={{alignItems:'center'}}>
           <Image

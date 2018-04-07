@@ -12,6 +12,13 @@ const numdays = [31,28,31,30,31,30,31,31,30,31,30,31];
 const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 export default class RequestByTimeScreen extends React.Component {
+  static navigationOptions = ({ navigation }) => {
+      const params = navigation.state.params || {};
+      return {
+        title: 'Choose a Time',
+      };
+    };
+
   state = {time: {}, index: 0};
 
   updateIndex = (index) => {
@@ -147,8 +154,7 @@ render() {
     //console.log(this.state.time)
 
     return (
-      <View>
-      <NavigationBar componentLeft={<View style={{flex: 1}}><TouchableHighlight onPress={() => this.props.navigation.goBack()}><Text style={{fontSize: 15, color: 'white'}}>Back</Text></TouchableHighlight></View>} componentCenter={<View style={{flex: 1}}><Text style={{fontSize: 14, color: 'white'}}>Request By Time</Text></View>}/>
+      <View style={{flex:1}}>
       <ButtonGroup
       onPress={this.updateIndex}
       selectedIndex={this.state.index}
