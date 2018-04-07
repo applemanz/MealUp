@@ -3,15 +3,14 @@ import { View, Image, Text, TouchableHighlight, SectionList, StyleSheet } from '
 import NavigationBar from 'navigationbar-react-native';
 import {ListItem} from 'react-native-elements';
 import firebase from "../config/firebase";
-import { userName } from '../screens/SignInScreen';
+import { userName, userID } from '../screens/SignInScreen';
 
-const userID = '10210889686788547'
 const db = firebase.firestore();
 
 export default class TimeChosenScreen extends React.Component {
-  
+
   state = {}
-  
+
   getTime = (id, day, time, length) => {
     return new Promise(resolve => {
       j = false;
@@ -54,7 +53,7 @@ export default class TimeChosenScreen extends React.Component {
     const { params } = this.props.navigation.state;
     await this.getFreeFriends(params.day,params.index,params.length)
   }
-  
+
   renderBottom() {
     const { params } = this.props.navigation.state;
     console.log(this.state.free)
@@ -102,7 +101,7 @@ export default class TimeChosenScreen extends React.Component {
           />
           {this.renderBottom()}
         </View>
-      ); 
+      );
     }
 }
 

@@ -3,9 +3,8 @@ import { View, Image, Text, TouchableHighlight } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
 import { Avatar, Card, ListItem, Button } from 'react-native-elements';
 import firebase from "../config/firebase";
-import { userName } from '../screens/SignInScreen';
+import { userName, userID } from '../screens/SignInScreen';
 
-const userID = '10210889686788547'
 const db = firebase.firestore();
 
 export default class RequestByFriendScreen extends React.Component {

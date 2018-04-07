@@ -3,9 +3,8 @@ import { View, Image, Text, TouchableHighlight, SectionList, StyleSheet } from '
 import NavigationBar from 'navigationbar-react-native';
 import { Avatar, Card, ListItem, Button, ButtonGroup} from 'react-native-elements';
 import firebase from "../config/firebase";
-import { userName } from '../screens/SignInScreen';
+import { userName, userID } from '../screens/SignInScreen';
 
-const userID = '10210889686788547'
 const db = firebase.firestore();
 
 const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
@@ -14,7 +13,7 @@ const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov
 
 export default class RequestByTimeScreen extends React.Component {
   state = {time: {}, index: 0};
-  
+
   updateIndex = (index) => {
     this.setState({index})
   }
@@ -71,7 +70,7 @@ export default class RequestByTimeScreen extends React.Component {
     index: item['index'],
     day: item['day']
   })}
-  
+
   renderBottom() {
     time1 = [];
     time2 = [];
@@ -120,13 +119,13 @@ export default class RequestByTimeScreen extends React.Component {
       i.title = this.printDate(month,date,day,i.title)
     }
 
-    if (this.state.index == 0) 
+    if (this.state.index == 0)
       return <SectionList
       sections={time1}
       renderItem={({item,section}) =>
       <ListItem
         title={item['time']}
-        onPress={() => this._onPress(item,section,length = 0.5)}                  
+        onPress={() => this._onPress(item,section,length = 0.5)}
       />}
       renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
       keyExtractor={(item, index) => index}
@@ -136,7 +135,7 @@ export default class RequestByTimeScreen extends React.Component {
     renderItem={({item,section}) =>
     <ListItem
       title={item['time']}
-      onPress={() => this._onPress(item,section,length = 1)}                  
+      onPress={() => this._onPress(item,section,length = 1)}
     />}
     renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
     keyExtractor={(item, index) => index}
@@ -146,7 +145,7 @@ export default class RequestByTimeScreen extends React.Component {
 
 render() {
     //console.log(this.state.time)
-   
+
     return (
       <View>
       <NavigationBar componentLeft={<View style={{flex: 1}}><TouchableHighlight onPress={() => this.props.navigation.goBack()}><Text style={{fontSize: 15, color: 'white'}}>Back</Text></TouchableHighlight></View>} componentCenter={<View style={{flex: 1}}><Text style={{fontSize: 14, color: 'white'}}>Request By Time</Text></View>}/>

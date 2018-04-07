@@ -2,8 +2,7 @@ import React, {Component} from 'react';
 import {Text, View, StyleSheet} from 'react-native';
 import {Agenda} from 'react-native-calendars';
 import firebase from "../config/firebase";
-// import { userName, userID } from '../screens/SignInScreen';
-const userID = '10210889686788547'
+import { userName, userID } from '../screens/SignInScreen';
 const db = firebase.firestore();
 
 export default class AgendaScreen extends Component {
