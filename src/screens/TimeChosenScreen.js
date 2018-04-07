@@ -97,7 +97,7 @@ export default class TimeChosenScreen extends React.Component {
       <NavigationBar
             componentLeft={
               <View style={{flex: 1}}>
-                <TouchableHighlight onPress={() => this.props.navigation.goBack()}>
+                <TouchableHighlight underlayColor='transparent' style={{padding: 20}} onPress={() => this.props.navigation.goBack()}>
                   <Text style={{fontSize: 15, color: 'white'}}>
                     Back
                   </Text>
