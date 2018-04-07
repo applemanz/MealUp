@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Text, TouchableHighlight, SectionList, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Image, Text, TouchableHighlight, SectionList, StyleSheet } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
 import {ListItem, Button, Avatar, ButtonGroup} from 'react-native-elements';
 import firebase from "../config/firebase";
@@ -9,6 +9,7 @@ const db = firebase.firestore();
 const numdays = [31,28,31,30,31,30,31,31,30,31,30,31];
 const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
+<<<<<<< HEAD
 
 export default class FriendChosenScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -21,12 +22,22 @@ export default class FriendChosenScreen extends React.Component {
      },
    }
  };
+=======
+export default class FriendChosenScreen extends React.Component {
+>>>>>>> a939711bc84a770aea6c6632cc01c6a49a6163fd
 
   state = {index: 0}
 
   updateIndex = (index) => {
     this.setState({index})
   }
+
+  //sort_days(days) {
+  // var day_of_week = new Date().getDay();
+  //  var list = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  //  var sorted_list = list.slice(day_of_week).concat(list.slice(0,day_of_week));
+  //  return days.sort(function(a,b) { return sorted_list.indexOf(a) > sorted_list.indexOf(b); });
+  //}
 
   printDate = (month, date, day, next) => {
     day += next;
@@ -168,16 +179,20 @@ export default class FriendChosenScreen extends React.Component {
           onPress={() => {
             t = section.title.split(", ");
             month = months.indexOf(t[1].slice(0, 3));
-            date = t[1].slice(-1);
-            // Year is hardcoded at\s 2018
-            ymd = new Date(2018,month,date)
+            date = parseInt(t[1].slice(4));
+            time = item.split("-")
+            hour = parseInt(time[0].split(":")[0])
+            min = parseInt(time[0].split(":")[1])
+            if (item.slice(-2) == "pm" && hour != 12 && time[0] != "11:30") hour += 12
+            // Year is hardcoded as 2018
+            ymd = new Date(2018,month,date,hour,min)
             this.props.navigation.navigate('FinalRequest', {
             name: name,
             id: id,
             url: url,
             dateobj: ymd.toString(),
             time: item,
-            date: t[1],
+            length: 0.5,
           })}}
         />}
         renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
@@ -185,16 +200,28 @@ export default class FriendChosenScreen extends React.Component {
       />
     return <SectionList
             sections={match2}
-            renderItem={({item}) =>
+            renderItem={({item,section}) =>
 
               <ListItem
               title={item}
-              onPress={() => this.props.navigation.navigate('FinalRequest', {
+              onPress={() => {
+                t = section.title.split(", ");
+                month = months.indexOf(t[1].slice(0, 3));
+                date = parseInt(t[1].slice(4));
+                time = item.split("-")
+                hour = parseInt(time[0].split(":")[0])
+                min = parseInt(time[0].split(":")[1])
+                if (item.slice(-2) == "pm" && hour != 12 && hour != 11) hour += 12
+                // Year is hardcoded as 2018
+                ymd = new Date(2018,month,date,hour,min)
+                this.props.navigation.navigate('FinalRequest', {
                 name: name,
                 id: id,
                 url: url,
+                dateobj: ymd.toString(),
                 time: item,
-              })}
+                length: 1,
+              })}}
             />}
 
             renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
@@ -241,26 +268,59 @@ export default class FriendChosenScreen extends React.Component {
       }
 
       return(
-        <View>
-          <View style={{alignItems:'center'}}>
-            <Image
-                style={{width: 80, height: 80, borderRadius: 40}}
-                source={{uri: url}}/>
-            <Text>Choose a time to get a Meal with {name}</Text>
-          </View>
+          <View>
+          <NavigationBar
+            componentLeft={
+              <View style={{flex: 1}}>
+                <TouchableHighlight onPress={() => this.props.navigation.goBack()}>
+                  <Text style={{fontSize: 15, color: 'white'}}>
+                    Back
+                  </Text>
+                </TouchableHighlight>
+              </View>}
+            componentCenter={
+              <View style={{flex: 1}}>
+                <Text style={{fontSize: 20, color: 'white'}}>
+                  Meal Request {name.split(" ")[0]}
+                </Text>
+              </View>}
+          />
+          <Avatar
+            small
+            rounded
+            source={{uri: url}}
+            onPress={() => console.log("Works!")}
+            activeOpacity={0.7}
+          />
           <ButtonGroup
-            onPress={this.updateIndex}
-            selectedIndex={this.state.index}
-            buttons={['30 min', '1 hr']}
-            containerStyle={{height: 30}} />
+        onPress={this.updateIndex}
+        selectedIndex={this.state.index}
+        buttons={['30 min', '1 hr']}
+        containerStyle={{height: 30}} />
           {this.renderBottom()}
         </View>
       );
-    } else
-    return (
-      <View>
-        <ActivityIndicator size="large" color="#000000" />
-      </View>
+    }
+    else
+    return (<View>
+      <NavigationBar
+            componentLeft={
+              <View style={{flex: 1}}>
+                <TouchableHighlight onPress={() => this.props.navigation.goBack()}>
+                  <Text style={{fontSize: 15, color: 'white'}}>
+                    Back
+                  </Text>
+                </TouchableHighlight>
+              </View>}
+            componentCenter={
+              <View style={{flex: 1}}>
+                <Text style={{fontSize: 20, color: 'white'}}>
+                  Meal Request {name.split(" ")[0]}
+                </Text>
+              </View>}
+          />
+          <Text>I am a fancy loading screen</Text>
+    </View>
     );
   }
 }

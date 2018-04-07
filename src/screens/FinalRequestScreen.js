@@ -25,9 +25,9 @@ export default class FinalRequestScreen extends React.Component {
 		const url = params ? params.url : null;
     const time = params ? params.time : null;
     const dateobj = params ? params.dateobj : null;
-    const date = params ? params.date : null;
+    const length = params ? params.length : null;
 		const firstName = name.split(' ')[0];
-
+    console.log(dateobj)
 		return (
 			<View style = {{flex:1}}>
 			<View style={{justifyContent: "center",alignItems: "center",padding:30}}>
@@ -64,8 +64,8 @@ export default class FinalRequestScreen extends React.Component {
     data['FriendName'] = prevData['name']
     data['FriendID'] = prevData['id']
     data['Location'] = this.state.location
-    data['DateTime'] = new Date()
-    data['Length'] = 1
+    data['DateTime'] = new Date(prevData['dateobj'])
+    data['Length'] = prevData['length']
     db.collection("users").doc(userID).collection('Sent Requests').add(data)
         .then(function(docRef) {
             console.log("Document written with ID: ", docRef.id);

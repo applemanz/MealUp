@@ -9,27 +9,31 @@ const userID = '10210889686788547'
 const db = firebase.firestore();
 
 export default class TimeChosenScreen extends React.Component {
-
+  
   state = {}
   
-  getTime = (id, day, time) => {
+  getTime = (id, day, time, length) => {
     return new Promise(resolve => {
       j = false;
       db.collection("users").doc(id).collection('Freetime').doc(day).get().then((doc) => {
         if (doc.exists) {
-          j = doc.data().Freetime[time]
+          if (length == 0.5)
+            j = doc.data().Freetime[time]
+          else if (length == 1)
+            j = doc.data().Freetime[time] && doc.data().Freetime[time + 1]
         }
+
         resolve(j);
       });
     })
   }
 
-  async getFreeFriends(day, time) {
+  async getFreeFriends(day, time, length) {
     myFriends = await this.getFriends()
     free = []
     for (fd in myFriends) {
-      isfree = await this.getTime(fd, day, time)
-      if (isfree) free.push(myFriends[fd])
+      isfree = await this.getTime(fd, day, time, length)
+      if (isfree) free.push({name:myFriends[fd], id:fd})
     }
     this.setState({free:free});
   }
@@ -47,29 +51,37 @@ export default class TimeChosenScreen extends React.Component {
   }
 
   async componentDidMount() {
-    await this.getFreeFriends('Monday',1)
+    const { params } = this.props.navigation.state;
+    await this.getFreeFriends(params.day,params.index,params.length)
   }
   
   renderBottom() {
-    return <SectionList
-    sections={[{title: "Friends", data: this.state.free}]}
-    renderItem={({item}) =>
-    <ListItem
-      title={item}
-      onPress={() => this.props.navigation.navigate('FinalRequest', {
-       name: name,
-       id: id,
-       url: url,
-        time: item,
-      })}
-    />}
-    renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-    keyExtractor={(item, index) => index}
-  />
+    const { params } = this.props.navigation.state;
+    console.log(this.state.free)
+    if (this.state.free)
+      return <SectionList
+        sections={[{title: "Friends", data: this.state.free}]}
+        renderItem={({item}) =>
+        <ListItem
+          title={item['name']}
+          onPress={() => this.props.navigation.navigate('FinalRequest', {
+            name: item['name'],
+            id: item['id'],
+            url: `http://graph.facebook.com/${item['id']}/picture?type=square`,
+            dateobj: params.dateobj,
+            time: params.time,
+            length: params.length,
+          })}
+        />}
+        renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+        keyExtractor={(item, index) => index}
+      />
+    return <View>
+      <Text> I'm a fancy loading screen... </Text>
+      </View>
   }
 
   render() {
-    if (this.state.free) {
       return(
           <View>
           <NavigationBar
@@ -92,28 +104,6 @@ export default class TimeChosenScreen extends React.Component {
         </View>
       ); 
     }
-    else 
-    return (<View>
-      <NavigationBar
-            componentLeft={
-              <View style={{flex: 1}}>
-                <TouchableHighlight underlayColor='transparent' style={{padding: 20}} onPress={() => this.props.navigation.goBack()}>
-                  <Text style={{fontSize: 15, color: 'white'}}>
-                    Back
-                  </Text>
-                </TouchableHighlight>
-              </View>}
-            componentCenter={
-              <View style={{flex: 1}}>
-                <Text style={{fontSize: 20, color: 'white'}}>
-                  Select Friend
-                </Text>
-              </View>}
-          />
-          <Text>I am a fancy loading screen</Text>
-    </View>
-    );
-  }
 }
 
 const styles = StyleSheet.create({
