@@ -122,7 +122,7 @@ export default class RequestsScreen extends React.Component {
         backgroundColor: '#00000080'}}>
       <View style={{
         width: 300,
-        height: 400,
+        height: 460,
         backgroundColor: '#fff', padding: 20}}>
         <View style={{alignItems: 'center'}}>
         <View style={{padding: 10}}>
@@ -142,6 +142,12 @@ export default class RequestsScreen extends React.Component {
           <TouchableHighlight style={{padding: 10, backgroundColor: "#5cb85c", borderRadius: 5}}
             onPress={this.acceptRequest}>
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Accept</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={{padding: 10}}>
+          <TouchableHighlight style={{padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
+            onPress={this.rescheduleRequest}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Reschedule</Text>
           </TouchableHighlight>
         </View>
         <View style={{padding: 10}}>
@@ -209,6 +215,21 @@ export default class RequestsScreen extends React.Component {
       console.error("Error removing document: ", error);
     });
     this.setState({undoVisible: false})
+  }
+
+  rescheduleRequest = () => {
+    db.collection("users").doc(userID).collection('Received Requests').doc(this.state.curUser.docID).delete().then(() => {
+      console.log("Document successfully deleted!");
+      db.collection("users").doc(this.state.curUser.id).collection('Sent Requests').doc(this.state.curUser.docID).delete()
+    }).catch(function(error) {
+      console.error("Error removing document: ", error);
+    });
+    this.setState({respondVisible: false})
+    this.props.navigation.navigate('FriendChosen', {
+      name: this.state.curUser.name,
+      id: this.state.curUser.id,
+      url: `http://graph.facebook.com/${this.state.curUser.id}/picture?type=square`
+    });
   }
 
   undoModal() {
