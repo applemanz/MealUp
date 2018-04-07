@@ -149,66 +149,6 @@ export default class RequestsScreen extends React.Component {
     />;
   }
 
-<<<<<<< HEAD
-=======
-  respondModal() {
-    return <View style={{flex: 1}}>
-    <Modal transparent={true} visible={this.state.respondVisible}>
-      <View style={{
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#00000080'}}>
-      <View style={{
-        width: 300,
-        height: 460,
-        backgroundColor: '#fff', padding: 20}}>
-        <View style={{alignItems: 'center'}}>
-        <View style={{padding: 10}}>
-        <Image
-          style={{width: 100, height: 100, borderRadius: 50}}
-          source={{uri: `http://graph.facebook.com/${this.state.curUser.id}/picture?type=large`}}
-        />
-        </View>
-        <View style={{padding: 10}}>
-        <Text>{this.state.curUser.name}</Text>
-        </View>
-        <View style={{padding: 10}}>
-        <Text>{this.state.curUser.DateTime} at {this.state.curUser.Location}</Text>
-        </View>
-        </View>
-        <View style={{padding: 10}}>
-          <TouchableHighlight style={{padding: 10, backgroundColor: "#5cb85c", borderRadius: 5}}
-            onPress={this.acceptRequest}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Accept</Text>
-          </TouchableHighlight>
-        </View>
-        <View style={{padding: 10}}>
-          <TouchableHighlight style={{padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
-            onPress={this.rescheduleRequest}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Reschedule</Text>
-          </TouchableHighlight>
-        </View>
-        <View style={{padding: 10}}>
-          <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
-            onPress={this.declineRequest}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Decline</Text>
-          </TouchableHighlight>
-        </View>
-        <View style={{padding: 15, alignItems: 'center'}}>
-          <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
-            onPress={() => this.setState({respondVisible: false})}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Cancel</Text>
-          </TouchableHighlight>
-        </View>
-        </View>
-        </View>
-    </Modal>
-  </View>;
-  }
-
->>>>>>> b57b5c6bf1f6cff882621b55596346f78eb96fe3
   acceptRequest = () => {
     // put document in meals
     console.log(this.state.curUser.docID)
@@ -247,8 +187,6 @@ export default class RequestsScreen extends React.Component {
     });
     this.setState({respondVisible: false})
   }
-
-<<<<<<< HEAD
 
 
   render() {
@@ -296,7 +234,6 @@ export default class RequestsScreen extends React.Component {
     );
   }
 
-=======
   undoRequest = () => {
     db.collection("users").doc(userID).collection('Sent Requests').doc(this.state.curUser.docID).delete().then(() => {
       console.log("Document successfully deleted!");
@@ -321,7 +258,6 @@ export default class RequestsScreen extends React.Component {
       url: `http://graph.facebook.com/${this.state.curUser.id}/picture?type=square`
     });
   }
->>>>>>> b57b5c6bf1f6cff882621b55596346f78eb96fe3
 
   undoModal() {
     return <View style={{flex: 1}}>
@@ -368,7 +304,6 @@ export default class RequestsScreen extends React.Component {
   </View>;
   }
 
-<<<<<<< HEAD
   respondModal() {
     return <View style={{flex: 1}}>
     <Modal transparent={true} visible={this.state.respondVisible}>
@@ -418,14 +353,9 @@ export default class RequestsScreen extends React.Component {
         </View>
     </Modal>
   </View>;
-=======
   render() {
     return (
       <View style={{flex: 1}}>
-        <NavigationBar componentCenter   =     {<ComponentCenter />}
-                       componentRight    =     {<View style={{ flex: 1, alignItems: 'center'}}>
-                       <TouchableHighlight underlayColor='transparent' style={{padding: 20}} onPress={() => this.setState({modalVisible: true})}><Text style={{fontSize: 30, fontWeight: 'bold', color: 'white'}}>+</Text></TouchableHighlight>
-                    </View>}/>
         <ButtonGroup
         onPress={this.updateIndex}
         selectedIndex={this.state.index}
@@ -467,6 +397,5 @@ export default class RequestsScreen extends React.Component {
 
     </View>
     );
->>>>>>> b57b5c6bf1f6cff882621b55596346f78eb96fe3
   }
 }
