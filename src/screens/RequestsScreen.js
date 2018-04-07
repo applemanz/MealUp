@@ -353,6 +353,7 @@ export default class RequestsScreen extends React.Component {
         </View>
     </Modal>
   </View>;
+}
   render() {
     return (
       <View style={{flex: 1}}>

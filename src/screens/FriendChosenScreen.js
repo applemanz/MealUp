@@ -23,9 +23,9 @@ export default class FriendChosenScreen extends React.Component {
      //                title = {params ? 'Meal with ' + params.name.split(" ")[0] : 'Meal with Unknown'}
      //                url = {params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=square`}
      //              />,
-     title: params ? 'Meal Request with ' + params.name.split(" ")[0] : 'Meal with Unknown',
+     title: 'Meal Request',
      headerTitleStyle: {
-       fontWeight: '300',
+       fontWeight: 'bold',
      },
    }
  };
@@ -240,41 +240,12 @@ export default class FriendChosenScreen extends React.Component {
       }
 
       return(
-<<<<<<< HEAD
         <View>
           <View style={{alignItems:'center'}}>
-          {/* <Avatar
-            large
-=======
-          <View>
-          <NavigationBar
-            componentLeft={
-              <View style={{flex: 1}}>
-                <TouchableHighlight underlayColor='transparent' style={{padding: 20}} onPress={() => this.props.navigation.goBack()}>
-                  <Text style={{fontSize: 15, color: 'white'}}>
-                    Back
-                  </Text>
-                </TouchableHighlight>
-              </View>}
-            componentCenter={
-              <View style={{flex: 1}}>
-                <Text style={{fontSize: 20, color: 'white'}}>
-                  Meal Request {name.split(" ")[0]}
-                </Text>
-              </View>}
-          />
-          <Avatar
-            small
->>>>>>> b57b5c6bf1f6cff882621b55596346f78eb96fe3
-            rounded
-            source={{uri: url}}
-            onPress={() => console.log("Works!")}
-            activeOpacity={0.7}
-          /> */}
-          <Image
-                style={{width: 100, height: 100, borderRadius: 50}}
-                source={{uri: url}}
-              />
+            <Image
+                style={{width: 80, height: 80, borderRadius: 40}}
+                source={{uri: url}}/>
+            <Text>Choose a time to get a Meal with {name}</Text>
           </View>
           <ButtonGroup
             onPress={this.updateIndex}
