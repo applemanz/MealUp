@@ -265,22 +265,6 @@ export default class FriendChosenScreen extends React.Component {
 
       return(
           <View>
-          <NavigationBar
-            componentLeft={
-              <View style={{flex: 1}}>
-                <TouchableHighlight onPress={() => this.props.navigation.goBack()}>
-                  <Text style={{fontSize: 15, color: 'white'}}>
-                    Back
-                  </Text>
-                </TouchableHighlight>
-              </View>}
-            componentCenter={
-              <View style={{flex: 1}}>
-                <Text style={{fontSize: 20, color: 'white'}}>
-                  Meal Request {name.split(" ")[0]}
-                </Text>
-              </View>}
-          />
           <Avatar
             small
             rounded
