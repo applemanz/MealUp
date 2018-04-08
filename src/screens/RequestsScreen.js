@@ -181,9 +181,6 @@ export default class RequestsScreen extends React.Component {
     this.setState({respondVisible: false})
   }
 
-
-
-
   undoRequest = () => {
     db.collection("users").doc(userID).collection('Sent Requests').doc(this.state.curUser.docID).delete().then(() => {
       console.log("Document successfully deleted!");
@@ -228,7 +225,7 @@ export default class RequestsScreen extends React.Component {
     return (
       <View style={{flex:1}}>
         <ScrollableTabView
-          style={{marginTop: 0, flex:1}}
+          style={{marginTop: 0}}
           renderTabBar={() => <DefaultTabBar />}
           // onChangeTab = {(i, ref) => {this.setState({onFriends: !this.state.onFriends})}}
           tabBarBackgroundColor = {'#f4511e'}
@@ -282,6 +279,9 @@ export default class RequestsScreen extends React.Component {
       </View>
     );
   }
+newRequestModal = () => {
+
+}
 
   undoModal() {
     return <View>

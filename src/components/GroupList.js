@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Image, Text, StyleSheet, FlatList, TouchableOpacity, ActionSheetIOS } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
 import { Avatar, Card, ListItem, Button, ButtonGroup, Icon } from 'react-native-elements';
 import firebase from "../config/firebase";
@@ -19,7 +19,8 @@ class MyListItem extends React.PureComponent {
     urls = []
     var names = [];
     for (var memberID in this.props.Members) {
-    names.push(this.props.Members[memberID]);
+      if (memberID != userID)
+        names.push(this.props.Members[memberID]);
     }
     names.sort()
     for (memberID in this.props.Members) {
@@ -52,8 +53,26 @@ class MyListItem extends React.PureComponent {
               </View>
             </View>}
         onPress = {this._onPress}
+        onLongPress = {this.onLongPress}
       />
     );
+  }
+
+  onLongPress = () => {
+    ActionSheetIOS.showActionSheetWithOptions({
+      options: ['Cancel', 'Leave Group', 'Change Group Name'],
+      destructiveButtonIndex: 1,
+      cancelButtonIndex: 0,
+    },
+    (buttonIndex) => {
+      if (buttonIndex === 1) {
+        // delete group, remove from group members database
+      }
+      if (buttonIndex === 2) {
+        // text input popup
+        // update database
+      }
+    });
   }
 
 }
@@ -80,7 +99,7 @@ export default class MultiSelectList extends React.PureComponent {
   );
 
   addGroup = () => {
-
+    this.props.navigation.navigate("AddGroup")
   }
 
   render() {

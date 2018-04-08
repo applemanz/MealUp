@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Image, Text, StyleSheet, Button } from 'react-native';
+import { View, Image, Text, StyleSheet, Button, TextInput } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
-import { Avatar, Card, ListItem, ButtonGroup } from 'react-native-elements';
+import { Avatar, Card, ListItem, ButtonGroup, CheckBox, Divider } from 'react-native-elements';
 import firebase from "../config/firebase";
 import HeaderButtons from 'react-navigation-header-buttons'
 import Swiper from 'react-native-swiper';
@@ -10,29 +10,24 @@ import { userName, userID } from '../screens/SignInScreen';
 
 const db = firebase.firestore();
 
-export default class EditFriendsScreen extends React.Component {
+export default class AddGroupScreen extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
       const params = navigation.state.params || {};
       return {
-        title: 'Edit Friends',
-        headerRight: (
-          <HeaderButtons color = '#ffffff'>
-            <HeaderButtons.Item title='Done' onPress={params.ButtonPressed} />
-          </HeaderButtons>
-        ),
+        title: 'New Group',
         headerLeft: (
           <HeaderButtons color = '#ffffff'>
-            <HeaderButtons.Item title='Cancel' onPress={params.ButtonPressed} />
+            <HeaderButtons.Item title='Cancel' onPress={params.CancelButtonPressed} />
           </HeaderButtons>
         ),
       };
     };
 
-  state = {friends: []};
+  state = {friends: [], groupName: ""};
 
   componentWillMount() {
-    this.props.navigation.setParams({ ButtonPressed: this.ButtonPressed});
+    this.props.navigation.setParams({ DoneButtonPressed: this.DoneButtonPressed, CancelButtonPressed: this.CancelButtonPressed});
   }
 
   componentDidMount() {
@@ -52,43 +47,26 @@ export default class EditFriendsScreen extends React.Component {
     });
   }
 
-  ButtonPressed = () => {
+  CancelButtonPressed = () => {
+    this.props.navigation.goBack(null)
+  }
+
+  DoneButtonPressed = () => {
+    // TODO add group to database
     this.props.navigation.goBack(null)
   }
 
   render() {
     return (
       <View style={{flex:1}}>
-        <FriendList data = {this.state.friends} navigation = {this.props.navigation} editOn = {true} />
+        <TextInput
+          placeholder = {'Name this group'}
+          onChangeText = {(text) => {this.setState({groupName:text})}}
+          style={{height: 30, fontSize: 20, color: 'black', marginTop:20, marginBottom:20, marginLeft:20}}
+        />
+        <Divider style={{ backgroundColor: '#f4511e', height: 3 }} />
+        <FriendList data = {this.state.friends} navigation = {this.props.navigation} addGroup = {true} groupName = {this.state.groupName}/>
       </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  wrapper: {
-  },
-  slide1: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  slide2: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  slide3: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  text: {
-    color: '#000',
-    fontSize: 30,
-    fontWeight: 'bold',
-  }
-})
