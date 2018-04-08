@@ -105,7 +105,7 @@ export default class RequestByTimeScreen extends React.Component {
       temp = [];
       cur = days.indexOf(thisday);
       for (j = 0; j < 25; j++) {
-        if (this.state.time[thisday][j]) {
+        if (this.state.time[thisday][j] && this.state.time[thisday][j+1]) {
           temp.push({time: this.printTime(j) + "-" + this.printTime(j+2,true), index: j, day: thisday})
         }
       }
