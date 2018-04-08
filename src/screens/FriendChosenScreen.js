@@ -230,7 +230,8 @@ export default class FriendChosenScreen extends React.Component {
     const { params } = this.props.navigation.state;
     const name = params ? params.name : "Chi Yu";
     const url = params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=large`;
-    if (params.CanViewFriend == false || (this.matches1.len==0 && this.matches2.len==0)) {
+    //|| (Object.keys(this.state.matches1).length==0 && Object.keys(this.state.matches2).length==0)
+    if (params.CanViewFriend == false) {
       return (
         <View style={{alignItems:'center'}}>
           <Image
@@ -265,7 +266,7 @@ export default class FriendChosenScreen extends React.Component {
       }
 
       return(
-          <View style={{flex:1}}>
+        <View style={{flex:1}}>
           <Avatar
             small
             rounded
@@ -274,10 +275,10 @@ export default class FriendChosenScreen extends React.Component {
             activeOpacity={0.7}
           />
           <ButtonGroup
-        onPress={this.updateIndex}
-        selectedIndex={this.state.index}
-        buttons={['30 min', '1 hr']}
-        containerStyle={{height: 30}} />
+            onPress={this.updateIndex}
+            selectedIndex={this.state.index}
+            buttons={['30 min', '1 hr']}
+            containerStyle={{height: 30}} />
           {this.renderBottom()}
         </View>
       );
