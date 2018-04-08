@@ -36,6 +36,7 @@ export default class FinalRequestScreen extends React.Component {
          		source={{uri: `http://graph.facebook.com/${friendID}/picture?type=large`}}
        		/>
 			<Text>{name.split(" ")[0]}</Text>
+      <Text>{dateobj.substring(0,10)}</Text>
 			<Text>{time}</Text>
 			</View>
 			<View style={{justifyContent: "center",alignItems: "center"}}>
@@ -68,6 +69,7 @@ export default class FinalRequestScreen extends React.Component {
     data['Location'] = this.state.location
     data['DateTime'] = new Date(prevData['dateobj'])
     data['Length'] = prevData['length']
+    data['TimeString'] = prevData['time']
     db.collection("users").doc(userID).collection('Sent Requests').add(data)
         .then(function(docRef) {
             console.log("Document written with ID: ", docRef.id);

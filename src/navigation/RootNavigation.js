@@ -9,7 +9,10 @@ import SignInScreen from '../screens/SignInScreen';
 
 
 const AuthStack = StackNavigator(
-  { SignIn: SignInScreen }
+  { SignIn: {
+    screen: SignInScreen,
+   }
+ },
 );
 
 const RootStackNavigator = SwitchNavigator(

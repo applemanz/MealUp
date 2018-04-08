@@ -76,7 +76,7 @@ export default class FlatListSelector extends React.PureComponent {
   updateState = (id) => {
     // copy the map rather than modifying state.
     selected = this.state.selected.slice(0);
-    if (selected.length == 0) selected = Array.from(Array(25), () => false); 
+    if (selected.length == 0) selected = Array.from(Array(25), () => false);
     selected[id] = !selected[id];
     // selected.set(id, !selected.get(id)); // toggle
 
@@ -129,7 +129,7 @@ export default class FlatListSelector extends React.PureComponent {
         }, {merge: true});
       }
     })
-    
+
     //this.setState(this.updateState2()
   }
 

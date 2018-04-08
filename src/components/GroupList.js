@@ -10,7 +10,6 @@ import { userName, userID } from '../screens/SignInScreen';
 
 const db = firebase.firestore();
 
-@connectActionSheet
 class MyListItem extends React.PureComponent {
   _onPress = () => {
     this.props.onPressItem(this.props.name, this.props.Members);
@@ -99,10 +98,10 @@ export default class MultiSelectList extends React.PureComponent {
   _keyExtractor = (item, index) => item.id;
 
   _onPressItem = (name, members) => {
-    this.props.navigation.navigate('FriendChosen', {
-      name: name,
-      members: members,
-    });
+    // this.props.navigation.navigate('FriendChosen', {
+    //   name: name,
+    //   members: members,
+    // });
   };
 
   _onLongPress = (name, members) => {

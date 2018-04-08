@@ -45,9 +45,10 @@ export default class AgendaScreen extends Component {
     });
   }
 
-  // formatTimeString(date, length) {
+  // formatTimeString(Day, length) {
   // timeStr = ""
-  // entries = date.split(" ")
+  // entries = Day.split(" ")
+  // console.log(entries)
   // amPM = entries[1]
   // times = entries[0].split(":")
   // if times[0]
@@ -58,7 +59,6 @@ export default class AgendaScreen extends Component {
   // } else {
   //
   // }
-
   //   min = date.getMinutes()
   //   if (min == 0) {min = ':00'}
   //   else {min = ':30'}
@@ -70,7 +70,7 @@ export default class AgendaScreen extends Component {
   //   } else {
   //     timeStr = hr+min+' AM'
   //   }
-  //   return timeStr
+    // return timeStr
   // }
 
   convertDate = (date) => {
@@ -91,19 +91,17 @@ export default class AgendaScreen extends Component {
   updateItems = (meals) => {
     var items = new Object();
     for (meal of meals) {
-      day = meal['Day']
-      dateID = this.convertDate(day.toLocaleDateString())
+      var Day = meal['Day']
+      dateID = this.convertDate(Day.toLocaleDateString())
       if (dateID in items) {
         mealItems = items[dateID]
       } else {
         mealItems = []
       }
-
       mealEntry = new Object()
       mealEntry['text'] = `Meal with ${meal['FriendName']}`
-      mealEntry['subtext'] = `${meal['Time']} at ${meal['Location']}`
+      mealEntry['subtext'] = `${meal['TimeString']} at ${meal['Location']}`
       mealItems.push(mealEntry)
-
       items[dateID] = mealItems
     }
 
@@ -121,7 +119,7 @@ export default class AgendaScreen extends Component {
 
   render() {
     today = new Date()
-    minDate = today.toISOString().substring(0, 10)
+    minDate = this.convertDate(today.toLocaleDateString());
     maxDate = this.addDays(today, 6)
     return (
         <Agenda items={this.state.items}
@@ -139,7 +137,26 @@ export default class AgendaScreen extends Component {
         renderEmptyDate={this.renderEmptyDate.bind(this)}
         rowHasChanged={this.rowHasChanged.bind(this)}
         hideKnob={true}
-        theme={{        }}
+        theme={{
+  backgroundColor: 'transparent',
+  calendarBackground: '#ffffff',
+  textSectionTitleColor: '#b6c1cd',
+  selectedDayBackgroundColor: '#f4511e',
+  selectedDayTextColor: '#ffffff',
+  todayTextColor: '#f4511e',
+  dayTextColor: '#2d4150',
+  textDisabledColor: '#d9e1e8',
+  dotColor: '#00adf5',
+  selectedDotColor: '#ffffff',
+  arrowColor: 'orange',
+  monthTextColor: 'blue',
+  textDayFontSize: 16,
+  textMonthFontSize: 16,
+  textDayHeaderFontSize: 16,
+  // agendaDayTextColor: 'yellow',
+  // agendaDayNumColor: 'green',
+  agendaTodayColor: '#f4511e',
+}}
       />
     )
   }

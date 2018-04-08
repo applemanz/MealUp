@@ -6,6 +6,7 @@ import {
   StyleSheet,
   View,
   Text,
+  Image
 } from 'react-native';
 import { Facebook } from 'expo';
 import {Button, SocialIcon, Divider} from 'react-native-elements';
@@ -21,12 +22,8 @@ var userName;
 var userToken;
 export default class SignInScreen extends React.Component {
   static navigationOptions = {
-    title: 'MealUp Login',
+  header: null,
   };
-
-  constructor(props) {
-    super(props);
-  }
 
   componentWillMount() {
     const value = AsyncStorage.getItem('loggedIn');
@@ -118,18 +115,18 @@ export default class SignInScreen extends React.Component {
   // Render any loading content that you like here
   render() {
     return (
-      <View >
-        <View>
+      <View style={{flex:1, alignItems:'center', justifyContent:'center', backgroundColor:'#f4511e'}}>
+        <Image source={require('../../assets/images/restaurant-cutlery-circular-symbol-of-a-spoon-and-a-fork-in-a-circle.png')}
+                style={{height:250, width:250}}/>
+        <Text style={{fontSize:40, fontWeight:'bold', marginTop:20, paddingBottom:10}}>MealUp</Text>
           <SocialIcon
             raised
             button
             type='facebook'
-            title='LOGIN WITH FACEBOOK'
-            iconSize={19}
-            // style={[styles.containerView, styles.socialButton]}
-            // fontStyle={styles.buttonText}
+            style= {{width:250}}
+            title='Sign In With Facebook'
+            iconSize={20}
             onPress={this.onSignInWithFacebook}/>
-        </View>
       </View>
     );
   }
