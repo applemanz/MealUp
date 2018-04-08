@@ -15,11 +15,23 @@ import FinalRequestScreen from '../screens/FinalRequestScreen';
 import FriendChosenScreen from '../screens/FriendChosenScreen';
 import TimeChosenScreen from '../screens/TimeChosenScreen';
 import EditFriendsScreen from '../screens/EditFriendsScreen';
-import EditGroupsScreen from '../screens/EditGroupsScreen';
+import AddGroupScreen from '../screens/AddGroupScreen';
 
 const RequestsStack = StackNavigator({
   Requests: {
     screen: RequestsScreen,
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: '#f4511e',
+        shadowColor: 'transparent',
+        elevation:0,
+        borderBottomWidth: 0,
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    },
   },
   RequestByFriend: {
     screen: RequestByFriendScreen,
@@ -90,8 +102,8 @@ const FriendsStack = StackNavigator({
       tabBarVisible: false
     }
   },
-  EditGroups: {
-    screen: EditGroupsScreen,
+  AddGroup: {
+    screen: AddGroupScreen,
     navigationOptions: {
       tabBarVisible: false
     }
@@ -159,6 +171,7 @@ export default TabNavigator(
     }
   },
   {
+    initialRouteName: 'Friends',
     navigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ focused }) => {
         const { routeName } = navigation.state;

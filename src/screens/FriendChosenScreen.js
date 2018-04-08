@@ -118,6 +118,8 @@ export default class FriendChosenScreen extends React.Component {
     const id = params ? params.id : "1893368474007587";
     const url = params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=square`;
     const name = params ? params.name : "Chi Yu";
+    const reschedule = params ? params.reschedule : undefined;
+    const sent = params ? params.sent : undefined;
 
     match1 = [];
     match2 = [];
@@ -183,6 +185,8 @@ export default class FriendChosenScreen extends React.Component {
             // Year is hardcoded as 2018
             ymd = new Date(2018,month,date,hour,min)
             this.props.navigation.navigate('FinalRequest', {
+            sent: sent,
+            reschedule: reschedule,
             name: name,
             id: id,
             url: url,
@@ -212,6 +216,8 @@ export default class FriendChosenScreen extends React.Component {
                 // Year is hardcoded as 2018
                 ymd = new Date(2018,month,date,hour,min)
                 this.props.navigation.navigate('FinalRequest', {
+                sent: sent,
+                reschedule: reschedule,
                 name: name,
                 id: id,
                 url: url,
@@ -230,7 +236,8 @@ export default class FriendChosenScreen extends React.Component {
     const { params } = this.props.navigation.state;
     const name = params ? params.name : "Chi Yu";
     const url = params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=large`;
-    if (params.CanViewFriend == false || (matches1.len==0 && matches2.len==0)) {
+    //|| (Object.keys(this.state.matches1).length==0 && Object.keys(this.state.matches2).length==0)
+    if (params.CanViewFriend == false) {
       return (
         <View style={{alignItems:'center'}}>
           <Image
@@ -265,7 +272,7 @@ export default class FriendChosenScreen extends React.Component {
       }
 
       return(
-          <View style={{flex:1}}>
+        <View style={{flex:1}}>
           <Avatar
             small
             rounded
@@ -274,19 +281,20 @@ export default class FriendChosenScreen extends React.Component {
             activeOpacity={0.7}
           />
           <ButtonGroup
-        onPress={this.updateIndex}
-        selectedIndex={this.state.index}
-        buttons={['30 min', '1 hr']}
-        containerStyle={{height: 30}} />
+            onPress={this.updateIndex}
+            selectedIndex={this.state.index}
+            buttons={['30 min', '1 hr']}
+            containerStyle={{height: 30}} />
           {this.renderBottom()}
         </View>
       );
     }
-    else
-    return (<View>
-          <ActivityIndicator size="large" color="#0000ff" />
-    </View>
-    );
+    else {
+      return (<View>
+            <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+      );
+    }
   }
 }
 

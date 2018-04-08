@@ -8,7 +8,7 @@ import Swiper from 'react-native-swiper';
 import FriendList from '../components/FriendList';
 import GroupList from '../components/GroupList';
 import ScrollableTabView, {DefaultTabBar, } from 'react-native-scrollable-tab-view';
-import { userName, userID } from '../screens/SignInScreen';
+import { userName, userID, userToken } from '../screens/SignInScreen';
 
 const db = firebase.firestore();
 
@@ -26,15 +26,15 @@ export default class FriendsScreen extends React.Component {
       };
     };
 
-  state = {friends: [], groups: [],};
+  state = {friends: [], groups: [], onFriends:true};
 
   componentWillMount() {
     this.props.navigation.setParams({ ButtonPressed: this.ButtonPressed, buttonText: 'Edit' });
-  }
+    }
 
   componentDidMount() {
     db.collection("users").doc(userID).collection('Friends').onSnapshot((querySnapshot) => {
-        friends = [];
+        var friends = [];
         querySnapshot.forEach((doc) => {
             friends.push({
               Name: doc.data().Name,
@@ -47,6 +47,21 @@ export default class FriendsScreen extends React.Component {
         });
         this.setState({friends:friends});
     });
+
+    // const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=friends`);
+    // const userData = await response.json();
+    // const friendsList = userData.friends.data;
+    // console.log(friendsList);
+    // for (var friend of friendsList) {
+    //   if (!friends.find(item => item.id === friend.id)) {
+    //     db.collection('users').doc(userID).collection('Friends').doc(friend.id).set({
+    //       Name: friend.name,
+    //       CanViewMe: true,
+    //       CanViewFriend: true,
+    //     })
+    //   }
+    // }
+
     db.collection("users").doc(userID).collection('Groups').onSnapshot((querySnapshot) => {
         groups = [];
         querySnapshot.forEach((doc) => {
@@ -64,11 +79,7 @@ export default class FriendsScreen extends React.Component {
   ButtonPressed = () => {
     if (this.state.onFriends) {
       this.props.navigation.navigate('EditFriends')
-    } else {
-      this.props.navigation.navigate('EditGroups')
     }
-
-
   }
 
   compare = (b,a) => {
@@ -88,11 +99,9 @@ export default class FriendsScreen extends React.Component {
           tabBarActiveTextColor = {'white'}
           tabBarInactiveTextColor = {'black'}
           tabBarUnderlineStyle = {{backgroundColor:'white'}}
-
         >
           <FriendList style={{flex:1}} tabLabel='Friends' data = {obj} navigation = {this.props.navigation} editOn = {false}/>
           <GroupList tabLabel='Groups' data = {this.state.groups} navigation = {this.props.navigation} />
-
         </ScrollableTabView>
       </View>
     );

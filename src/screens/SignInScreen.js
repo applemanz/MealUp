@@ -18,6 +18,7 @@ const db = firebase.firestore();
 var provider = new firebase.auth.FacebookAuthProvider();
 var userID;
 var userName;
+var userToken;
 export default class SignInScreen extends React.Component {
   static navigationOptions = {
     title: 'MealUp Login',
@@ -41,7 +42,7 @@ export default class SignInScreen extends React.Component {
       // const {type, token} = await Facebook.logInWithReadPermissionsAsync("159765391398008", options);
       // if (type === 'success') {
       //   try {
-      //     AsyncStorage.setItem('userToken', token);
+      //     userToken = token;
       //
       //     const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,friends`);
       //     const userData = await response.json();
@@ -136,3 +137,4 @@ export default class SignInScreen extends React.Component {
 
 export {userName};
 export {userID};
+export {userToken};
