@@ -5,9 +5,8 @@ import { ListItem, ButtonGroup } from 'react-native-elements';
 import HeaderButtons from 'react-navigation-header-buttons'
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Ionicons } from '@expo/vector-icons';
-
+import ScrollableTabView, {DefaultTabBar, } from 'react-native-scrollable-tab-view';
 import { userName, userID } from '../screens/SignInScreen';
-
 import firebase from "../config/firebase";
 
 const db = firebase.firestore();
@@ -24,11 +23,6 @@ export default class RequestsScreen extends React.Component {
         ),
       };
     };
-
-  constructor(props) {
-    super(props);
-    this.updateIndex = this.updateIndex.bind(this);
-  }
 
   componentWillMount() {
     this.props.navigation.setParams({ showModal: this.showModal });
@@ -132,21 +126,21 @@ export default class RequestsScreen extends React.Component {
         DateObj: item.DateTime}});
   }
 
-  updateIndex = (index) => {
-    this.setState({index})
-  }
+  // updateIndex = (index) => {
+  //   this.setState({index})
+  // }
 
-  renderBottom() {
-    if (this.state.index == 0)
-        return <FlatList keyExtractor={this._keyExtractor}
-          data={this.state.sentRequests}
-          renderItem={this.renderSentRequest}
-        />;
-    return <FlatList keyExtractor={this._keyExtractor}
-      data={this.state.receivedRequests}
-      renderItem={this.renderReceivedRequest}
-    />;
-  }
+  // renderBottom() {
+  //   if (this.state.index == 0)
+  //       return <FlatList keyExtractor={this._keyExtractor}
+  //         data={this.state.sentRequests}
+  //         renderItem={this.renderSentRequest}
+  //       />;
+  //   return <FlatList keyExtractor={this._keyExtractor}
+  //     data={this.state.receivedRequests}
+  //     renderItem={this.renderReceivedRequest}
+  //   />;
+  // }
 
   acceptRequest = () => {
     // put document in meals
@@ -188,50 +182,7 @@ export default class RequestsScreen extends React.Component {
   }
 
 
-  render() {
-    return (
-      <View style={{flex: 1}}>
-        <ButtonGroup
-          onPress={this.updateIndex}
-          selectedIndex={this.state.index}
-          buttons={['Sent', 'Received']}
-          containerStyle={{height: 30}} />
-        {this.renderBottom()}
-        <View style={{flex: 1}}>
-          <Modal transparent={true} visible={this.state.modalVisible}>
-            <View style={{
-              flex: 1,
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: '#00000080'}}>
-              <View style={{
-                width: 300,
-                height: 300,
-                backgroundColor: '#fff', padding: 20}}>
-                <View style={{padding: 15}}>
-                  <Button onPress={this.RequestByFriend} title="Request by Friend"/>
-                </View>
-                <View style={{padding: 15}}>
-                  <Button onPress = {this.RequestByTime} title="Request by Time"/>
-                </View>
-                <View style={{padding: 25, alignItems: 'center'}}>
-                  <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
-                    onPress={() => this.setState({modalVisible: false})}>
-                    <Text style={{fontSize: 15, textAlign: 'right'}}>Cancel</Text>
-                  </TouchableHighlight>
-                </View>
-              </View>
-            </View>
-          </Modal>
-      </View>
 
-      {this.respondModal()}
-      {this.undoModal()}
-
-    </View>
-    );
-  }
 
   undoRequest = () => {
     db.collection("users").doc(userID).collection('Sent Requests').doc(this.state.curUser.docID).delete().then(() => {
@@ -273,8 +224,67 @@ export default class RequestsScreen extends React.Component {
     });
   }
 
+  render() {
+    return (
+      <View style={{flex:1}}>
+        <ScrollableTabView
+          style={{marginTop: 0, flex:1}}
+          renderTabBar={() => <DefaultTabBar />}
+          // onChangeTab = {(i, ref) => {this.setState({onFriends: !this.state.onFriends})}}
+          tabBarBackgroundColor = {'#f4511e'}
+          tabBarActiveTextColor = {'white'}
+          tabBarInactiveTextColor = {'black'}
+          tabBarUnderlineStyle = {{backgroundColor:'white'}}
+        >
+          <FlatList
+            tabLabel='Received'
+            keyExtractor={this._keyExtractor}
+            data={this.state.receivedRequests}
+            renderItem={this.renderReceivedRequest}
+          />
+          <FlatList
+            tabLabel='Sent'
+            keyExtractor={this._keyExtractor}
+            data={this.state.sentRequests}
+            renderItem={this.renderSentRequest}
+          />
+        </ScrollableTabView>
+        <View style={{flex: 1}}>
+          <Modal transparent={true} visible={this.state.modalVisible}>
+            <View style={{
+              flex: 1,
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: '#00000080'}}>
+              <View style={{
+                width: 300,
+                height: 300,
+                backgroundColor: '#fff', padding: 20}}>
+                <View style={{padding: 15}}>
+                  <Button onPress={this.RequestByFriend} title="Request by Friend"/>
+                </View>
+                <View style={{padding: 15}}>
+                  <Button onPress = {this.RequestByTime} title="Request by Time"/>
+                </View>
+                <View style={{padding: 25, alignItems: 'center'}}>
+                  <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
+                    onPress={() => this.setState({modalVisible: false})}>
+                    <Text style={{fontSize: 15, textAlign: 'right'}}>Cancel</Text>
+                  </TouchableHighlight>
+                </View>
+              </View>
+            </View>
+          </Modal>
+        </View>
+          {this.respondModal()}
+          {this.undoModal()}
+      </View>
+    );
+  }
+
   undoModal() {
-    return <View style={{flex: 1}}>
+    return <View>
     <Modal transparent={true} visible={this.state.undoVisible}>
       <View style={{
         flex: 1,
@@ -325,7 +335,7 @@ export default class RequestsScreen extends React.Component {
   }
 
   respondModal() {
-    return <View style={{flex: 1}}>
+    return <View>
     <Modal transparent={true} visible={this.state.respondVisible}>
       <View style={{
         flex: 1,
@@ -380,49 +390,4 @@ export default class RequestsScreen extends React.Component {
     </Modal>
   </View>;
 }
-  render() {
-    return (
-      <View style={{flex: 1}}>
-        <ButtonGroup
-        onPress={this.updateIndex}
-        selectedIndex={this.state.index}
-        buttons={['Sent', 'Received']}
-        containerStyle={{height: 30}} />
-
-        {this.renderBottom()}
-        <View style={{flex: 1}}>
-        <Modal transparent={true} visible={this.state.modalVisible}>
-          <View style={{
-            flex: 1,
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: '#00000080'}}>
-          <View style={{
-            width: 300,
-            height: 300,
-            backgroundColor: '#fff', padding: 20}}>
-            <View style={{padding: 15}}>
-              <Button onPress={this.RequestByFriend} title="Request by Friend"/>
-            </View>
-            <View style={{padding: 15}}>
-              <Button onPress = {this.RequestByTime} title="Request by Time"/>
-            </View>
-            <View style={{padding: 25, alignItems: 'center'}}>
-              <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
-                onPress={() => this.setState({modalVisible: false})}>
-                <Text style={{fontSize: 15, textAlign: 'right'}}>Cancel</Text>
-              </TouchableHighlight>
-            </View>
-            </View>
-            </View>
-        </Modal>
-      </View>
-
-      {this.respondModal()}
-      {this.undoModal()}
-
-    </View>
-    );
-  }
 }

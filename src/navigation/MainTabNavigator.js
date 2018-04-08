@@ -20,6 +20,18 @@ import EditGroupsScreen from '../screens/EditGroupsScreen';
 const RequestsStack = StackNavigator({
   Requests: {
     screen: RequestsScreen,
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: '#f4511e',
+        shadowColor: 'transparent',
+        elevation:0,
+        borderBottomWidth: 0,
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    },
   },
   RequestByFriend: {
     screen: RequestByFriendScreen,
