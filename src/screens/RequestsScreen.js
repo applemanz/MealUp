@@ -195,14 +195,16 @@ export default class RequestsScreen extends React.Component {
   }
 
   rescheduleRequest = () => {
-    db.collection("users").doc(userID).collection('Received Requests').doc(this.state.curUser.docID).delete().then(() => {
-      console.log("Document successfully deleted!");
-      db.collection("users").doc(this.state.curUser.id).collection('Sent Requests').doc(this.state.curUser.docID).delete()
-    }).catch(function(error) {
-      console.error("Error removing document: ", error);
-    });
+    // db.collection("users").doc(userID).collection('Received Requests').doc(this.state.curUser.docID).delete().then(() => {
+    //   console.log("Document successfully deleted!");
+    //   db.collection("users").doc(this.state.curUser.id).collection('Sent Requests').doc(this.state.curUser.docID).delete()
+    // }).catch(function(error) {
+    //   console.error("Error removing document: ", error);
+    // });
     this.setState({respondVisible: false})
     this.props.navigation.navigate('FriendChosen', {
+      sent: false,
+      reschedule: this.state.curUser.docID,
       name: this.state.curUser.name,
       id: this.state.curUser.id,
       url: `http://graph.facebook.com/${this.state.curUser.id}/picture?type=large`
@@ -210,14 +212,16 @@ export default class RequestsScreen extends React.Component {
   }
 
   rescheduleSentRequest = () => {
-    db.collection("users").doc(userID).collection('Sent Requests').doc(this.state.curUser.docID).delete().then(() => {
-      console.log("Document successfully deleted!");
-      db.collection("users").doc(this.state.curUser.id).collection('Received Requests').doc(this.state.curUser.docID).delete()
-    }).catch(function(error) {
-      console.error("Error removing document: ", error);
-    });
+    // db.collection("users").doc(userID).collection('Sent Requests').doc(this.state.curUser.docID).delete().then(() => {
+    //   console.log("Document successfully deleted!");
+    //   db.collection("users").doc(this.state.curUser.id).collection('Received Requests').doc(this.state.curUser.docID).delete()
+    // }).catch(function(error) {
+    //   console.error("Error removing document: ", error);
+    // });
     this.setState({undoVisible: false})
     this.props.navigation.navigate('FriendChosen', {
+      sent: true,
+      reschedule: this.state.curUser.docID,
       name: this.state.curUser.name,
       id: this.state.curUser.id,
       url: `http://graph.facebook.com/${this.state.curUser.id}/picture?type=large`
@@ -249,38 +253,41 @@ export default class RequestsScreen extends React.Component {
             renderItem={this.renderSentRequest}
           />
         </ScrollableTabView>
-        <View style={{flex: 1}}>
-          <Modal transparent={true} visible={this.state.modalVisible}>
-            <View style={{
-              flex: 1,
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: '#00000080'}}>
-              <View style={{
-                width: 300,
-                height: 300,
-                backgroundColor: '#fff', padding: 20}}>
-                <View style={{padding: 15}}>
-                  <Button onPress={this.RequestByFriend} title="Request by Friend"/>
-                </View>
-                <View style={{padding: 15}}>
-                  <Button onPress = {this.RequestByTime} title="Request by Time"/>
-                </View>
-                <View style={{padding: 25, alignItems: 'center'}}>
-                  <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
-                    onPress={() => this.setState({modalVisible: false})}>
-                    <Text style={{fontSize: 15, textAlign: 'right'}}>Cancel</Text>
-                  </TouchableHighlight>
-                </View>
-              </View>
-            </View>
-          </Modal>
-        </View>
+          {this.requestModal()}
           {this.respondModal()}
           {this.undoModal()}
       </View>
     );
+  }
+  requestModal() {
+    return <View>
+    <Modal transparent={true} visible={this.state.modalVisible}>
+      <View style={{
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000080'}}>
+        <View style={{
+          width: 300,
+          height: 300,
+          backgroundColor: '#fff', padding: 20}}>
+          <View style={{padding: 15}}>
+            <Button onPress={this.RequestByFriend} title="Request by Friend"/>
+          </View>
+          <View style={{padding: 15}}>
+            <Button onPress = {this.RequestByTime} title="Request by Time"/>
+          </View>
+          <View style={{padding: 25, alignItems: 'center'}}>
+            <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
+              onPress={() => this.setState({modalVisible: false})}>
+              <Text style={{fontSize: 15, textAlign: 'right'}}>Cancel</Text>
+            </TouchableHighlight>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  </View>;
   }
 
   undoModal() {
