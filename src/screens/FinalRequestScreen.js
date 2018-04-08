@@ -16,7 +16,7 @@ export default class FinalRequestScreen extends React.Component {
     }
   };
 
-	state = {location: ""}
+	state = {location: "WuCox"}
 
 	render() {
 		const { params } = this.props.navigation.state;
@@ -35,7 +35,7 @@ export default class FinalRequestScreen extends React.Component {
          		style={{width: 100, height: 100, borderRadius: 50}}
          		source={{uri: `http://graph.facebook.com/${friendID}/picture?type=large`}}
        		/>
-			<Text>{name}</Text>
+			<Text>{name.split(" ")[0]}</Text>
 			<Text>{time}</Text>
 			</View>
 			<View style={{justifyContent: "center",alignItems: "center"}}>

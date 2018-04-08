@@ -38,7 +38,7 @@ export default class FriendsScreen extends React.Component {
         querySnapshot.forEach((doc) => {
             friends.push({
               Name: doc.data().Name,
-              url:`http://graph.facebook.com/${doc.id}/picture?type=normal`,
+              url:`http://graph.facebook.com/${doc.id}/picture?type=large`,
               id: doc.id,
               CanViewMe: doc.data().CanViewMe,
               CanViewFriend: doc.data().CanViewFriend,

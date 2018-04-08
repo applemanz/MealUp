@@ -28,7 +28,7 @@ export default class RequestsScreen extends React.Component {
     this.props.navigation.setParams({ showModal: this.showModal });
   }
 
-  state = {modalVisible: false, index: 1, sentRequests: [], receivedRequests: [], respondVisible: false, curUser: {}, undoVisible: false, 
+  state = {modalVisible: false, index: 1, sentRequests: [], receivedRequests: [], respondVisible: false, curUser: {}, undoVisible: false,
   refreshingR: false, refreshingS: false};
 
 
@@ -40,7 +40,7 @@ export default class RequestsScreen extends React.Component {
     db.collection("users").doc(userID).collection('Sent Requests').onSnapshot((querySnapshot) => {
       requestS = [];
       querySnapshot.forEach((doc) => {
-        if (doc.data().DateTime >= new Date()) {    
+        if (doc.data().DateTime >= new Date()) {
           requestS.push({
             name: doc.data().FriendName,
             url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`,
@@ -64,7 +64,7 @@ export default class RequestsScreen extends React.Component {
     db.collection("users").doc(userID).collection('Received Requests').onSnapshot((querySnapshot) => {
       requestR = [];
       querySnapshot.forEach((doc) => {
-        if (doc.data().DateTime >= new Date()) {    
+        if (doc.data().DateTime >= new Date()) {
           requestR.push({
             name: doc.data().FriendName,
             url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`,
@@ -223,7 +223,7 @@ export default class RequestsScreen extends React.Component {
     db.collection("users").doc(userID).collection('Received Requests').onSnapshot((querySnapshot) => {
       requestR = [];
         querySnapshot.forEach((doc) => {
-          if (doc.data().DateTime >= new Date()) {    
+          if (doc.data().DateTime >= new Date()) {
             requestR.push({
               name: doc.data().FriendName,
               url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`,
@@ -252,7 +252,7 @@ export default class RequestsScreen extends React.Component {
     db.collection("users").doc(userID).collection('Sent Requests').onSnapshot((querySnapshot) => {
       requestS = [];
         querySnapshot.forEach((doc) => {
-          if (doc.data().DateTime >= new Date()) {    
+          if (doc.data().DateTime >= new Date()) {
             requestS.push({
               name: doc.data().FriendName,
               url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`,
@@ -311,11 +311,6 @@ export default class RequestsScreen extends React.Component {
       </View>
     );
   }
-<<<<<<< HEAD
-newRequestModal = () => {
-
-}
-=======
   requestModal() {
     return <View>
     <Modal transparent={true} visible={this.state.modalVisible}>
@@ -346,7 +341,6 @@ newRequestModal = () => {
     </Modal>
   </View>;
   }
->>>>>>> 639a69339501af9ca7f59cb7afffe9aa11eebc77
 
   undoModal() {
     return <View>
