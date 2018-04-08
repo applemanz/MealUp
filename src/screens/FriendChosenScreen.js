@@ -118,6 +118,8 @@ export default class FriendChosenScreen extends React.Component {
     const id = params ? params.id : "1893368474007587";
     const url = params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=square`;
     const name = params ? params.name : "Chi Yu";
+    const reschedule = params ? params.reschedule : undefined;
+    const sent = params ? params.sent : undefined;
 
     match1 = [];
     match2 = [];
@@ -183,6 +185,8 @@ export default class FriendChosenScreen extends React.Component {
             // Year is hardcoded as 2018
             ymd = new Date(2018,month,date,hour,min)
             this.props.navigation.navigate('FinalRequest', {
+            sent: sent,
+            reschedule: reschedule,
             name: name,
             id: id,
             url: url,
@@ -212,6 +216,8 @@ export default class FriendChosenScreen extends React.Component {
                 // Year is hardcoded as 2018
                 ymd = new Date(2018,month,date,hour,min)
                 this.props.navigation.navigate('FinalRequest', {
+                sent: sent,
+                reschedule: reschedule,
                 name: name,
                 id: id,
                 url: url,
