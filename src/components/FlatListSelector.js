@@ -30,11 +30,11 @@ export default class FlatListSelector extends React.PureComponent {
 
   constructor(props) {
     super(props);
-    this.state = {selected: []}
+    this.state = {selected: [], friends: {}, freeFriends: {}}
     userRef = db.collection('users').doc(userID).collection('Freetime').doc(this.props.dayOfWeek);
     userRef.get().then(doc => {
       if (doc.exists) {
-          console.log("Document data:", doc.data().Freetime);
+          // console.log("Document data:", this.props.dayOfWeek, doc.data().Freetime);
           this.setState(previousState => {
         return { selected: doc.data().Freetime };
       });
@@ -45,27 +45,92 @@ export default class FlatListSelector extends React.PureComponent {
   }).catch(function(error) {
       console.log("Error getting document:", error);
   });
+
+  // friends : {id: name}
+  friends = new Object()
+  db.collection("users").doc(userID).collection('Friends').get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      friends[doc.id] = doc.data().Name
+    });
+    this.setState({friends:friends})
+
+  // freeFriends : {id: [day]{friendid : name}}
+    for (key of Object.keys(friends)) {
+      let temp = key;
+      fdRef = db.collection("users").doc(temp).collection('FreeFriends').doc(this.props.dayOfWeek);
+      fdRef.get().then(doc => {
+        if (doc.exists) {
+          console.log("EXISTS",friends[temp],this.props.dayOfWeek)
+          freeFriends = this.state.freeFriends
+          freeFriends[temp] = doc.data().Freefriends;
+          this.setState({freeFriends:freeFriends})
+        }
+        else {
+         console.log("Does not exist")
+        }
+      })
+    }
+});
 }
-
-
 
   updateState = (id) => {
     // copy the map rather than modifying state.
-    const selected = this.state.selected.slice(0);
+    selected = this.state.selected.slice(0);
+    if (selected.length == 0) selected = Array.from(Array(25), () => false); 
     selected[id] = !selected[id];
     // selected.set(id, !selected.get(id)); // toggle
-    return {selected};
+
+    // update all your friends that you're free / not free on tap
+    freeFriends = Object.assign(this.state.freeFriends)
+    for (key of Object.keys(this.state.friends)) {
+      if (key in freeFriends) {
+        if (userID in freeFriends[key][id]) {
+          delete freeFriends[key][id][userID];
+        }
+        else {
+          // store name but it's not necessary
+          if (selected[id])
+          freeFriends[key][id][userID] = userName;
+        }
+      }
+      else {
+        // initialize empty array (time) of arrays
+        freeFriends[key] = []
+        for (i = 0; i < 25; i++) {
+          freeFriends[key].push({})
+        }
+        if (selected[id])
+          freeFriends[key][id][userID] = userName;
+      }
+    }
+    return {selected:selected,freeFriends:freeFriends};
   };
 
   _onPressItem = (id: int) => {
     // updater functions are preferred for transactional updates
     this.setState(this.updateState(id), () => {
-      console.log(this.state.selected);
-      console.log(userID);
+      // console.log(this.state.selected);
+      // console.log(this.state.freeFriends);
+      // console.log(this.state.friends)
+      // console.log(userID);
+
+      // merge
       var setWithMerge = this.userRef.set({
       Freetime: this.state.selected
       }, { merge: true });
+
+      // merge for each friend you have
+      for (friendID of Object.keys(this.state.freeFriends)) {
+        //console.log(friendID)
+        fdRef = db.collection("users").doc(friendID).collection('FreeFriends').doc(this.props.dayOfWeek)
+        console.log(this.state.freeFriends[friendID])
+        fdRef.set({
+          Freefriends: this.state.freeFriends[friendID]
+        }, {merge: true});
+      }
     })
+    
+    //this.setState(this.updateState2()
   }
 
   _renderItem = ({item}) => (
@@ -82,7 +147,9 @@ export default class FlatListSelector extends React.PureComponent {
   );
 
   render() {
-    console.log(this.state.selected);
+    //console.log(this.state.selected);
+    console.log(this.state.freeFriends);
+    //console.log(this.state.friends)
     return (
 
       <FlatList
