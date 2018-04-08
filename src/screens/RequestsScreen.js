@@ -28,7 +28,8 @@ export default class RequestsScreen extends React.Component {
     this.props.navigation.setParams({ showModal: this.showModal });
   }
 
-  state = {modalVisible: false, index: 1, sentRequests: [], receivedRequests: [], respondVisible: false, curUser: {}, undoVisible: false};
+  state = {modalVisible: false, index: 1, sentRequests: [], receivedRequests: [], respondVisible: false, curUser: {}, undoVisible: false, 
+  refreshingR: false, refreshingS: false};
 
 
   showModal = () => {
@@ -38,29 +39,50 @@ export default class RequestsScreen extends React.Component {
   componentDidMount() {
     db.collection("users").doc(userID).collection('Sent Requests').onSnapshot((querySnapshot) => {
       requestS = [];
-        querySnapshot.forEach((doc) => {
-            requestS.push({
-              name: doc.data().FriendName,
-              url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`,
-              id: doc.data().FriendID,
-              DateTime: doc.data().DateTime,
-              Location: doc.data().Location,
-              docID: doc.id
-            })
-        });
+      querySnapshot.forEach((doc) => {
+        if (doc.data().DateTime >= new Date()) {    
+          requestS.push({
+            name: doc.data().FriendName,
+            url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`,
+            id: doc.data().FriendID,
+            DateTime: doc.data().DateTime,
+            Location: doc.data().Location,
+            docID: doc.id
+          })
+        } else {
+          console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
+          db.collection("users").doc(userID).collection('Sent Requests').doc(doc.id).delete().then(() => {
+            console.log("Document successfully deleted!");
+            db.collection("users").doc(doc.data().FriendID).collection('Received Requests').doc(doc.id).delete()
+          }).catch(function(error) {
+            console.error("Error removing document: ", error);
+          });
+        }
+      });
         this.setState({sentRequests: requestS});
     });
     db.collection("users").doc(userID).collection('Received Requests').onSnapshot((querySnapshot) => {
       requestR = [];
-        querySnapshot.forEach((doc) => {
-            requestR.push({
-              name: doc.data().FriendName,
-              url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`,
-              id: doc.data().FriendID,
-              DateTime: doc.data().DateTime,
-              Location: doc.data().Location,
-              docID: doc.id})
-        });
+      querySnapshot.forEach((doc) => {
+        if (doc.data().DateTime >= new Date()) {    
+          requestR.push({
+            name: doc.data().FriendName,
+            url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`,
+            id: doc.data().FriendID,
+            DateTime: doc.data().DateTime,
+            Location: doc.data().Location,
+            docID: doc.id
+          })
+        } else {
+          console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
+          db.collection("users").doc(userID).collection('Received Requests').doc(doc.id).delete().then(() => {
+            console.log("Document successfully deleted!");
+            db.collection("users").doc(doc.data().FriendID).collection('Sent Requests').doc(doc.id).delete()
+          }).catch(function(error) {
+            console.error("Error removing document: ", error);
+          });
+        }
+      });
         this.setState({receivedRequests: requestR});
     });
   }
@@ -126,22 +148,6 @@ export default class RequestsScreen extends React.Component {
         DateObj: item.DateTime}});
   }
 
-  // updateIndex = (index) => {
-  //   this.setState({index})
-  // }
-
-  // renderBottom() {
-  //   if (this.state.index == 0)
-  //       return <FlatList keyExtractor={this._keyExtractor}
-  //         data={this.state.sentRequests}
-  //         renderItem={this.renderSentRequest}
-  //       />;
-  //   return <FlatList keyExtractor={this._keyExtractor}
-  //     data={this.state.receivedRequests}
-  //     renderItem={this.renderReceivedRequest}
-  //   />;
-  // }
-
   acceptRequest = () => {
     // put document in meals
     console.log(this.state.curUser.docID)
@@ -195,12 +201,6 @@ export default class RequestsScreen extends React.Component {
   }
 
   rescheduleRequest = () => {
-    // db.collection("users").doc(userID).collection('Received Requests').doc(this.state.curUser.docID).delete().then(() => {
-    //   console.log("Document successfully deleted!");
-    //   db.collection("users").doc(this.state.curUser.id).collection('Sent Requests').doc(this.state.curUser.docID).delete()
-    // }).catch(function(error) {
-    //   console.error("Error removing document: ", error);
-    // });
     this.setState({respondVisible: false})
     this.props.navigation.navigate('FriendChosen', {
       sent: false,
@@ -212,12 +212,6 @@ export default class RequestsScreen extends React.Component {
   }
 
   rescheduleSentRequest = () => {
-    // db.collection("users").doc(userID).collection('Sent Requests').doc(this.state.curUser.docID).delete().then(() => {
-    //   console.log("Document successfully deleted!");
-    //   db.collection("users").doc(this.state.curUser.id).collection('Received Requests').doc(this.state.curUser.docID).delete()
-    // }).catch(function(error) {
-    //   console.error("Error removing document: ", error);
-    // });
     this.setState({undoVisible: false})
     this.props.navigation.navigate('FriendChosen', {
       sent: true,
@@ -226,6 +220,63 @@ export default class RequestsScreen extends React.Component {
       id: this.state.curUser.id,
       url: `http://graph.facebook.com/${this.state.curUser.id}/picture?type=large`
     });
+  }
+  refreshReceived = () => {
+    this.setState({refreshingR: true});
+    db.collection("users").doc(userID).collection('Received Requests').onSnapshot((querySnapshot) => {
+      requestR = [];
+        querySnapshot.forEach((doc) => {
+          if (doc.data().DateTime >= new Date()) {    
+            requestR.push({
+              name: doc.data().FriendName,
+              url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`,
+              id: doc.data().FriendID,
+              DateTime: doc.data().DateTime,
+              Location: doc.data().Location,
+              docID: doc.id
+            })
+          } else {
+            console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
+            db.collection("users").doc(userID).collection('Received Requests').doc(doc.id).delete().then(() => {
+              console.log("Document successfully deleted!");
+              db.collection("users").doc(doc.data().FriendID).collection('Sent Requests').doc(doc.id).delete()
+            }).catch(function(error) {
+              console.error("Error removing document: ", error);
+            });
+          }
+        });
+        this.setState({receivedRequests: requestR});
+    });
+    this.setState({refreshingR: false});
+  }
+
+  refreshSent = () => {
+    this.setState({refreshingS: true});
+    db.collection("users").doc(userID).collection('Sent Requests').onSnapshot((querySnapshot) => {
+      requestS = [];
+        querySnapshot.forEach((doc) => {
+          if (doc.data().DateTime >= new Date()) {    
+            requestS.push({
+              name: doc.data().FriendName,
+              url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`,
+              id: doc.data().FriendID,
+              DateTime: doc.data().DateTime,
+              Location: doc.data().Location,
+              docID: doc.id
+            })
+          } else {
+            console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
+            db.collection("users").doc(userID).collection('Sent Requests').doc(doc.id).delete().then(() => {
+              console.log("Document successfully deleted!");
+              db.collection("users").doc(doc.data().FriendID).collection('Received Requests').doc(doc.id).delete()
+            }).catch(function(error) {
+              console.error("Error removing document: ", error);
+            });
+          }
+        });
+        this.setState({sentRequests: requestS});
+    });
+    this.setState({refreshingS: false});
   }
 
   render() {
@@ -241,12 +292,16 @@ export default class RequestsScreen extends React.Component {
           tabBarUnderlineStyle = {{backgroundColor:'white'}}
         >
           <FlatList
+            refreshing={this.state.refreshingR}
+            onRefresh={this.refreshReceived}
             tabLabel='Received'
             keyExtractor={this._keyExtractor}
             data={this.state.receivedRequests}
             renderItem={this.renderReceivedRequest}
           />
           <FlatList
+            refreshing={this.state.refreshingS}
+            onRefresh={this.refreshSent}
             tabLabel='Sent'
             keyExtractor={this._keyExtractor}
             data={this.state.sentRequests}
