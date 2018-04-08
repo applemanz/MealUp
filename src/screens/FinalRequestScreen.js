@@ -26,7 +26,7 @@ export default class FinalRequestScreen extends React.Component {
     const time = params ? params.time : null;
     const dateobj = params ? params.dateobj : null;
     const length = params ? params.length : null;
-		const firstName = name.split(' ')[0];
+    const firstName = name.split(' ')[0];
     console.log(dateobj)
 		return (
 			<View style = {{flex:1}}>
@@ -60,6 +60,8 @@ export default class FinalRequestScreen extends React.Component {
 
   submitRequest = () => {
     prevData = this.props.navigation.state.params
+    reschedule = prevData['reschedule'];
+    sent = prevData['sent'];
     data = new Object()
     data['FriendName'] = prevData['name']
     data['FriendID'] = prevData['id']
@@ -76,6 +78,25 @@ export default class FinalRequestScreen extends React.Component {
         .catch(function(error) {
             console.error("Error adding document: ", error);
         });
+    if (reschedule !== undefined) {
+      console.log("RESCHEDULE: " + reschedule);
+      if (sent) {
+        db.collection("users").doc(userID).collection('Sent Requests').doc(reschedule).delete().then(() => {
+          console.log("Document successfully deleted!");
+          db.collection("users").doc(prevData['id']).collection('Received Requests').doc(reschedule).delete()
+        }).catch(function(error) {
+          console.error("Error removing document: ", error);
+        });
+      } else {
+        db.collection("users").doc(userID).collection('Received Requests').doc(reschedule).delete().then(() => {
+          console.log("Document successfully deleted!");
+          db.collection("users").doc(prevData['id']).collection('Sent Requests').doc(reschedule).delete()
+        }).catch(function(error) {
+          console.error("Error removing document: ", error);
+        });
+      }
+    }
+    else console.log("NOT RESCHEDULE");
     this.props.navigation.popToTop()
   }
 }
