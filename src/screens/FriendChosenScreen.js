@@ -230,7 +230,7 @@ export default class FriendChosenScreen extends React.Component {
     const { params } = this.props.navigation.state;
     const name = params ? params.name : "Chi Yu";
     const url = params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=large`;
-    if (params.CanViewFriend == false || (matches1.len==0 && matches2.len==0)) {
+    if (params.CanViewFriend == false || (this.matches1.len==0 && this.matches2.len==0)) {
       return (
         <View style={{alignItems:'center'}}>
           <Image
@@ -282,11 +282,12 @@ export default class FriendChosenScreen extends React.Component {
         </View>
       );
     }
-    else
-    return (<View>
-          <ActivityIndicator size="large" color="#0000ff" />
-    </View>
-    );
+    else {
+      return (<View>
+            <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+      );
+    }
   }
 }
 
