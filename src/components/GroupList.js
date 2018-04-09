@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Image, Text, StyleSheet, FlatList, TouchableOpacity, ActionSheetIOS } from 'react-native';
-import { ActionSheetProvider, connectActionSheet } from '@expo/react-native-action-sheet';
+// import { ActionSheetProvider, connectActionSheet } from '@expo/react-native-action-sheet';
 import NavigationBar from 'navigationbar-react-native';
 import { Avatar, Card, ListItem, Button, ButtonGroup, Icon } from 'react-native-elements';
 import firebase from "../config/firebase";

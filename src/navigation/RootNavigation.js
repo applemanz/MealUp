@@ -1,7 +1,7 @@
 import { Notifications } from 'expo';
 import React from 'react';
 import { StackNavigator, SwitchNavigator } from 'react-navigation';
-import { ActionSheetProvider, connectActionSheet } from '@expo/react-native-action-sheet';
+// import { ActionSheetProvider, connectActionSheet } from '@expo/react-native-action-sheet';
 
 import MainTabNavigator from './MainTabNavigator';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
@@ -45,7 +45,7 @@ export default class RootNavigator extends React.Component {
         originalSend.call(this, body);
       }
     };
-    return <ActionSheetProvider><RootStackNavigator /></ActionSheetProvider>
+    return <RootStackNavigator />
 ;
   }
 

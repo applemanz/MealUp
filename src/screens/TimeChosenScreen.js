@@ -81,31 +81,46 @@ export default class TimeChosenScreen extends React.Component {
             free[id] = temp[id]
         }
       }
-      this.setState({free:free})
+
+      db.collection("users").doc(userID).collection('Friends').get().then((querySnapShot) => {
+        console.log("BEFORE", free)
+        freeCanView = new Object()
+        querySnapShot.forEach(doc => {
+          if (doc.id in free)
+            if (doc.data().CanViewFriend)
+              freeCanView[doc.id] = free[doc.id]
+        })
+        console.log("AFTER", freeCanView)
+        this.setState({free:freeCanView})
+      })
     })
   }
 
   getCanViewFreeFriends = () => {
     db.collection("users").doc(userID).collection('Friends').get().then((querySnapShot) => {
+      console.log("HI", this.state.free)
       free = new Object()
       for (id in this.state.free) {
+        console.log("HELLO")
+        console.log(id, this.state.free[id], querySnapShot[id].data().CanViewFriend)
         if (querySnapShot[id].data().CanViewFriend) {
           free[id] = this.state.free[id]
         }
       }
       this.setState({free:free})
+      console.log(free)
     })
   }
 
   async componentDidMount() {
     const { params } = this.props.navigation.state;
     await this.getFreeFriends(params.day,params.index,params.length)
-    await this.getCanViewFreeFriends();
+   // await this.getCanViewFreeFriends();
   }
 
   renderBottom() {
     const { params } = this.props.navigation.state;
-    console.log(this.state.free)
+    // console.log(this.state.free)
     if (this.state.free)
       return <SectionList
         // in previous version no need object.keys
