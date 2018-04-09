@@ -37,6 +37,14 @@ export default class RootNavigator extends React.Component {
   }
 
   render() {
+    const originalSend = XMLHttpRequest.prototype.send;
+    XMLHttpRequest.prototype.send = function(body) {
+      if (body === '') {
+        originalSend.call(this);
+      } else {
+        originalSend.call(this, body);
+      }
+    };
     return <ActionSheetProvider><RootStackNavigator /></ActionSheetProvider>
 ;
   }

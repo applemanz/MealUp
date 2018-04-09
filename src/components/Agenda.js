@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Text, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet, Platform} from 'react-native';
 import {Agenda} from 'react-native-calendars';
 import firebase from "../config/firebase";
 import { userName, userID } from '../screens/SignInScreen';
@@ -26,7 +26,8 @@ export default class AgendaScreen extends Component {
   addDays = (date, days) => {
     var dat = new Date(date);
     dat.setDate(dat.getDate() + days);
-    return this.convertDate(dat.toLocaleDateString());
+    dateStr = Platform.OS === 'ios' ? this.convertDate(dat.toLocaleDateString()) : this.convertDateAndroid(dat.toLocaleDateString())
+    return dateStr
   }
 
   componentDidMount() {
@@ -41,6 +42,7 @@ export default class AgendaScreen extends Component {
           return {items: updatedItems}
         });
       }
+      console.log(meals)
       this.updateItems(meals);
     });
   }
@@ -88,11 +90,16 @@ export default class AgendaScreen extends Component {
     return (entries[2] + '-' + month + '-' + day)
   }
 
+  convertDateAndroid = (date) => {
+    entries = date.split("/")
+    return ('20'+entries[2]+'-'+entries[0]+'-'+entries[1])
+  }
+
   updateItems = (meals) => {
     var items = new Object();
     for (meal of meals) {
-      var Day = meal['Day']
-      dateID = this.convertDate(Day.toLocaleDateString())
+      var Day = meal['DateTime']
+      dateID = Platform.OS === 'ios' ? this.convertDate(Day.toLocaleDateString()) : this.convertDateAndroid(Day.toLocaleDateString())
       if (dateID in items) {
         mealItems = items[dateID]
       } else {
@@ -104,7 +111,8 @@ export default class AgendaScreen extends Component {
       mealItems.push(mealEntry)
       items[dateID] = mealItems
     }
-
+    console.log('in update meals')
+    console.log(items)
     updatedItems = this.createEmptyData()
 
     for (dateID in updatedItems) {
@@ -112,6 +120,7 @@ export default class AgendaScreen extends Component {
         updatedItems[dateID] = items[dateID]
       }
     }
+    console.log(updatedItems)
     this.setState((prevState) => {
       return {items: updatedItems}
     });
@@ -119,8 +128,10 @@ export default class AgendaScreen extends Component {
 
   render() {
     today = new Date()
-    minDate = this.convertDate(today.toLocaleDateString());
+    minDate = Platform.OS === 'ios' ? this.convertDate(today.toLocaleDateString()) : this.convertDateAndroid(today.toLocaleDateString())
     maxDate = this.addDays(today, 6)
+    console.log('in render')
+    console.log(this.state.items)
     return (
         <Agenda items={this.state.items}
         // loadItemsForMonth={this.loadMeals.bind(this)}

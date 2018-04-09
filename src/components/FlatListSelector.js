@@ -60,13 +60,13 @@ export default class FlatListSelector extends React.PureComponent {
       fdRef = db.collection("users").doc(temp).collection('FreeFriends').doc(this.props.dayOfWeek);
       fdRef.get().then(doc => {
         if (doc.exists) {
-          console.log("EXISTS",friends[temp],this.props.dayOfWeek)
+          // console.log("EXISTS",friends[temp],this.props.dayOfWeek)
           freeFriends = this.state.freeFriends
           freeFriends[temp] = doc.data().Freefriends;
           this.setState({freeFriends:freeFriends})
         }
         else {
-         console.log("Does not exist")
+         // console.log("Does not exist")
         }
       })
     }
@@ -123,7 +123,7 @@ export default class FlatListSelector extends React.PureComponent {
       for (friendID of Object.keys(this.state.freeFriends)) {
         //console.log(friendID)
         fdRef = db.collection("users").doc(friendID).collection('FreeFriends').doc(this.props.dayOfWeek)
-        console.log(this.state.freeFriends[friendID])
+        // console.log(this.state.freeFriends[friendID])
         fdRef.set({
           Freefriends: this.state.freeFriends[friendID]
         }, {merge: true});
@@ -148,7 +148,7 @@ export default class FlatListSelector extends React.PureComponent {
 
   render() {
     //console.log(this.state.selected);
-    console.log(this.state.freeFriends);
+    // console.log(this.state.freeFriends);
     //console.log(this.state.friends)
     return (
 

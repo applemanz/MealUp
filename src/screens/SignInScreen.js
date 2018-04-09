@@ -20,6 +20,8 @@ var provider = new firebase.auth.FacebookAuthProvider();
 var userID;
 var userName;
 var userToken;
+
+
 export default class SignInScreen extends React.Component {
   static navigationOptions = {
   header: null,
@@ -51,6 +53,16 @@ export default class SignInScreen extends React.Component {
       //     console.log(userID);
       //
       //     AsyncStorage.setItem('loggedIn', 'true');
+      //
+          // const originalSend = XMLHttpRequest.prototype.send;
+          // XMLHttpRequest.prototype.send = function(body) {
+          //   if (body === '') {
+          //     originalSend.call(this);
+          //   } else {
+          //     originalSend.call(this, body);
+          //   }
+          // };
+      //
       //     // const credential = provider.credential(token);
       //     // auth.signInWithCredential(credential);
       //     db.collection('users').doc(userID).set({
@@ -69,6 +81,7 @@ export default class SignInScreen extends React.Component {
       //         Name: friend.name,
       //         CanViewMe: true,
       //         CanViewFriend: true,
+      //         numOfMeals: 0
       //       })
       //     }
       //     daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday','Sunday'];
@@ -93,13 +106,13 @@ export default class SignInScreen extends React.Component {
           userID = '10210889686788547'
           userName = 'Andrew Zeng'
           this.props.navigation.navigate('Main');
-
-          // } catch (error) {
-          //   console.error(error);
-          // }
-
-      }
-  // };
+      //
+      //     } catch (error) {
+      //       console.error(error);
+      //     }
+      //
+      // }
+  };
 
 
   // export function signInWithFacebook (fbToken, callback) {

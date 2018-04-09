@@ -110,7 +110,7 @@ export default class RequestsScreen extends React.Component {
     key={index}
     roundAvatar
     title={item.FriendName}
-    subtitle={item.TimeString + " at " + item.Location}
+    subtitle={item.DateTime.toDateString().substring(0,10) + " " + item.TimeString + " at " + item.Location}
     avatar={{uri:item.url}}
     onPress={() => this._onPressSent(item)}
     />;
@@ -121,7 +121,7 @@ export default class RequestsScreen extends React.Component {
     key={index}
     roundAvatar
     title={item.FriendName}
-    subtitle={item.TimeString + " at " + item.Location}
+    subtitle={item.DateTime.toDateString().substring(0,10) + " " + item.TimeString + " at " + item.Location}
     avatar={{uri:item.url}}
     onPress={() => this._onPressReceived(item)}
     />;
@@ -327,7 +327,7 @@ export default class RequestsScreen extends React.Component {
   }
   requestModal() {
     return <View>
-    <Modal transparent={true} visible={this.state.modalVisible}>
+    <Modal onRequestClose={() => this.setState({modalVisible: false})} transparent={true} visible={this.state.modalVisible}>
       <View style={{
         flex: 1,
         flexDirection: 'column',
@@ -358,7 +358,7 @@ export default class RequestsScreen extends React.Component {
 
   undoModal() {
     return <View>
-    <Modal transparent={true} visible={this.state.undoVisible}>
+    <Modal onRequestClose={() => this.setState({modalVisible: false})} transparent={true} visible={this.state.undoVisible}>
       <View style={{
         flex: 1,
         flexDirection: 'column',
@@ -409,7 +409,7 @@ export default class RequestsScreen extends React.Component {
 
   respondModal() {
     return <View>
-    <Modal transparent={true} visible={this.state.respondVisible}>
+    <Modal onRequestClose={() => this.setState({modalVisible: false})} transparent={true} visible={this.state.respondVisible}>
       <View style={{
         flex: 1,
         flexDirection: 'column',
@@ -424,7 +424,7 @@ export default class RequestsScreen extends React.Component {
         <View style={{padding: 10}}>
         <Image
           style={{width: 100, height: 100, borderRadius: 50}}
-          source={{uri: `http://graph.facebook.com/${this.state.curUser.id}/picture?type=large`}}
+          source={{uri: `http://graph.facebook.com/${this.state.curUser.FriendID}/picture?type=large`}}
         />
         </View>
         <View style={{padding: 10}}>

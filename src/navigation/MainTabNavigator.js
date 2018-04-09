@@ -172,7 +172,7 @@ export default TabNavigator(
     }
   },
   {
-    initialRouteName: 'Friends',
+    initialRouteName: 'FreeTime',
     tabBarOptions: {
       activeTintColor: '#f4511e',
       labelStyle: {
