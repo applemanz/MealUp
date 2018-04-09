@@ -311,11 +311,6 @@ export default class RequestsScreen extends React.Component {
       </View>
     );
   }
-<<<<<<< HEAD
-newRequestModal = () => {
-
-}
-=======
   requestModal() {
     return <View>
     <Modal transparent={true} visible={this.state.modalVisible}>
@@ -346,7 +341,6 @@ newRequestModal = () => {
     </Modal>
   </View>;
   }
->>>>>>> 639a69339501af9ca7f59cb7afffe9aa11eebc77
 
   undoModal() {
     return <View>

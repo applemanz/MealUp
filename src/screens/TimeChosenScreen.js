@@ -85,9 +85,22 @@ export default class TimeChosenScreen extends React.Component {
     })
   }
 
+  getCanViewFreeFriends = () => {
+    db.collection("users").doc(userID).collection('Friends').get().then((querySnapShot) => {
+      free = new Object()
+      for (id in this.state.free) {
+        if (querySnapShot[id].data().CanViewFriend) {
+          free[id] = this.state.free[id]
+        }
+      }
+      this.setState({free:free})
+    })
+  }
+
   async componentDidMount() {
     const { params } = this.props.navigation.state;
     await this.getFreeFriends(params.day,params.index,params.length)
+    await this.getCanViewFreeFriends();
   }
 
   renderBottom() {
