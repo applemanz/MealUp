@@ -21,16 +21,7 @@ const RequestsStack = StackNavigator({
   Requests: {
     screen: RequestsScreen,
     navigationOptions: {
-      headerStyle: {
-        backgroundColor: '#f4511e',
-        shadowColor: 'transparent',
-        elevation:0,
-        borderBottomWidth: 0,
-      },
-      headerTintColor: '#fff',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
+
     },
   },
   RequestByFriend: {
@@ -63,12 +54,21 @@ const RequestsStack = StackNavigator({
       tabBarVisible: false
     }
   },
+  AddGroup: {
+    screen: AddGroupScreen,
+    navigationOptions: {
+      tabBarVisible: false
+    }
+  }
 },
 {
     initialRouteName: 'Requests',
     navigationOptions: {
       headerStyle: {
         backgroundColor: '#f4511e',
+        shadowColor: 'transparent',
+        elevation:0,
+        borderBottomWidth: 0,
       },
       headerTintColor: '#fff',
       headerTitleStyle: {
@@ -159,6 +159,7 @@ export default TabNavigator(
   {
     Meals: {
       screen: MealsStack,
+      style: {textColor:"#f4511e"}
     },
     Requests: {
       screen: RequestsStack,
@@ -171,7 +172,16 @@ export default TabNavigator(
     }
   },
   {
-    initialRouteName: 'Friends',
+    initialRouteName: 'FreeTime',
+    tabBarOptions: {
+      activeTintColor: '#f4511e',
+      labelStyle: {
+        fontSize: 14,
+      },
+      style: {
+        // backgroundColor: 'blue',
+      },
+    },
     navigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ focused }) => {
         const { routeName } = navigation.state;
@@ -196,7 +206,7 @@ export default TabNavigator(
             name={iconName}
             size={28}
             style={{ marginBottom: -3 }}
-            color={focused ? Colors.tabIconSelected : Colors.tabIconDefault}
+            color={focused ? '#f4511e' : Colors.tabIconDefault}
           />
         );
       },

@@ -1,6 +1,7 @@
 import { Notifications } from 'expo';
 import React from 'react';
 import { StackNavigator, SwitchNavigator } from 'react-navigation';
+import { ActionSheetProvider, connectActionSheet } from '@expo/react-native-action-sheet';
 
 import MainTabNavigator from './MainTabNavigator';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
@@ -8,7 +9,10 @@ import SignInScreen from '../screens/SignInScreen';
 
 
 const AuthStack = StackNavigator(
-  { SignIn: SignInScreen }
+  { SignIn: {
+    screen: SignInScreen,
+   }
+ },
 );
 
 const RootStackNavigator = SwitchNavigator(
@@ -33,7 +37,16 @@ export default class RootNavigator extends React.Component {
   }
 
   render() {
-    return <RootStackNavigator />;
+    const originalSend = XMLHttpRequest.prototype.send;
+    XMLHttpRequest.prototype.send = function(body) {
+      if (body === '') {
+        originalSend.call(this);
+      } else {
+        originalSend.call(this, body);
+      }
+    };
+    return <ActionSheetProvider><RootStackNavigator /></ActionSheetProvider>
+;
   }
 
   _registerForPushNotifications() {

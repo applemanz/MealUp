@@ -16,11 +16,11 @@ export default class AddGroupScreen extends React.Component {
       const params = navigation.state.params || {};
       return {
         title: 'New Group',
-        headerLeft: (
-          <HeaderButtons color = '#ffffff'>
-            <HeaderButtons.Item title='Cancel' onPress={params.CancelButtonPressed} />
-          </HeaderButtons>
-        ),
+        // headerLeft: (
+        //   <HeaderButtons color = '#ffffff'>
+        //     <HeaderButtons.Item title='Cancel' onPress={params.CancelButtonPressed} />
+        //   </HeaderButtons>
+        // ),
       };
     };
 

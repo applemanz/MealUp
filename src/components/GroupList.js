@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Image, Text, StyleSheet, FlatList, TouchableOpacity, ActionSheetIOS } from 'react-native';
+import { ActionSheetProvider, connectActionSheet } from '@expo/react-native-action-sheet';
 import NavigationBar from 'navigationbar-react-native';
 import { Avatar, Card, ListItem, Button, ButtonGroup, Icon } from 'react-native-elements';
 import firebase from "../config/firebase";
@@ -53,27 +54,41 @@ class MyListItem extends React.PureComponent {
               </View>
             </View>}
         onPress = {this._onPress}
-        onLongPress = {this.onLongPress}
+        // onLongPress = {this._onLongPress}
       />
     );
   }
 
-  onLongPress = () => {
-    ActionSheetIOS.showActionSheetWithOptions({
-      options: ['Cancel', 'Leave Group', 'Change Group Name'],
-      destructiveButtonIndex: 1,
-      cancelButtonIndex: 0,
-    },
-    (buttonIndex) => {
-      if (buttonIndex === 1) {
-        // delete group, remove from group members database
-      }
-      if (buttonIndex === 2) {
-        // text input popup
-        // update database
-      }
-    });
-  }
+  // _onLongPress = () => {
+  //   this.props.onLongPressItem(this.props.name, this.props.Members);
+  // };
+
+  // _onOpenActionSheet = () => {
+  //   // Same interface as https://facebook.github.io/react-native/docs/actionsheetios.html
+  //   let options = ['Delete', 'Save', 'Cancel'];
+  //   let destructiveButtonIndex = 0;
+  //   let cancelButtonIndex = 2;
+  //
+  //   this.props.showActionSheetWithOptions({
+  //     options,
+  //     cancelButtonIndex,
+  //     destructiveButtonIndex,
+  //   },
+  //   (buttonIndex) => {
+  //     // Do something here depending on the button index selected
+  //   });
+  //
+  // }
+  // onLongPress = () => {
+  //   ActionSheetIOS.showActionSheetWithOptions({
+  //   options: ['Cancel', 'Remove'],
+  //   destructiveButtonIndex: 1,
+  //   cancelButtonIndex: 0,
+  // },
+  // (buttonIndex) => {
+  //   if (buttonIndex === 1) { /* destructive action */ }
+  // });
+  // }
 
 }
 
@@ -83,11 +98,22 @@ export default class MultiSelectList extends React.PureComponent {
   _keyExtractor = (item, index) => item.id;
 
   _onPressItem = (name, members) => {
-    this.props.navigation.navigate('FriendChosen', {
-      name: name,
-      members: members,
-    });
+    // this.props.navigation.navigate('FriendChosen', {
+    //   name: name,
+    //   members: members,
+    // });
   };
+
+  _onLongPress = (name, members) => {
+    ActionSheetIOS.showActionSheetWithOptions({
+    options: ['Cancel', 'Remove'],
+    destructiveButtonIndex: 1,
+    cancelButtonIndex: 0,
+  },
+  (buttonIndex) => {
+    if (buttonIndex === 1) { /* destructive action */ }
+  });
+  }
 
   _renderItem = ({item}) => (
     <MyListItem
@@ -95,6 +121,7 @@ export default class MultiSelectList extends React.PureComponent {
       onPressItem={this._onPressItem}
       name={item.Name}
       Members = {item.Members}
+      onLongPressItem={this._onLongPress}
     />
   );
 
@@ -105,7 +132,7 @@ export default class MultiSelectList extends React.PureComponent {
   render() {
     console.log(this.props.data)
     return (
-      <View>
+      <View style={{flex:1}}>
         <ListItem
           title={'Add Group'}
           titleStyle = {{paddingLeft:10}}

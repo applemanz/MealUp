@@ -28,7 +28,7 @@ export default class RequestsScreen extends React.Component {
     this.props.navigation.setParams({ showModal: this.showModal });
   }
 
-  state = {modalVisible: false, index: 1, sentRequests: [], receivedRequests: [], respondVisible: false, curUser: {}, undoVisible: false, 
+  state = {modalVisible: false, index: 1, sentRequests: [], receivedRequests: [], respondVisible: false, curUser: {}, undoVisible: false,
   refreshingR: false, refreshingS: false};
 
 
@@ -40,14 +40,16 @@ export default class RequestsScreen extends React.Component {
     db.collection("users").doc(userID).collection('Sent Requests').onSnapshot((querySnapshot) => {
       requestS = [];
       querySnapshot.forEach((doc) => {
-        if (doc.data().DateTime >= new Date()) {    
+        if (doc.data().DateTime >= new Date()) {
           requestS.push({
-            name: doc.data().FriendName,
+            FriendName: doc.data().FriendName,
             url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`,
-            id: doc.data().FriendID,
+            FriendID: doc.data().FriendID,
             DateTime: doc.data().DateTime,
             Location: doc.data().Location,
-            docID: doc.id
+            docID: doc.id,
+            Length: doc.data().Length,
+            TimeString: doc.data().TimeString
           })
         } else {
           console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
@@ -64,14 +66,16 @@ export default class RequestsScreen extends React.Component {
     db.collection("users").doc(userID).collection('Received Requests').onSnapshot((querySnapshot) => {
       requestR = [];
       querySnapshot.forEach((doc) => {
-        if (doc.data().DateTime >= new Date()) {    
+        if (doc.data().DateTime >= new Date()) {
           requestR.push({
-            name: doc.data().FriendName,
+            FriendName: doc.data().FriendName,
             url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`,
-            id: doc.data().FriendID,
+            FriendID: doc.data().FriendID,
             DateTime: doc.data().DateTime,
             Location: doc.data().Location,
-            docID: doc.id
+            docID: doc.id,
+            Length: doc.data().Length,
+            TimeString: doc.data().TimeString
           })
         } else {
           console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
@@ -97,16 +101,16 @@ export default class RequestsScreen extends React.Component {
     this.props.navigation.navigate('RequestByTime');
   }
 
-  renderItem = ({item, index}) => {
-    return <ListItem key={item.key} title={item.key}/>;
-  }
+  // renderItem = ({item, index}) => {
+  //   return <ListItem key={item.key} title={item.key}/>;
+  // }
 
   renderSentRequest = ({item, index}) => {
     return <ListItem
     key={index}
     roundAvatar
-    title={item.name}
-    subtitle={item.DateTime + " at " + item.Location}
+    title={item.FriendName}
+    subtitle={item.DateTime.toDateString().substring(0,10) + " " + item.TimeString + " at " + item.Location}
     avatar={{uri:item.url}}
     onPress={() => this._onPressSent(item)}
     />;
@@ -116,8 +120,8 @@ export default class RequestsScreen extends React.Component {
     return <ListItem
     key={index}
     roundAvatar
-    title={item.name}
-    subtitle={item.DateTime + " at " + item.Location}
+    title={item.FriendName}
+    subtitle={item.DateTime.toDateString().substring(0,10) + " " + item.TimeString + " at " + item.Location}
     avatar={{uri:item.url}}
     onPress={() => this._onPressReceived(item)}
     />;
@@ -129,40 +133,46 @@ export default class RequestsScreen extends React.Component {
     this.setState({
       undoVisible: true,
       curUser: {
-        name: item.name,
-        id: item.id,
-        DateTime: item.DateTime.toDateString() + " " + (item.DateTime.getHours() % 12 || 12) + ":" + ("0" + item.DateTime.getMinutes()).slice(-2),
+        FriendName: item.FriendName,
+        FriendID: item.FriendID,
+        TimeString: item.TimeString,
         Location: item.Location,
+        Length: item.Length,
         docID: item.docID,
-        DateObj: item.DateTime}});
+        DateTime: item.DateTime}});
   }
+  // item.DateTime.toDateString() + " " + (item.DateTime.getHours() % 12 || 12) + ":" + ("0" + item.DateTime.getMinutes()).slice(-2),
+
   _onPressReceived = (item) => {
     this.setState({
       respondVisible: true,
       curUser: {
-        name: item.name,
-        id: item.id,
-        DateTime: item.DateTime.toDateString() + " " + (item.DateTime.getHours() % 12 || 12) + ":" + ("0" + item.DateTime.getMinutes()).slice(-2),
+        FriendName: item.FriendName,
+        FriendID: item.FriendID,
+        TimeString: item.TimeString,
         Location: item.Location,
         docID: item.docID,
-        DateObj: item.DateTime}});
+        Length: item.Length,
+        DateTime: item.DateTime}});
   }
+  //item.DateTime.toDateString() + " " + (item.DateTime.getHours() % 12 || 12) + ":" + ("0" + item.DateTime.getMinutes()).slice(-2),
 
   acceptRequest = () => {
     // put document in meals
     console.log(this.state.curUser.docID)
     data = new Object()
-    data['Day'] = this.state.curUser.DateObj
-    data['FriendID'] = this.state.curUser.id
-    data['FriendName'] = this.state.curUser.name
-    data['Length'] = 0.5
+    data['DateTime'] = this.state.curUser.DateTime
+    data['FriendID'] = this.state.curUser.FriendID
+    data['FriendName'] = this.state.curUser.FriendName
+    data['Length'] = this.state.curUser.Length
     data['Location'] = this.state.curUser.Location
+    data['TimeString'] = this.state.curUser.TimeString
     db.collection("users").doc(userID).collection('Meals').add(data)
         .then((docRef) => {
             console.log("Document written with ID: ", docRef.id);
             data['FriendName'] = userName
             data['FriendID'] = userID
-            db.collection("users").doc(this.state.curUser.id).collection('Meals').doc(docRef.id).set(data)
+            db.collection("users").doc(this.state.curUser.FriendID).collection('Meals').doc(docRef.id).set(data)
         })
         .catch(function(error) {
             console.error("Error adding document: ", error);
@@ -170,14 +180,14 @@ export default class RequestsScreen extends React.Component {
     // remove document from requests
     db.collection("users").doc(userID).collection('Received Requests').doc(this.state.curUser.docID).delete().then(() => {
       console.log("Document successfully deleted!");
-      db.collection("users").doc(this.state.curUser.id).collection('Sent Requests').doc(this.state.curUser.docID).delete()
+      db.collection("users").doc(this.state.curUser.FriendID).collection('Sent Requests').doc(this.state.curUser.docID).delete()
     }).catch(function(error) {
       console.error("Error removing document: ", error);
     });
     this.setState({respondVisible: false})
   }
 
-  declineRequest = () => {
+  ignoreRequest = () => {
     db.collection("users").doc(userID).collection('Received Requests').doc(this.state.curUser.docID).delete().then(() => {
       console.log("Document successfully deleted!");
       // db.collection("users").doc(this.state.curUser.id).collection('Sent Requests').doc(this.state.curUser.docID).delete()
@@ -187,10 +197,10 @@ export default class RequestsScreen extends React.Component {
     this.setState({respondVisible: false})
   }
 
-  undoRequest = () => {
+  cancelRequest = () => {
     db.collection("users").doc(userID).collection('Sent Requests').doc(this.state.curUser.docID).delete().then(() => {
       console.log("Document successfully deleted!");
-      db.collection("users").doc(this.state.curUser.id).collection('Received Requests').doc(this.state.curUser.docID).delete()
+      db.collection("users").doc(this.state.curUser.FriendID).collection('Received Requests').doc(this.state.curUser.docID).delete()
     }).catch(function(error) {
       console.error("Error removing document: ", error);
     });
@@ -202,9 +212,9 @@ export default class RequestsScreen extends React.Component {
     this.props.navigation.navigate('FriendChosen', {
       sent: false,
       reschedule: this.state.curUser.docID,
-      name: this.state.curUser.name,
-      id: this.state.curUser.id,
-      url: `http://graph.facebook.com/${this.state.curUser.id}/picture?type=large`
+      name: this.state.curUser.FriendName,
+      id: this.state.curUser.FriendID,
+      url: `http://graph.facebook.com/${this.state.curUser.FriendID}/picture?type=large`
     });
   }
 
@@ -213,9 +223,9 @@ export default class RequestsScreen extends React.Component {
     this.props.navigation.navigate('FriendChosen', {
       sent: true,
       reschedule: this.state.curUser.docID,
-      name: this.state.curUser.name,
-      id: this.state.curUser.id,
-      url: `http://graph.facebook.com/${this.state.curUser.id}/picture?type=large`
+      name: this.state.curUser.FriendName,
+      id: this.state.curUser.FriendID,
+      url: `http://graph.facebook.com/${this.state.curUser.FriendID}/picture?type=large`
     });
   }
   refreshReceived = () => {
@@ -223,14 +233,16 @@ export default class RequestsScreen extends React.Component {
     db.collection("users").doc(userID).collection('Received Requests').onSnapshot((querySnapshot) => {
       requestR = [];
         querySnapshot.forEach((doc) => {
-          if (doc.data().DateTime >= new Date()) {    
+          if (doc.data().DateTime >= new Date()) {
             requestR.push({
-              name: doc.data().FriendName,
+              FriendName: doc.data().FriendName,
               url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`,
-              id: doc.data().FriendID,
+              FriendID: doc.data().FriendID,
               DateTime: doc.data().DateTime,
               Location: doc.data().Location,
-              docID: doc.id
+              docID: doc.id,
+              Length: doc.data().Length,
+              TimeString: doc.data().TimeString
             })
           } else {
             console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
@@ -252,14 +264,16 @@ export default class RequestsScreen extends React.Component {
     db.collection("users").doc(userID).collection('Sent Requests').onSnapshot((querySnapshot) => {
       requestS = [];
         querySnapshot.forEach((doc) => {
-          if (doc.data().DateTime >= new Date()) {    
+          if (doc.data().DateTime >= new Date()) {
             requestS.push({
-              name: doc.data().FriendName,
+              FriendName: doc.data().FriendName,
               url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`,
-              id: doc.data().FriendID,
+              FriendID: doc.data().FriendID,
               DateTime: doc.data().DateTime,
               Location: doc.data().Location,
-              docID: doc.id
+              docID: doc.id,
+              Length: doc.data().Length,
+              TimeString: doc.data().TimeString
             })
           } else {
             console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
@@ -313,7 +327,7 @@ export default class RequestsScreen extends React.Component {
   }
   requestModal() {
     return <View>
-    <Modal transparent={true} visible={this.state.modalVisible}>
+    <Modal onRequestClose={() => this.setState({modalVisible: false})} transparent={true} visible={this.state.modalVisible}>
       <View style={{
         flex: 1,
         flexDirection: 'column',
@@ -344,7 +358,7 @@ export default class RequestsScreen extends React.Component {
 
   undoModal() {
     return <View>
-    <Modal transparent={true} visible={this.state.undoVisible}>
+    <Modal onRequestClose={() => this.setState({modalVisible: false})} transparent={true} visible={this.state.undoVisible}>
       <View style={{
         flex: 1,
         flexDirection: 'column',
@@ -359,26 +373,26 @@ export default class RequestsScreen extends React.Component {
         <View style={{padding: 10}}>
         <Image
           style={{width: 100, height: 100, borderRadius: 50}}
-          source={{uri: `http://graph.facebook.com/${this.state.curUser.id}/picture?type=large`}}
+          source={{uri: `http://graph.facebook.com/${this.state.curUser.FriendID}/picture?type=large`}}
         />
         </View>
         <View style={{padding: 10}}>
-        <Text>{this.state.curUser.name}</Text>
+        <Text>{this.state.curUser.FriendName}</Text>
         </View>
         <View style={{padding: 10}}>
-        <Text>{this.state.curUser.DateTime} at {this.state.curUser.Location}</Text>
+        <Text>{this.state.curUser.TimeString} at {this.state.curUser.Location}</Text>
         </View>
         </View>
         <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
-            onPress={this.undoRequest}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Undo Request</Text>
+            onPress={this.cancelRequest}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Cancel Request</Text>
           </TouchableHighlight>
         </View>
         <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
             onPress={this.rescheduleSentRequest}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Reschedule</Text>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Reschedule Meal</Text>
           </TouchableHighlight>
         </View>
         <View style={{padding: 15, alignItems: 'center'}}>
@@ -395,7 +409,7 @@ export default class RequestsScreen extends React.Component {
 
   respondModal() {
     return <View>
-    <Modal transparent={true} visible={this.state.respondVisible}>
+    <Modal onRequestClose={() => this.setState({modalVisible: false})} transparent={true} visible={this.state.respondVisible}>
       <View style={{
         flex: 1,
         flexDirection: 'column',
@@ -410,14 +424,14 @@ export default class RequestsScreen extends React.Component {
         <View style={{padding: 10}}>
         <Image
           style={{width: 100, height: 100, borderRadius: 50}}
-          source={{uri: `http://graph.facebook.com/${this.state.curUser.id}/picture?type=large`}}
+          source={{uri: `http://graph.facebook.com/${this.state.curUser.FriendID}/picture?type=large`}}
         />
         </View>
         <View style={{padding: 10}}>
-        <Text>{this.state.curUser.name}</Text>
+        <Text>{this.state.curUser.FriendName}</Text>
         </View>
         <View style={{padding: 10}}>
-        <Text>{this.state.curUser.DateTime} at {this.state.curUser.Location}</Text>
+        <Text>{this.state.curUser.TimeString} at {this.state.curUser.Location}</Text>
         </View>
         </View>
         <View style={{padding: 10}}>
@@ -434,7 +448,7 @@ export default class RequestsScreen extends React.Component {
         </View>
         <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
-            onPress={this.declineRequest}>
+            onPress={this.ignoreRequest}>
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Ignore</Text>
           </TouchableHighlight>
         </View>

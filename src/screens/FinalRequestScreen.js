@@ -16,7 +16,7 @@ export default class FinalRequestScreen extends React.Component {
     }
   };
 
-	state = {location: ""}
+	state = {location: "Wilcox"}
 
 	render() {
 		const { params } = this.props.navigation.state;
@@ -35,8 +35,9 @@ export default class FinalRequestScreen extends React.Component {
          		style={{width: 100, height: 100, borderRadius: 50}}
          		source={{uri: `http://graph.facebook.com/${friendID}/picture?type=large`}}
        		/>
-			<Text>{name}</Text>
-			<Text>{time}</Text>
+			<Text style={{fontSize:20, fontWeight:'bold'}}>{name.split(" ")[0]}</Text>
+      <Text style={{fontSize:15}}>{dateobj.substring(0,10)}</Text>
+			<Text style={{fontSize:15}}>{time}</Text>
 			</View>
 			<View style={{justifyContent: "center",alignItems: "center"}}>
 			<Text>Select a Location:</Text>
@@ -45,15 +46,17 @@ export default class FinalRequestScreen extends React.Component {
 			<Picker
 				selectedValue = {this.state.location}
 				onValueChange = {(itemValue, itemIndex) => {this.setState({location: itemValue})}}>
-        <Picker.Item label="WuCox" value="WuCox" />
+        <Picker.Item label="Wilcox" value="Wilcox" />
+        <Picker.Item label="Wu" value="Wu" />
+        <Picker.Item label="Rocky" value="Rocky" />
+        <Picker.Item label="Matthey" value="Matthey" />
         <Picker.Item label="Whitman" value="Whitman" />
-        <Picker.Item label="RoMa" value="RoMa" />
         <Picker.Item label="Frist" value="Frist" />
 				<Picker.Item label="Forbes" value="Forbes" />
 				<Picker.Item label="CJL" value="CJL" />
 				<Picker.Item label="Grad College" value="Grad College" />
   		</Picker>
-			<Button title="Submit" onPress={this.submitRequest}/>
+			<Button title="Submit" backgroundColor='#f4511e' borderRadius={50} raised onPress={this.submitRequest}/>
 			</View>
 		);
 	}
@@ -68,6 +71,7 @@ export default class FinalRequestScreen extends React.Component {
     data['Location'] = this.state.location
     data['DateTime'] = new Date(prevData['dateobj'])
     data['Length'] = prevData['length']
+    data['TimeString'] = prevData['time']
     db.collection("users").doc(userID).collection('Sent Requests').add(data)
         .then(function(docRef) {
             console.log("Document written with ID: ", docRef.id);

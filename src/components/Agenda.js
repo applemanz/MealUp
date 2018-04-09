@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Text, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet, Platform} from 'react-native';
 import {Agenda} from 'react-native-calendars';
 import firebase from "../config/firebase";
 import { userName, userID } from '../screens/SignInScreen';
@@ -26,7 +26,8 @@ export default class AgendaScreen extends Component {
   addDays = (date, days) => {
     var dat = new Date(date);
     dat.setDate(dat.getDate() + days);
-    return this.convertDate(dat.toLocaleDateString());
+    dateStr = Platform.OS === 'ios' ? this.convertDate(dat.toLocaleDateString()) : this.convertDateAndroid(dat.toLocaleDateString())
+    return dateStr
   }
 
   componentDidMount() {
@@ -41,13 +42,15 @@ export default class AgendaScreen extends Component {
           return {items: updatedItems}
         });
       }
+      console.log(meals)
       this.updateItems(meals);
     });
   }
 
-  // formatTimeString(date, length) {
+  // formatTimeString(Day, length) {
   // timeStr = ""
-  // entries = date.split(" ")
+  // entries = Day.split(" ")
+  // console.log(entries)
   // amPM = entries[1]
   // times = entries[0].split(":")
   // if times[0]
@@ -58,7 +61,6 @@ export default class AgendaScreen extends Component {
   // } else {
   //
   // }
-
   //   min = date.getMinutes()
   //   if (min == 0) {min = ':00'}
   //   else {min = ':30'}
@@ -70,7 +72,7 @@ export default class AgendaScreen extends Component {
   //   } else {
   //     timeStr = hr+min+' AM'
   //   }
-  //   return timeStr
+    // return timeStr
   // }
 
   convertDate = (date) => {
@@ -88,25 +90,29 @@ export default class AgendaScreen extends Component {
     return (entries[2] + '-' + month + '-' + day)
   }
 
+  convertDateAndroid = (date) => {
+    entries = date.split("/")
+    return ('20'+entries[2]+'-'+entries[0]+'-'+entries[1])
+  }
+
   updateItems = (meals) => {
     var items = new Object();
     for (meal of meals) {
-      day = meal['Day']
-      dateID = this.convertDate(day.toLocaleDateString())
+      var Day = meal['DateTime']
+      dateID = Platform.OS === 'ios' ? this.convertDate(Day.toLocaleDateString()) : this.convertDateAndroid(Day.toLocaleDateString())
       if (dateID in items) {
         mealItems = items[dateID]
       } else {
         mealItems = []
       }
-
       mealEntry = new Object()
       mealEntry['text'] = `Meal with ${meal['FriendName']}`
-      mealEntry['subtext'] = `${meal['Time']} at ${meal['Location']}`
+      mealEntry['subtext'] = `${meal['TimeString']} at ${meal['Location']}`
       mealItems.push(mealEntry)
-
       items[dateID] = mealItems
     }
-
+    console.log('in update meals')
+    console.log(items)
     updatedItems = this.createEmptyData()
 
     for (dateID in updatedItems) {
@@ -114,6 +120,7 @@ export default class AgendaScreen extends Component {
         updatedItems[dateID] = items[dateID]
       }
     }
+    console.log(updatedItems)
     this.setState((prevState) => {
       return {items: updatedItems}
     });
@@ -121,8 +128,10 @@ export default class AgendaScreen extends Component {
 
   render() {
     today = new Date()
-    minDate = today.toISOString().substring(0, 10)
+    minDate = Platform.OS === 'ios' ? this.convertDate(today.toLocaleDateString()) : this.convertDateAndroid(today.toLocaleDateString())
     maxDate = this.addDays(today, 6)
+    console.log('in render')
+    console.log(this.state.items)
     return (
         <Agenda items={this.state.items}
         // loadItemsForMonth={this.loadMeals.bind(this)}
@@ -139,7 +148,26 @@ export default class AgendaScreen extends Component {
         renderEmptyDate={this.renderEmptyDate.bind(this)}
         rowHasChanged={this.rowHasChanged.bind(this)}
         hideKnob={true}
-        theme={{        }}
+        theme={{
+  backgroundColor: 'transparent',
+  calendarBackground: '#ffffff',
+  textSectionTitleColor: '#b6c1cd',
+  selectedDayBackgroundColor: '#f4511e',
+  selectedDayTextColor: '#ffffff',
+  todayTextColor: '#f4511e',
+  dayTextColor: '#2d4150',
+  textDisabledColor: '#d9e1e8',
+  dotColor: '#00adf5',
+  selectedDotColor: '#ffffff',
+  arrowColor: 'orange',
+  monthTextColor: 'blue',
+  textDayFontSize: 16,
+  textMonthFontSize: 16,
+  textDayHeaderFontSize: 16,
+  // agendaDayTextColor: 'yellow',
+  // agendaDayNumColor: 'green',
+  agendaTodayColor: '#f4511e',
+}}
       />
     )
   }

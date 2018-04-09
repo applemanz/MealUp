@@ -1,7 +1,7 @@
 import * as firebase from 'firebase';
 
 // Initialize Firebase
-const config = {
+var config = {
   apiKey: "AIzaSyC0KLW-drjokUAv1gjTKLfObmGmQmB5tx8",
   authDomain: "auth-f86eb.firebaseapp.com",
   databaseURL: "https://auth-f86eb.firebaseio.com",
