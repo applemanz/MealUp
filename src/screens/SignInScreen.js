@@ -42,27 +42,28 @@ export default class SignInScreen extends React.Component {
       // if (type === 'success') {
       //   try {
       //     userToken = token;
-      //
+      
       //     const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,friends`);
       //     const userData = await response.json();
       //     const friendsList = userData.friends.data;
+      //     console.log("friendsList")
       //     console.log(friendsList);
       //     userName = userData.name;
       //     userID = userData.id;
       //     console.log(userName);
       //     console.log(userID);
-      //
+      
       //     AsyncStorage.setItem('loggedIn', 'true');
-      //
-          // const originalSend = XMLHttpRequest.prototype.send;
-          // XMLHttpRequest.prototype.send = function(body) {
-          //   if (body === '') {
-          //     originalSend.call(this);
-          //   } else {
-          //     originalSend.call(this, body);
-          //   }
-          // };
-      //
+      
+      //     const originalSend = XMLHttpRequest.prototype.send;
+      //     XMLHttpRequest.prototype.send = function(body) {
+      //       if (body === '') {
+      //         originalSend.call(this);
+      //       } else {
+      //         originalSend.call(this, body);
+      //       }
+      //     };
+      
       //     // const credential = provider.credential(token);
       //     // auth.signInWithCredential(credential);
       //     db.collection('users').doc(userID).set({
@@ -75,19 +76,30 @@ export default class SignInScreen extends React.Component {
       //     // The document probably doesn't exist.
       //     console.error("Error updating document: ", error);
       //     });
-      //
+      
       //     for (var friend of friendsList) {
-      //       db.collection('users').doc(userID).collection('Friends').doc(friend.id).set({
-      //         Name: friend.name,
-      //         CanViewMe: true,
-      //         CanViewFriend: true,
-      //         numOfMeals: 0
+      //       let thisfriend = friend;
+      //       db.collection('users').doc(userID).collection('Friends').doc(thisfriend.id).get().then(function(doc) {
+      //         if (!doc.exists) {
+      //           console.log("Friend doesn't exist", thisfriend.name)
+      //           console.log(docRef.id)
+      //           db.collection('users').doc(userID).collection('Friends').doc(thisfriend.id).set({
+      //             Name: thisfriend.name,
+      //             CanViewMe: true,
+      //             CanViewFriend: true,
+      //             numOfMeals: 0
+      //           })
+      //           console.log("Finish setting", thisfriend.name)
+      //         }
+      //         else {
+      //           console.log("Friend exists", doc.data());
+      //         }
       //       })
       //     }
       //     daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday','Sunday'];
-      //
-      //     var docRef = db.collection('users').doc(userID).collection('Freetime').doc('Monday');
-      //
+      
+      //     docRef = db.collection('users').doc(userID).collection('Freetime').doc('Monday');
+      
       //     docRef.get().then(function(doc) {
       //         if (doc.exists) {
       //             console.log("Document data:", doc.data());
@@ -98,6 +110,41 @@ export default class SignInScreen extends React.Component {
       //                 Freetime: Array.from(Array(25), () => false),
       //               })
       //             }
+      //             console.log("I'm here 0")
+      //             // create new freeFriends object
+      //             freeFriends = new Object()
+      //             for (dofW of daysOfWeek) {
+      //               freeFriends[dofW] = [];
+      //               for (i = 0; i < 25; i++) {
+      //                 freeFriends[dofW].push({})
+      //               }
+      //             }
+      //             console.log("I'm here 1")
+      //             // initialize freeFriends object
+      //             for (friend of friendsList) {
+      //               let thisfriend = friend;
+      //               db.collection('users').doc(thisfriend.id).collection('Freetime').get().then((querySnapshot) => {
+      //                 console.log("I'm in then 1")
+      //                 querySnapshot.forEach(function(doc) {
+      //                   for (i = 0; i < 25; i++) {
+      //                     if (doc.data().Freetime[i]) {
+      //                       freeFriends[doc.id][i][thisfriend.id] = thisfriend.name
+      //                     }
+      //                   }
+      //                 })
+                       
+      //                 // set freeFriends
+      //                 for (dofW of daysOfWeek) {
+      //                   db.collection('users').doc(userID).collection('FreeFriends').doc(dofW).set({
+      //                     Freefriends: freeFriends[dofW]
+      //                   })
+      //                 }
+      //                 console.log("I'm here 2")
+      //                 console.log("Freefriends", freeFriends)
+      //               })
+      //             }
+
+                 
       //         }
       //     }).catch(function(error) {
       //         console.log("Error getting document:", error);
@@ -106,11 +153,11 @@ export default class SignInScreen extends React.Component {
           userID = '10210889686788547'
           userName = 'Andrew Zeng'
           this.props.navigation.navigate('Main');
-      //
+      
       //     } catch (error) {
       //       console.error(error);
       //     }
-      //
+      
       // }
   };
 

@@ -26,7 +26,7 @@ export default class AgendaScreen extends Component {
   addDays = (date, days) => {
     var dat = new Date(date);
     dat.setDate(dat.getDate() + days);
-    dateStr = Platform.OS === 'ios' ? this.convertDate(dat.toLocaleDateString()) : this.convertDateAndroid(dat.toLocaleDateString())
+    dateStr = Platform.OS === 'ios' ? this.convertDate(dat.toLocaleDateString('en-US')) : this.convertDateAndroid(dat.toLocaleDateString('en-US'))
     return dateStr
   }
 
@@ -99,7 +99,7 @@ export default class AgendaScreen extends Component {
     var items = new Object();
     for (meal of meals) {
       var Day = meal['DateTime']
-      dateID = Platform.OS === 'ios' ? this.convertDate(Day.toLocaleDateString()) : this.convertDateAndroid(Day.toLocaleDateString())
+      dateID = Platform.OS === 'ios' ? this.convertDate(Day.toLocaleDateString('en-US')) : this.convertDateAndroid(Day.toLocaleDateString('en-US'))
       if (dateID in items) {
         mealItems = items[dateID]
       } else {
@@ -128,8 +128,11 @@ export default class AgendaScreen extends Component {
 
   render() {
     today = new Date()
-    minDate = Platform.OS === 'ios' ? this.convertDate(today.toLocaleDateString()) : this.convertDateAndroid(today.toLocaleDateString())
+    console.log(today)
+    console.log("converted today", this.convertDate(today.toLocaleDateString('en-US')))
+    minDate = Platform.OS === 'ios' ? this.convertDate(today.toLocaleDateString('en-US')) : this.convertDateAndroid(today.toLocaleDateString('en-US'))
     maxDate = this.addDays(today, 6)
+    console.log("Maxdate", maxDate)
     console.log('in render')
     console.log(this.state.items)
     return (

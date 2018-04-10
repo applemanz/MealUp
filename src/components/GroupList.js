@@ -98,10 +98,10 @@ export default class MultiSelectList extends React.PureComponent {
   _keyExtractor = (item, index) => item.id;
 
   _onPressItem = (name, members) => {
-    // this.props.navigation.navigate('FriendChosen', {
-    //   name: name,
-    //   members: members,
-    // });
+    this.props.navigation.navigate('FriendChosen', {
+      groupname: name,
+      members: members,
+    });
   };
 
   _onLongPress = (name, members) => {
