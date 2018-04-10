@@ -72,54 +72,112 @@ export default class FriendChosenScreen extends React.Component {
   }
 
 
+  // async matchFreeTimes(id) {
+  //   myFreetime = await this.getFreeTimes(userID);
+  //   friendFreetime = await this.getFreeTimes(id);
+  //   matches1 = this.match30min(myFreetime, friendFreetime);
+  //   matches2 = this.match1hr(myFreetime, friendFreetime);
+  //   this.setState({matches1:matches1,matches2:matches2})
+  // }
+
   async matchFreeTimes(id) {
-    myFreetime = await this.getFreeTimes(userID);
-    friendFreetime = await this.getFreeTimes(id);
-    matches1 = this.match30min(myFreetime, friendFreetime);
-    matches2 = this.match1hr(myFreetime, friendFreetime);
+    freeTimeObj = new Object();
+    freeTimeObj[userID] = await this.getFreeTimes(userID);
+    freeTimeObj[id] = await this.getFreeTimes(id);
+    matches1 = this.match30min(freeTimeObj);
+    matches2 = this.match1hr(freeTimeObj);
     this.setState({matches1:matches1,matches2:matches2})
   }
 
-  match30min = (my, friend) => {
+  // match30min = (my, friend) => {
+  //   matches = new Object();
+  //   for (const day in my) {
+  //     matches[day] = Array.from(Array(25), () => false)
+  //     for (i=0; i < 25; i++) {
+  //       if (typeof friend[day] == 'undefined') break;
+  //       if (my[day][i] == true && friend[day][i]==true) {
+  //         matches[day][i] = true
+  //       }
+  //     }
+  //   }
+  //   return matches;
+  // }
+
+  match30min = (freeTimeObj) => {
     matches = new Object();
-    for (const day in my) {
-      matches[day] = Array.from(Array(25), () => false)
+    for (const day in freeTimeObj[userID]) {
+      matches[day] = Array.from(Array(25), () => true)
       for (i=0; i < 25; i++) {
-        if (typeof friend[day] == 'undefined') break;
-        if (my[day][i] == true && friend[day][i]==true) {
-          matches[day][i] = true
-        }
+        for (friend in freeTimeObj)
+          if (freeTimeObj[friend][day][i] === false) {
+            matches[day][i] = false
+          }
       }
     }
     return matches;
   }
 
-  match1hr = (my, friend) => {
+  // match1hr = (my, friend) => {
+  //   matches = new Object();
+  //   for (const day in my) {
+  //     matches[day] = Array.from(Array(24), () => false)
+  //     for (i=0; i < 24; i++) {
+  //       if (typeof friend[day] == 'undefined') break;
+  //       if (my[day][i] == true && my[day][i+1] == true && friend[day][i]==true && friend[day][i+1]==true) {
+  //         matches[day][i] = true
+  //       }
+  //     }
+  //   }
+  //   return matches;
+  // }
+
+  match1hr = (freeTimeObj) => {
     matches = new Object();
-    for (const day in my) {
-      matches[day] = Array.from(Array(24), () => false)
-      for (i=0; i < 24; i++) {
-        if (typeof friend[day] == 'undefined') break;
-        if (my[day][i] == true && my[day][i+1] == true && friend[day][i]==true && friend[day][i+1]==true) {
-          matches[day][i] = true
-        }
+    for (const day in freeTimeObj[userID]) {
+      matches[day] = Array.from(Array(25), () => true)
+      for (i=0; i < 25; i++) {
+        for (friend in freeTimeObj)
+          if (freeTimeObj[friend][day][i] === false) {
+            matches[day][i] = false
+            if (i != 24)
+              matches[day][i+1] = false
+          }
       }
     }
     return matches;
+  }
+
+  async matchGroup(members) {
+    freeTimeObj = new Object();
+    for (let id in members) {
+      freeTimeObj[id] = await this.getFreeTimes(id);
+      console.log("HERE 1")
+    }
+    console.log("HERE 2")
+    matches1 = this.match30min(freeTimeObj);
+    matches2 = this.match1hr(freeTimeObj);
+    this.setState({matches1:matches1,matches2:matches2}) 
   }
 
   async componentDidMount() {
     const { params } = this.props.navigation.state;
-    const id = params ? params.id : "1893368474007587";
-    await this.matchFreeTimes(id);
+    if (params.id) {
+      await this.matchFreeTimes(params.id);
+    } else {
+      await this.matchGroup(params.members);
+    }
   }
 
   render() {
     const { params } = this.props.navigation.state;
-    const name = params ? params.name : "Chi Yu";
-    const id = params ? params.id : "1893368474007587";
-    const url = params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=large`;
-    //|| (Object.keys(this.state.matches1).length==0 && Object.keys(this.state.matches2).length==0)
+    console.log(params.name)
+      const name = params.name
+      const id = params.id
+      const url = params.url
+      //|| (Object.keys(this.state.matches1).length==0 && Object.keys(this.state.matches2).length==0)
+      const groupname = params.groupname
+      const members = params.members
+    console.log("Url",params.url)
     if (params.CanViewFriend == false) {
       return (
         <View style={{alignItems:'center'}}>
@@ -130,6 +188,7 @@ export default class FriendChosenScreen extends React.Component {
         </View>
       )
     }
+    
     if (this.state.matches1) {
       // match1 = [];
       // match2 = [];
@@ -204,15 +263,97 @@ export default class FriendChosenScreen extends React.Component {
         i.title = this.printDate(month,date,day,i.title)
       }
 
+      // for individual
+      if (params.name) {
+        return(
+          <View style={{flex:1, alignItems:'center'}}>
+            <Image
+              style={{width: 100, height: 100, borderRadius: 50}}
+              source={{uri: url}}
+            />
+            <Text>Choose a time to get a meal with {name.split(" ")[0]}</Text>
+            <ScrollableTabView
+              style={{marginTop: 0, flex:1}}
+              renderTabBar={() => <DefaultTabBar />}
+              onChangeTab = {()=>{}}
+              tabBarBackgroundColor = {'white'}
+              tabBarActiveTextColor = {'black'}
+              tabBarInactiveTextColor = {'black'}
+              tabBarUnderlineStyle = {{backgroundColor:'#f4511e'}}
+            >
+              <SectionList
+                tabLabel='30 min'
+                sections={match1}
+                renderItem={({item,section}) =>
+                  <ListItem
+                title={item}
+                onPress={() => {
+                  t = section.title.split(", ");
+                  month = months.indexOf(t[1].slice(0, 3));
+                  date = parseInt(t[1].slice(4));
+                  time = item.split("-")
+                  hour = parseInt(time[0].split(":")[0])
+                  min = parseInt(time[0].split(":")[1])
+                  if (item.slice(-2) == "pm" && hour != 12 && time[0] != "11:30") hour += 12
+                  // Year is hardcoded as 2018
+                  ymd = new Date(2018,month,date,hour,min)
+                  this.props.navigation.navigate('FinalRequest', {
+                  sent: sent,
+                  reschedule: reschedule,
+                  name: name,
+                  id: id,
+                  url: url,
+                  dateobj: ymd.toString(),
+                  time: item,
+                  length: 0.5,
+                })}}
+                />}
+                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                keyExtractor={(item, index) => index}
+              />
+              <SectionList
+                tabLabel='1 hr'
+                style = {{flex:1}}
+                sections={match2}
+                renderItem={({item,section}) =>
 
+                      <ListItem
+                      title={item}
+                      onPress={() => {
+                        t = section.title.split(", ");
+                        month = months.indexOf(t[1].slice(0, 3));
+                        date = parseInt(t[1].slice(4));
+                        time = item.split("-")
+                        hour = parseInt(time[0].split(":")[0])
+                        min = parseInt(time[0].split(":")[1])
+                        if (item.slice(-2) == "pm" && hour != 12 && hour != 11) hour += 12
+                        // Year is hardcoded as 2018
+                        ymd = new Date(2018,month,date,hour,min)
+                        this.props.navigation.navigate('FinalRequest', {
+                        sent: sent,
+                        reschedule: reschedule,
+                        name: name,
+                        id: id,
+                        url: url,
+                        dateobj: ymd.toString(),
+                        time: item,
+                        length: 1,
+                      })}}
+                    />}
+                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                keyExtractor={(item, index) => index}
+              />
+            </ScrollableTabView>
+          </View>
+        );
+      }
 
-      return(
+      // for group
+      // *** FINAL REQUEST PAGE NOT CHANGED YET 
+      // *** instead of passing name, id, url, passed groupname, members
+      else return(
         <View style={{flex:1, alignItems:'center'}}>
-          <Image
-            style={{width: 100, height: 100, borderRadius: 50}}
-            source={{uri: url}}
-          />
-          <Text>Choose a time to get a meal with {name.split(" ")[0]}</Text>
+          <Text>Choose a time to get a meal with {groupname}</Text>
           <ScrollableTabView
             style={{marginTop: 0, flex:1}}
             renderTabBar={() => <DefaultTabBar />}
@@ -241,9 +382,11 @@ export default class FriendChosenScreen extends React.Component {
                 this.props.navigation.navigate('FinalRequest', {
                 sent: sent,
                 reschedule: reschedule,
-                name: name,
-                id: id,
-                url: url,
+                // name: name,
+                // id: id,
+                // url: url,
+                name: groupname,
+                members: members,
                 dateobj: ymd.toString(),
                 time: item,
                 length: 0.5,
@@ -273,9 +416,11 @@ export default class FriendChosenScreen extends React.Component {
                       this.props.navigation.navigate('FinalRequest', {
                       sent: sent,
                       reschedule: reschedule,
-                      name: name,
-                      id: id,
-                      url: url,
+                      // name: name,
+                      // id: id,
+                      // url: url,
+                      name: groupname,
+                      members: members,
                       dateobj: ymd.toString(),
                       time: item,
                       length: 1,
