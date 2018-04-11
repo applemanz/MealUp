@@ -11,6 +11,15 @@ import firebase from "../config/firebase";
 
 const db = firebase.firestore();
 
+const data_flip = {'7:30 AM': 0, '8:00 AM': 1, '8:30 AM': 2, '9:00 AM': 3, '9:30 AM': 4, '10:00 AM': 5, '10:30 AM': 6, 
+'11:00 AM': 7, '11:30 AM': 8, '12:00 PM': 9, '12:30 PM': 10, '1:00 PM': 11, '1:30 PM': 12, '2:00 PM': 13, '2:30 PM': 14, 
+'3:00 PM': 15, '3:30 PM': 16, '4:00 PM': 17, '4:30 PM': 18, '5:00 PM': 19, '5:30 PM': 20, '6:00 PM': 21, '6:30 PM': 22, 
+'7:00 PM': 23, '7:30 PM': 24}
+const weekdays = [
+{key:0, day:'Sunday'}, {key:1, day:'Monday'}, {key:2, day:'Tuesday'}, {key:3, day:'Wednesday'}, {key:4, day:'Thursday'}, 
+{key:5, day:'Friday'}, {key:6, day:'Saturday'}
+]
+
 export default class RequestsScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
       const params = navigation.state.params || {};
@@ -158,7 +167,6 @@ export default class RequestsScreen extends React.Component {
   //item.DateTime.toDateString() + " " + (item.DateTime.getHours() % 12 || 12) + ":" + ("0" + item.DateTime.getMinutes()).slice(-2),
 
   acceptRequest = () => {
-    // put document in meals
     console.log(this.state.curUser.docID)
     data = new Object()
     data['DateTime'] = this.state.curUser.DateTime
@@ -167,6 +175,73 @@ export default class RequestsScreen extends React.Component {
     data['Length'] = this.state.curUser.Length
     data['Location'] = this.state.curUser.Location
     data['TimeString'] = this.state.curUser.TimeString
+
+    day = weekdays[this.state.curUser.DateTime.getDay()].day
+    amPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
+    hours = (data['DateTime'].getHours() % 12 || 12) + ":" + ("0" + data['DateTime'].getMinutes()).slice(-2) + " " + amPM
+    index = data_flip[hours]
+
+    // update freetimes
+    freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(day);
+    freetimeRef.get().then(function(doc) {
+      freetimeData = doc.data();
+      freetimeData['Freetime'][index] = 2
+      if (data['Length'] === 1) {
+        freetimeData['Freetime'][index+1] = 2
+      }
+       console.log(freetimeData)
+    db.collection("users").doc(userID).collection('Freetime').doc(day).update(freetimeData).then(() => {
+      console.log("Document updated");
+      })
+      .catch(function(error) {
+        console.error("Error updating", error);
+      });
+    })
+
+    freetimeRef_other = db.collection("users").doc(data['FriendID']).collection('Freetime').doc(day);
+    freetimeRef_other.get().then(function(doc) {
+      freetimeData_other = doc.data();
+      freetimeData_other['Freetime'][index] = 2
+      if (data['Length'] === 1) {
+        freetimeData_other['Freetime'][index+1] = 2
+      }
+       console.log(freetimeData_other)
+    db.collection("users").doc(data['FriendID']).collection('Freetime').doc(day).update(freetimeData_other).then(() => {
+      console.log("Document updated");
+      })
+      .catch(function(error) {
+        console.error("Error updating", error);
+      });
+    })
+
+    // increment number of meals between two users
+    friendRef = db.collection("users").doc(userID).collection('Friends').doc(data['FriendID'])
+    friendRef.get().then(function(doc) {
+      friendData = doc.data();
+      if (!friendData['numOfMeals']) {
+        friendRef.set({
+          numOfMeals: 1
+        }, {merge: true})
+      } else {
+        friendData['numOfMeals']++
+        db.collection("users").doc(userID).collection('Friends').doc(data['FriendID']).update(friendData)
+      }
+    })
+
+    friendRef_toMe = db.collection("users").doc(data['FriendID']).collection('Friends').doc(userID)
+    friendRef_toMe.get().then(function(doc) {
+    friendData_toMe = doc.data();
+      if (!friendData_toMe['numOfMeals']) {
+        friendRef_toMe.set({
+          numOfMeals: 1
+         }, {merge: true})
+      } else {
+        friendData_toMe['numOfMeals']++
+        db.collection("users").doc(data['FriendID']).collection('Friends').doc(userID).update(friendData_toMe)
+      }
+    })
+
+    // put document in meals
     db.collection("users").doc(userID).collection('Meals').add(data)
         .then((docRef) => {
             console.log("Document written with ID: ", docRef.id);
