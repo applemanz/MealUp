@@ -52,7 +52,7 @@ export default class RequestsScreen extends React.Component {
         if (doc.data().DateTime >= new Date()) {
           requestS.push({
             FriendName: doc.data().FriendName,
-            url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`,
+            url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=large`,
             FriendID: doc.data().FriendID,
             DateTime: doc.data().DateTime,
             Location: doc.data().Location,
@@ -78,7 +78,7 @@ export default class RequestsScreen extends React.Component {
         if (doc.data().DateTime >= new Date()) {
           requestR.push({
             FriendName: doc.data().FriendName,
-            url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`,
+            url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=large`,
             FriendID: doc.data().FriendID,
             DateTime: doc.data().DateTime,
             Location: doc.data().Location,
@@ -148,7 +148,8 @@ export default class RequestsScreen extends React.Component {
         Location: item.Location,
         Length: item.Length,
         docID: item.docID,
-        DateTime: item.DateTime}});
+        DateTime: item.DateTime,
+        displayDate: item.DateTime.toDateString().substring(0,10)}});
   }
   // item.DateTime.toDateString() + " " + (item.DateTime.getHours() % 12 || 12) + ":" + ("0" + item.DateTime.getMinutes()).slice(-2),
 
@@ -162,7 +163,8 @@ export default class RequestsScreen extends React.Component {
         Location: item.Location,
         docID: item.docID,
         Length: item.Length,
-        DateTime: item.DateTime}});
+        DateTime: item.DateTime,
+        displayDate: item.DateTime.toDateString().substring(0,10)}});
   }
   //item.DateTime.toDateString() + " " + (item.DateTime.getHours() % 12 || 12) + ":" + ("0" + item.DateTime.getMinutes()).slice(-2),
 
@@ -311,7 +313,7 @@ export default class RequestsScreen extends React.Component {
           if (doc.data().DateTime >= new Date()) {
             requestR.push({
               FriendName: doc.data().FriendName,
-              url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`,
+              url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=large`,
               FriendID: doc.data().FriendID,
               DateTime: doc.data().DateTime,
               Location: doc.data().Location,
@@ -342,7 +344,7 @@ export default class RequestsScreen extends React.Component {
           if (doc.data().DateTime >= new Date()) {
             requestS.push({
               FriendName: doc.data().FriendName,
-              url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=square`,
+              url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=large`,
               FriendID: doc.data().FriendID,
               DateTime: doc.data().DateTime,
               Location: doc.data().Location,
@@ -455,7 +457,7 @@ export default class RequestsScreen extends React.Component {
         <Text>{this.state.curUser.FriendName}</Text>
         </View>
         <View style={{padding: 10}}>
-        <Text>{this.state.curUser.TimeString} at {this.state.curUser.Location}</Text>
+        <Text>{this.state.curUser.displayDate} {this.state.curUser.TimeString} at {this.state.curUser.Location}</Text>
         </View>
         </View>
         <View style={{padding: 10}}>
@@ -506,7 +508,7 @@ export default class RequestsScreen extends React.Component {
         <Text>{this.state.curUser.FriendName}</Text>
         </View>
         <View style={{padding: 10}}>
-        <Text>{this.state.curUser.TimeString} at {this.state.curUser.Location}</Text>
+        <Text>{this.state.curUser.displayDate} {this.state.curUser.TimeString} at {this.state.curUser.Location}</Text>
         </View>
         </View>
         <View style={{padding: 10}}>
