@@ -214,36 +214,36 @@ export default class RequestsScreen extends React.Component {
       });
     })
 
-    // increment number of meals between two users
-    friendRef = db.collection("users").doc(userID).collection('Friends').doc(data['FriendID'])
-    friendRef.get().then(function(doc) {
-      friendData = doc.data();
-      if (!Number.isInteger(friendData['numOfMeals'])) {
-        friendRef.set({
-        numOfMeals: 1
-         }, {merge: true})
-      } else {
-        numMealsSoFar = friendData['numOfMeals']
-        friendRef.set({
-        numOfMeals: numMealsSoFar+1
-        }, {merge: true})
-      }
-    })
+    // // increment number of meals between two users
+    // friendRef = db.collection("users").doc(userID).collection('Friends').doc(data['FriendID'])
+    // friendRef.get().then(function(doc) {
+    //   friendData = doc.data();
+    //   if (!Number.isInteger(friendData['numOfMeals'])) {
+    //     friendRef.set({
+    //     numOfMeals: 1
+    //      }, {merge: true})
+    //   } else {
+    //     numMealsSoFar = friendData['numOfMeals']
+    //     friendRef.set({
+    //     numOfMeals: numMealsSoFar+1
+    //     }, {merge: true})
+    //   }
+    // })
 
-    friendRef_toMe = db.collection("users").doc(data['FriendID']).collection('Friends').doc(userID)
-    friendRef_toMe.get().then(function(doc) {
-      friendData_toMe = doc.data();
-      if (!Number.isInteger(friendData_toMe['numOfMeals'])) {
-        friendRef.set({
-        numOfMeals: 1
-         }, {merge: true})
-      } else {
-        numMealsSoFar_toMe = friendData_toMe['numOfMeals']
-        friendRef.set({
-        numOfMeals: numMealsSoFar_toMe+1
-        }, {merge: true})
-      }
-    })
+    // friendRef_toMe = db.collection("users").doc(data['FriendID']).collection('Friends').doc(userID)
+    // friendRef_toMe.get().then(function(doc) {
+    //   friendData_toMe = doc.data();
+    //   if (!Number.isInteger(friendData_toMe['numOfMeals'])) {
+    //     friendRef.set({
+    //       numOfMeals: 1
+    //      }, {merge: true})
+    //   } else {
+    //     numMealsSoFar_toMe = friendData_toMe['numOfMeals']
+    //     friendRef.set({
+    //       numOfMeals: numMealsSoFar_toMe+1
+    //     }, {merge: true})
+    //   }
+    // })
 
     // put document in meals
     db.collection("users").doc(userID).collection('Meals').add(data)
