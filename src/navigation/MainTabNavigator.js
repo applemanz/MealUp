@@ -172,7 +172,7 @@ export default TabNavigator(
     }
   },
   {
-    initialRouteName: 'FreeTime',
+    initialRouteName: 'Meals',
     tabBarOptions: {
       activeTintColor: '#f4511e',
       labelStyle: {

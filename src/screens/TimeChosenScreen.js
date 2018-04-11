@@ -9,59 +9,17 @@ const db = firebase.firestore();
 
 export default class TimeChosenScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
-      const params = navigation.state.params || {};
-      return {
-        title: 'Choose a Friend',
-      };
+    const params = navigation.state.params || {};
+    return {
+      title: 'Choose a Friend',
     };
+  };
 
-  state = {}
-
-  // getTime = (id, day, time, length) => {
-  //   return new Promise(resolve => {
-  //     j = false;
-  //     db.collection("users").doc(id).collection('Freetime').doc(day).get().then((doc) => {
-  //       if (doc.exists) {
-  //         if (length == 0.5)
-  //           j = doc.data().Freetime[time]
-  //         else if (length == 1)
-  //           j = doc.data().Freetime[time] && doc.data().Freetime[time + 1]
-  //       }
-
-  //       resolve(j);
-  //     });
-  //   })
-  // }
-
-  // async getFreeFriend(day, time, length, id, name) {
-  //   free = this.state.free ? this.state.free.slice() : []
-  //   isfree = await this.getTime(id, day, time, length)
-  //   if (isfree) free.push({name:name, id:id})
-  //   this.setState({free:free})
-  // }
-
-  // async getFreeFriends(day, time, length) {
-  //   myFriends = await this.getFriends()
-  // //  free = []
-  //   for (fd in myFriends) {
-  //   //  isfree = await this.getTime(fd, day, time, length)
-  //   //  if (isfree) free.push({name:myFriends[fd], id:fd})
-  //     await this.getFreeFriend(day, time, length, fd, myFriends[fd])
-  //   }
-  //   // this.setState({free:free});
-  // }
-
-  // getFriends = () => {
-  //   return new Promise(resolve => {
-  //     names = new Object()
-  //     db.collection("users").doc(userID).collection('Friends').get().then((querySnapshot) => {
-  //         querySnapshot.forEach((doc) => {
-  //           names[doc.id] = doc.data().Name
-  //         });
-  //       resolve(names);
-  //     });
-  //   })
-  // }
+  async componentDidMount() {
+    const { params } = this.props.navigation.state;
+    await this.getFreeFriends(params.day,params.index,params.length)
+    // await this.getCanViewFreeFriends();
+  }
 
   getFreeFriends = (day,index,length) => {
     free = new Object()
@@ -70,7 +28,6 @@ export default class TimeChosenScreen extends React.Component {
         this.setState({free:free})
         return
       }
-
       if (length == 0.5)
         free = doc.data().Freefriends[index]
       else if (length == 1) {
@@ -96,67 +53,44 @@ export default class TimeChosenScreen extends React.Component {
     })
   }
 
-  // getCanViewFreeFriends = () => {
-  //   db.collection("users").doc(userID).collection('Friends').get().then((querySnapShot) => {
-  //     console.log("HI", this.state.free)
-  //     free = new Object()
-  //     for (id in this.state.free) {
-  //       console.log("HELLO")
-  //       console.log(id, this.state.free[id], querySnapShot[id].data().CanViewFriend)
-  //       if (querySnapShot[id].data().CanViewFriend) {
-  //         free[id] = this.state.free[id]
-  //       }
-  //     }
-  //     this.setState({free:free})
-  //     console.log(free)
-  //   })
-  // }
-
-  async componentDidMount() {
-    const { params } = this.props.navigation.state;
-    await this.getFreeFriends(params.day,params.index,params.length)
-   // await this.getCanViewFreeFriends();
-  }
-
-  renderBottom() {
+  render() {
     const { params } = this.props.navigation.state;
     // console.log(this.state.free)
-    if (this.state.free)
-      return <SectionList
-        // in previous version no need object.keys
-        sections={[{title: "Friends", data: Object.keys(this.state.free)}]}
-        renderItem={({item}) =>
-        <ListItem
-          // title={item['name']}
-          title = {this.state.free[item]}
-          onPress={() => this.props.navigation.navigate('FinalRequest', {
-            // name: item['name'],
-            // id: item['id'],
-            // url: `http://graph.facebook.com/${item['id']}/picture?type=square`,
-            name: this.state.free[item],
-            id: item,
-            url: `http://graph.facebook.com/${item}/picture?type=square`,
-            dateobj: params.dateobj,
-            time: params.time,
-            length: params.length,
-          })}
-        />}
-        renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-        keyExtractor={(item, index) => index}
-      />
+    if (this.state.free) {
     return(
       <View>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <SectionList
+            // in previous version no need object.keys
+            sections={[{title: "Friends", data: Object.keys(this.state.free)}]}
+            renderItem={({item}) =>
+            <ListItem
+              // title={item['name']}
+              title = {this.state.free[item]}
+              onPress={() => this.props.navigation.navigate('FinalRequest', {
+                // name: item['name'],
+                // id: item['id'],
+                // url: `http://graph.facebook.com/${item['id']}/picture?type=square`,
+                name: this.state.free[item],
+                id: item,
+                url: `http://graph.facebook.com/${item}/picture?type=square`,
+                dateobj: params.dateobj,
+                time: params.time,
+                length: params.length,
+              })}
+            />}
+            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+            keyExtractor={(item, index) => index}
+          />
       </View>
     )
-  }
+    } else {
+      return(
+        <View>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      )
+    }
 
-  render() {
-    return(
-      <View>
-        {this.renderBottom()}
-      </View>
-    );
   }
 }
 
@@ -180,3 +114,100 @@ const styles = StyleSheet.create({
     height: 44,
   },
 })
+
+// getTime = (id, day, time, length) => {
+//   return new Promise(resolve => {
+//     j = false;
+//     db.collection("users").doc(id).collection('Freetime').doc(day).get().then((doc) => {
+//       if (doc.exists) {
+//         if (length == 0.5)
+//           j = doc.data().Freetime[time]
+//         else if (length == 1)
+//           j = doc.data().Freetime[time] && doc.data().Freetime[time + 1]
+//       }
+
+//       resolve(j);
+//     });
+//   })
+// }
+
+// async getFreeFriend(day, time, length, id, name) {
+//   free = this.state.free ? this.state.free.slice() : []
+//   isfree = await this.getTime(id, day, time, length)
+//   if (isfree) free.push({name:name, id:id})
+//   this.setState({free:free})
+// }
+
+// async getFreeFriends(day, time, length) {
+//   myFriends = await this.getFriends()
+// //  free = []
+//   for (fd in myFriends) {
+//   //  isfree = await this.getTime(fd, day, time, length)
+//   //  if (isfree) free.push({name:myFriends[fd], id:fd})
+//     await this.getFreeFriend(day, time, length, fd, myFriends[fd])
+//   }
+//   // this.setState({free:free});
+// }
+
+// getFriends = () => {
+//   return new Promise(resolve => {
+//     names = new Object()
+//     db.collection("users").doc(userID).collection('Friends').get().then((querySnapshot) => {
+//         querySnapshot.forEach((doc) => {
+//           names[doc.id] = doc.data().Name
+//         });
+//       resolve(names);
+//     });
+//   })
+// }
+
+// getCanViewFreeFriends = () => {
+//   db.collection("users").doc(userID).collection('Friends').get().then((querySnapShot) => {
+//     console.log("HI", this.state.free)
+//     free = new Object()
+//     for (id in this.state.free) {
+//       console.log("HELLO")
+//       console.log(id, this.state.free[id], querySnapShot[id].data().CanViewFriend)
+//       if (querySnapShot[id].data().CanViewFriend) {
+//         free[id] = this.state.free[id]
+//       }
+//     }
+//     this.setState({free:free})
+//     console.log(free)
+//   })
+// }
+
+
+
+// renderBottom() {
+//   const { params } = this.props.navigation.state;
+//   // console.log(this.state.free)
+//   if (this.state.free)
+//     return <SectionList
+//       // in previous version no need object.keys
+//       sections={[{title: "Friends", data: Object.keys(this.state.free)}]}
+//       renderItem={({item}) =>
+//       <ListItem
+//         // title={item['name']}
+//         title = {this.state.free[item]}
+//         onPress={() => this.props.navigation.navigate('FinalRequest', {
+//           // name: item['name'],
+//           // id: item['id'],
+//           // url: `http://graph.facebook.com/${item['id']}/picture?type=square`,
+//           name: this.state.free[item],
+//           id: item,
+//           url: `http://graph.facebook.com/${item}/picture?type=square`,
+//           dateobj: params.dateobj,
+//           time: params.time,
+//           length: params.length,
+//         })}
+//       />}
+//       renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+//       keyExtractor={(item, index) => index}
+//     />
+//   return(
+//     <View>
+//       <ActivityIndicator size="large" color="#0000ff" />
+//     </View>
+//   )
+// }

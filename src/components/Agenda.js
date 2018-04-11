@@ -2,15 +2,20 @@ import React, {Component} from 'react';
 import {Text, View, StyleSheet, Platform} from 'react-native';
 import {Agenda} from 'react-native-calendars';
 import firebase from "../config/firebase";
-import { userName, userID } from '../screens/SignInScreen';
+import { userName, userID } from './SignInScreen';
 const db = firebase.firestore();
 
-export default class AgendaScreen extends Component {
+export default class HomeScreen extends Component {
+  static navigationOptions = {
+    title: 'Meals'
+  };
+
   constructor(props) {
     super(props);
     let items = this.createEmptyData()
     this.state = {
-      items: items
+      items: items,
+      refreshing: false
     }
   }
 
@@ -126,6 +131,36 @@ export default class AgendaScreen extends Component {
     });
   }
 
+  onRefresh = () => {
+    this.setState({refreshing: true});
+    db.collection("users").doc(userID).collection('Meals').onSnapshot((querySnapshot) => {
+      meals = [];
+      querySnapshot.forEach((doc) => {
+        if (doc.data().DateTime >= new Date()) {
+          meals.push(doc.data())
+        } else {
+          console.log("MEAL HAS PASSED: " + doc.data().DateTime);
+          // TODO convert meal back to freetime in array
+          db.collection("users").doc(userID).collection('Meals').doc(doc.id).delete().then(() => {
+            console.log("Document successfully deleted!");
+            db.collection("users").doc(doc.data().FriendID).collection('Meals').doc(doc.id).delete()
+          }).catch(function(error) {
+            console.error("Error removing document: ", error);
+          });
+        }
+      });
+      if (meals.length == 0) {
+        updatedItems = this.createEmptyData()
+        this.setState((prevState) => {
+          return {items: updatedItems}
+        });
+      }
+      console.log(meals)
+      this.updateItems(meals);
+    });
+    this.setState({refreshing: false});
+  }
+
   render() {
     today = new Date()
     console.log(today)
@@ -136,7 +171,10 @@ export default class AgendaScreen extends Component {
     console.log('in render')
     console.log(this.state.items)
     return (
+      <View style={{flex: 1}}>
         <Agenda items={this.state.items}
+        refreshing={this.state.refreshing}
+        onRefresh={this.onRefresh}
         // loadItemsForMonth={this.loadMeals.bind(this)}
         selected={minDate}
         // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
@@ -144,9 +182,9 @@ export default class AgendaScreen extends Component {
         // Maximum date that can be selected, dates after maxDate will be grayed out. Default = undefined
         maxDate={maxDate}
         // Max amount of months allowed to scroll to the past. Default = 50
-        pastScrollRange={1}
+        pastScrollRange={2}
         // Max amount of months allowed to scroll to the future. Default = 50
-        futureScrollRange={1}
+        futureScrollRange={2}
         renderItem={this.renderItem}
         renderEmptyDate={this.renderEmptyDate.bind(this)}
         rowHasChanged={this.rowHasChanged.bind(this)}
@@ -172,6 +210,7 @@ export default class AgendaScreen extends Component {
   agendaTodayColor: '#f4511e',
 }}
       />
+    </View>
     )
   }
 

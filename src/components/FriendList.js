@@ -83,17 +83,11 @@ class MyListItem extends React.PureComponent {
 export default class MultiSelectList extends React.PureComponent {
   constructor(props) {
     super(props);
-
     var selected = new Map()
-    console.log(this.props.data)
     for (item of this.props.data) {
       selected.set(item.id, false)
     }
-    console.log('in constructor')
-    // console.log(selected)
     this.state = {selected: selected}
-    console.log(this.state.selected)
-
   }
 
   _keyExtractor = (item, index) => item.id;
@@ -135,19 +129,18 @@ export default class MultiSelectList extends React.PureComponent {
   render() {
     return (
       <View style={{flex:1}}>
-        <ScrollView>
-      <FlatList
-        data={this.props.data}
-        extraData={this.state}
-        keyExtractor={this._keyExtractor}
-        renderItem={this._renderItem}
-      />
-      </ScrollView>
-      {this.renderBottom()}
-    </View>
-    );
+        <FlatList
+          data={this.props.data}
+          extraData={this.state}
+          keyExtractor={this._keyExtractor}
+          renderItem={this._renderItem}
+        />
+        {this.renderBottom()}
+      </View>
+    )
   }
 
+// Add Group Screen Friend List Code
   countSelected = () => {
     count = 0
     if (this.state.selected) {
@@ -199,28 +192,30 @@ export default class MultiSelectList extends React.PureComponent {
     buttonActive = this.countSelected() >= 2 ? '#f4511e' : '#d3d3d3'
     buttonFont = this.countSelected() >= 2 ? 'bold' : 'normal'
     if (this.props.addGroup && this.countSelected() >= 1) {
-      return <View >
-        <ListItem
-          title={''}
-          rightIcon = {
-            <TouchableOpacity
-              style={{backgroundColor: 'transparent',}}
-              onPress={this.createGroup}>
-              <Text style = {{color:buttonActive, fontWeight: 'bold'}}>Create Group</Text>
-            </TouchableOpacity>}
-          leftIcon = {
-            <View style={{flex: 4, flexDirection: 'row',}}>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator = {false}
-                // contentContainerStyle={{justifyContent:''}}
-                >
-              {this.renderAvatars()}
-              </ScrollView>
-            </View>
-          }
-        />
-      </View>
+      return (
+        <View >
+          <ListItem
+            title={''}
+            rightIcon = {
+              <TouchableOpacity
+                style={{backgroundColor: 'transparent',}}
+                onPress={this.createGroup}>
+                <Text style = {{color:buttonActive, fontWeight: 'bold'}}>Create Group</Text>
+              </TouchableOpacity>}
+            leftIcon = {
+              <View style={{flex: 4, flexDirection: 'row',}}>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator = {false}
+                  // contentContainerStyle={{justifyContent:''}}
+                  >
+                {this.renderAvatars()}
+                </ScrollView>
+              </View>
+            }
+          />
+        </View>
+      )
     }
   }
 
