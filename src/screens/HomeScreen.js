@@ -23,6 +23,7 @@ export default class HomeScreen extends Component {
     this.props.navigation.addListener('willFocus', ()=>{
       this.onRefresh();
     });
+    console.log(userID)
     db.collection("users").doc(userID).collection('Meals').onSnapshot((querySnapshot) => {
       meals = [];
       querySnapshot.forEach((doc) => {

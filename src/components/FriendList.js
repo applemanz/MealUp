@@ -140,7 +140,7 @@ export default class MultiSelectList extends React.PureComponent {
     )
   }
 
-// Add Group Screen Friend List Code
+  // Add Group Screen Friend List Code
   countSelected = () => {
     count = 0
     if (this.state.selected) {
@@ -154,32 +154,37 @@ export default class MultiSelectList extends React.PureComponent {
   createGroup = () => {
     if (this.countSelected() == 1) return;
     data = new Object()
-    // console.log(this.prop.data)
+    members = new Object()
     for (var [key, value] of this.state.selected) {
       if (value) {
-        data[key] = this.props.data.find(item => item.id === key).Name
+        members[key] = this.props.data.find(item => item.id === key).Name
       }
     }
+    members[userID] = userName
     var groupName = this.props.groupName
-    if (this.props.groupName == "") {
-      var names = [];
-      for (var id in data) {
-      names.push(data[id]);
-      }
-      names.sort()
-      for (name of names) {
-        groupName = groupName + name.split(" ")[0] + ", "
-      }
-      groupName = groupName.slice(0, -2)
-    }
-    data[userID] = userName
-    data[numOfMeals] = 0
-    db.collection("users").doc(userID).collection('Groups').doc(groupName).set(data)
+    // Default name
+    // if (groupName == "") {
+    //   var names = [];
+    //   for (var id in members) {
+    //   names.push(members[id].split(" ")[0]);
+    //   }
+    //   names.sort()
+    //   for (name of names) {
+    //     groupName = groupName + name + ", "
+    //   }
+    //   groupName = groupName.slice(0, -2)
+    // }
+
+    data['groupName'] = groupName
+    data['members'] = members
+    data['numOfMeals'] = 0
+
+    db.collection("users").doc(userID).collection('Groups').add(data)
         .then((docRef) => {
             console.log("Document written successfully");
-            for (var id in data) {
+            for (id in members) {
               if (id != userID) {
-                db.collection("users").doc(id).collection('Groups').doc(groupName).set(data)
+                db.collection("users").doc(id).collection('Groups').doc(docRef.id).set(data)
               }
             }
         })

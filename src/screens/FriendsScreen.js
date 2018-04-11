@@ -59,42 +59,39 @@ export default class FriendsScreen extends React.Component {
     db.collection("users").doc(userID).collection('Groups').onSnapshot((querySnapshot) => {
         groups = [];
         querySnapshot.forEach((doc) => {
-            groups.push({
-              Name: doc.id,
-              Members: doc.data(),
-              id: doc.id,
-            })
+            let data = doc.data()
+            data['id'] = doc.id
+            groups.push(data)
         });
-        // console.log(groups)
         this.setState({groups:groups});
     });
   }
 
   onRefresh  = async () => {
-    const response = await fetch(`https://graph.facebook.com/me?access_token=${userToken}&fields=friends`);
-    const userData = await response.json();
-    const friendsList = userData.friends.data;
-    console.log(friendsList);
-    for (var friend of friendsList) {
-      if (!this.state.friends.find(item => item.id === friend.id)) {
-        db.collection('users').doc(friend.id).collection('Friends').doc(userID).get().then((doc)=> {
-            if (doc.exists) {
-                var canViewFriend = doc.data().CanViewMe
-            } else {
-                // doc.data() will be undefined in this case
-                console.log("No such document!");
-            }
-        }).catch(function(error) {
-            console.log("Error getting document:", error);
-        });
-
-        db.collection('users').doc(userID).collection('Friends').doc(friend.id).set({
-          Name: friend.name,
-          CanViewMe: true,
-          CanViewFriend: canViewFriend,
-        })
-      }
-    }
+    // const response = await fetch(`https://graph.facebook.com/me?access_token=${userToken}&fields=friends`);
+    // const userData = await response.json();
+    // const friendsList = userData.friends.data;
+    // console.log(friendsList);
+    // for (var friend of friendsList) {
+    //   if (!this.state.friends.find(item => item.id === friend.id)) {
+    //     db.collection('users').doc(friend.id).collection('Friends').doc(userID).get().then((doc)=> {
+    //         if (doc.exists) {
+    //             var canViewFriend = doc.data().CanViewMe
+    //         } else {
+    //             // doc.data() will be undefined in this case
+    //             console.log("No such document!");
+    //         }
+    //     }).catch(function(error) {
+    //         console.log("Error getting document:", error);
+    //     });
+    //
+    //     db.collection('users').doc(userID).collection('Friends').doc(friend.id).set({
+    //       Name: friend.name,
+    //       CanViewMe: true,
+    //       CanViewFriend: canViewFriend,
+    //     })
+    //   }
+    // }
     this.getFriendsAndGroups()
   }
 
