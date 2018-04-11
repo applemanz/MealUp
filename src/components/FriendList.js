@@ -173,6 +173,7 @@ export default class MultiSelectList extends React.PureComponent {
       groupName = groupName.slice(0, -2)
     }
     data[userID] = userName
+    data[numOfMeals] = 0
     db.collection("users").doc(userID).collection('Groups').doc(groupName).set(data)
         .then((docRef) => {
             console.log("Document written successfully");

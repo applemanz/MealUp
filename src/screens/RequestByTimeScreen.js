@@ -83,19 +83,6 @@ export default class RequestByTimeScreen extends React.Component {
     date = d.getDate();
     day = d.getDay();
 
-    for (dayOfWeekID of daysOfWeek) {
-      let temp = []
-      for (j = 0; j < 25; j++) {
-        // TODO change to if == 1
-        if (this.state.time[dayOfWeek][j]) {
-          temp.push({
-            time: this.printTime(j) + "-" + this.printTime(j+1,true),
-            index: j,
-            day: dayOfWeek
-          })
-        }
-      }
-    }
 
     for (dayOfWeek in this.state.time) {
       let temp = [];
@@ -187,31 +174,6 @@ export default class RequestByTimeScreen extends React.Component {
     )
   }
 
-  renderBottom() {
-    if (this.state.index == 0)
-      return <SectionList
-      sections={time1}
-      renderItem={({item,section}) =>
-      <ListItem
-        title={item['time']}
-        onPress={() => this._onPress(item,section,length = 0.5)}
-      />}
-      renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-      keyExtractor={(item, index) => index}
-    />
-
-    return <SectionList
-    sections={time2}
-    renderItem={({item,section}) =>
-    <ListItem
-      title={item['time']}
-      onPress={() => this._onPress(item,section,length = 1)}
-    />}
-    renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-    keyExtractor={(item, index) => index}
-  />
-    }
-
 }
 
 const styles = StyleSheet.create({
@@ -234,3 +196,30 @@ const styles = StyleSheet.create({
     height: 44,
   },
 })
+
+
+
+// renderBottom() {
+//   if (this.state.index == 0)
+//     return <SectionList
+//     sections={time1}
+//     renderItem={({item,section}) =>
+//     <ListItem
+//       title={item['time']}
+//       onPress={() => this._onPress(item,section,length = 0.5)}
+//     />}
+//     renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+//     keyExtractor={(item, index) => index}
+//   />
+//
+//   return <SectionList
+//   sections={time2}
+//   renderItem={({item,section}) =>
+//   <ListItem
+//     title={item['time']}
+//     onPress={() => this._onPress(item,section,length = 1)}
+//   />}
+//   renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+//   keyExtractor={(item, index) => index}
+// />
+//   }

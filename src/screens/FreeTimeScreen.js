@@ -24,8 +24,22 @@ export default class FreeTimeScreen extends React.Component {
   }
 
   componentDidMount() {
-    var today = new Date()
-    this.setState({today:today})
+    this.props.navigation.addListener('willFocus', ()=>{this.onRefresh()});
+  }
+
+  onRefresh = () => {
+    currentDay = new Date()
+    this.setState({today:currentDay})
+  }
+
+  render() {
+    return (
+      <View style={{flex: 1, justifyContent: 'center'}}>
+        <ScrollView horizontal={true} >
+          {this.renderDaysofWeek(this.state.today)}
+        </ScrollView>
+      </View>
+    );
   }
 
   renderDaysofWeek = (today) => {
@@ -55,14 +69,4 @@ export default class FreeTimeScreen extends React.Component {
       return dat;
     }
 
-
-  render() {
-    return (
-      <View style={{flex: 1, justifyContent: 'center'}}>
-        <ScrollView horizontal={true} >
-          {this.renderDaysofWeek(this.state.today)}
-        </ScrollView>
-      </View>
-    );
-  }
 }

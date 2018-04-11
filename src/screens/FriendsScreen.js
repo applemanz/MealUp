@@ -33,6 +33,13 @@ export default class FriendsScreen extends React.Component {
     }
 
   componentDidMount() {
+    this.getFriendsAndGroups()
+    this.props.navigation.addListener('willFocus', ()=>{
+      this.onRefresh();
+    });
+  }
+
+  getFriendsAndGroups() {
     db.collection("users").doc(userID).collection('Friends').onSnapshot((querySnapshot) => {
         var friends = [];
         querySnapshot.forEach((doc) => {
@@ -48,19 +55,6 @@ export default class FriendsScreen extends React.Component {
         this.setState({friends:friends});
     });
 
-    // const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=friends`);
-    // const userData = await response.json();
-    // const friendsList = userData.friends.data;
-    // console.log(friendsList);
-    // for (var friend of friendsList) {
-    //   if (!friends.find(item => item.id === friend.id)) {
-    //     db.collection('users').doc(userID).collection('Friends').doc(friend.id).set({
-    //       Name: friend.name,
-    //       CanViewMe: true,
-    //       CanViewFriend: true,
-    //     })
-    //   }
-    // }
 
     db.collection("users").doc(userID).collection('Groups').onSnapshot((querySnapshot) => {
         groups = [];
@@ -76,6 +70,34 @@ export default class FriendsScreen extends React.Component {
     });
   }
 
+  onRefresh  = async () => {
+    const response = await fetch(`https://graph.facebook.com/me?access_token=${userToken}&fields=friends`);
+    const userData = await response.json();
+    const friendsList = userData.friends.data;
+    console.log(friendsList);
+    for (var friend of friendsList) {
+      if (!this.state.friends.find(item => item.id === friend.id)) {
+        db.collection('users').doc(friend.id).collection('Friends').doc(userID).get().then((doc)=> {
+            if (doc.exists) {
+                var canViewFriend = doc.data().CanViewMe
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+            }
+        }).catch(function(error) {
+            console.log("Error getting document:", error);
+        });
+
+        db.collection('users').doc(userID).collection('Friends').doc(friend.id).set({
+          Name: friend.name,
+          CanViewMe: true,
+          CanViewFriend: canViewFriend,
+        })
+      }
+    }
+    this.getFriendsAndGroups()
+  }
+
   ButtonPressed = () => {
     if (this.state.onFriends) {
       this.props.navigation.navigate('EditFriends')
@@ -85,10 +107,12 @@ export default class FriendsScreen extends React.Component {
   compare = (b,a) => {
     return a.numOfMeals - b.numOfMeals;
   }
-
+  onChange
   render() {
     var obj = [...this.state.friends];
     obj.sort((a,b) => b.numOfMeals - a.numOfMeals);
+    var obj2 = [...this.state.groups];
+    obj2.sort((a,b) => b.numOfMeals - a.numOfMeals);
     return (
       <View style={{flex:1}}>
         <ScrollableTabView
@@ -101,7 +125,7 @@ export default class FriendsScreen extends React.Component {
           tabBarUnderlineStyle = {{backgroundColor:'white'}}
         >
           <FriendList style={{flex:1}} tabLabel='Friends' data = {obj} navigation = {this.props.navigation} editOn = {false}/>
-          <GroupList tabLabel='Groups' data = {this.state.groups} navigation = {this.props.navigation} />
+          <GroupList tabLabel='Groups' data = {obj2} navigation = {this.props.navigation} />
         </ScrollableTabView>
       </View>
     );
