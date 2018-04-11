@@ -19,17 +19,17 @@ class MyListItem extends React.PureComponent {
 
   render() { 
     // const textColor = this.props.selected ? "gray" : "green";
-    if (this.props.selected === 0) {
+    if (this.props.selected === 2) {
       return (
-      <Button onPress={this._onPress} title={this.props.title} backgroundColor="gray"/>
+      <Button onPress={this._onPress} title={this.props.title} backgroundColor="black"/>
     );} else if (this.props.selected === 1) {
       return (
         <Button onPress={this._onPress} title={this.props.title} backgroundColor="green"/>
     );} else {
       return (
-        <Button onPress={this._onPress} title={this.props.title} backgroundColor="black"/>
+        <Button onPress={this._onPress} title={this.props.title} backgroundColor="gray"/>
     );}
-  }
+  } 
 }
 
 export default class FlatListSelector extends React.PureComponent {
@@ -88,6 +88,10 @@ export default class FlatListSelector extends React.PureComponent {
       selected[id] = 1;
     } else if (selected[id] === 1) {
       selected[id] = 0;
+    } else if (selected[id] === true) {
+      selected[id] = 0;
+    } else if (selected[id] === false) {
+      selected[id] = 1;
     }
     // selected.set(id, !selected.get(id)); // toggle
 
