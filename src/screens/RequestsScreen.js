@@ -87,7 +87,7 @@ export default class RequestsScreen extends React.Component {
             TimeString: doc.data().TimeString
           })
         } else {
-          console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
+          // console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
           db.collection("users").doc(userID).collection('Received Requests').doc(doc.id).delete().then(() => {
             console.log("Document successfully deleted!");
             db.collection("users").doc(doc.data().FriendID).collection('Sent Requests').doc(doc.id).delete()
@@ -195,7 +195,7 @@ export default class RequestsScreen extends React.Component {
       if (data['Length'] === 1) {
         freetimeData['Freetime'][index+1] = 2
       } 
-       console.log("my data", freetimeData)
+      // console.log("my data", freetimeData)
     freetimeRef.set(freetimeData).then(() => {
       console.log("My Document updated");
       })
@@ -211,13 +211,60 @@ export default class RequestsScreen extends React.Component {
       if (data['Length'] === 1) {
         freetimeData_other['Freetime'][index+1] = 2
       }
-       console.log(freetimeData_other)
+      // console.log(freetimeData_other)
     freetimeRef_other.set(freetimeData_other).then(() => {
       console.log("Document updated");
       })
       .catch(function(error) {
         console.error("Error updating", error);
       });
+    })
+    
+    // update freefriends for acceptor
+    friendsRef = db.collection("users").doc(userID).collection('Friends');
+    friendsRef.get().then((querySnapshot) => {
+      friends = [];
+      querySnapshot.forEach((doc) => {
+        friends.push(doc.id)
+      })
+
+      console.log("friends", friends)
+
+      for (let friend of friends) {
+        thisday = weekdays[data['DateTime'].getDay()].day;
+        freefriendsRef = db.collection("users").doc(friend).collection('FreeFriends').doc(thisday);
+        freefriendsRef.get().then(function(doc) {
+          console.log("current friend ", friend, "day:", thisday, "index: ", index)
+          temp = doc.data().Freefriends;
+          delete temp[index][userID];
+          freefriendsRef.set({Freefriends: temp}).then(() => {
+            
+            console.log("Free friends updated for", friend)
+          })
+        })
+      }
+    })
+    
+    // update freefriends for other person
+    friendsRef = db.collection("users").doc(data['FriendID']).collection('Friends');
+    friendsRef.get().then((querySnapshot) => {
+      friends = [];
+      querySnapshot.forEach((doc) => {
+        friends.push(doc.id)
+      })
+
+      for (let friend of friends) {
+        thisday = weekdays[data['DateTime'].getDay()].day;
+        let freefriendsRef = db.collection("users").doc(friend).collection('FreeFriends').doc(thisday);
+        freefriendsRef.get().then(function(doc) {
+          console.log("current friend ", friend, "day:", thisday, "index: ", index)
+          temp = doc.data().Freefriends;
+          delete temp[index][data['FriendID']];
+          freefriendsRef.set({Freefriends: temp}).then(() => {
+            console.log("Free friends updated for", friend)
+          })
+        })
+      }
     })
 
     // increment number of meals between two users
