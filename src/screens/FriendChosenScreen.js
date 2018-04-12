@@ -109,7 +109,7 @@ export default class FriendChosenScreen extends React.Component {
       matches[day] = Array.from(Array(25), () => true)
       for (i=0; i < 25; i++) {
         for (friend in freeTimeObj)
-          if (freeTimeObj[friend][day][i] === false) {
+          if (freeTimeObj[friend][day][i] != 1) {
             matches[day][i] = false
           }
       }
@@ -137,7 +137,7 @@ export default class FriendChosenScreen extends React.Component {
       matches[day] = Array.from(Array(25), () => true)
       for (i=0; i < 25; i++) {
         for (friend in freeTimeObj)
-          if (freeTimeObj[friend][day][i] === false) {
+          if (freeTimeObj[friend][day][i] != 1) {
             matches[day][i] = false
             if (i != 24)
               matches[day][i+1] = false
