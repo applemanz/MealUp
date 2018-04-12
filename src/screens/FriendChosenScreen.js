@@ -105,9 +105,20 @@ export default class FriendChosenScreen extends React.Component {
 
   match30min = (freeTimeObj) => {
     matches = new Object();
+
+    today = new Date();
+    thisDay = days[today.getDay()];
+    thisHour = today.getHours();
+    thisMin = today.getMinutes();
+    thisIndex = (thisHour - 7) * 2 + Math.floor(thisMin / 30) - 1;
+
     for (const day in freeTimeObj[userID]) {
       matches[day] = Array.from(Array(25), () => true)
       for (i=0; i < 25; i++) {
+        if (day === thisDay && i <= thisIndex) {
+          matches[day][i] = false
+          continue;
+        } 
         for (friend in freeTimeObj)
           if (freeTimeObj[friend][day][i] != 1) {
             matches[day][i] = false
@@ -133,14 +144,25 @@ export default class FriendChosenScreen extends React.Component {
 
   match1hr = (freeTimeObj) => {
     matches = new Object();
+
+    today = new Date();
+    thisDay = days[today.getDay()];
+    thisHour = today.getHours();
+    thisMin = today.getMinutes();
+    thisIndex = (thisHour - 7) * 2 + Math.floor(thisMin / 30) - 1;
+    
     for (const day in freeTimeObj[userID]) {
-      matches[day] = Array.from(Array(25), () => true)
+      matches[day] = Array.from(Array(24), () => true)
       for (i=0; i < 25; i++) {
+        if (day === thisDay && i <= thisIndex) {
+          matches[day][i] = false
+          continue;
+        } 
         for (friend in freeTimeObj)
           if (freeTimeObj[friend][day][i] != 1) {
             matches[day][i] = false
-            if (i != 24)
-              matches[day][i+1] = false
+            if (i != 0)
+              matches[day][i-1] = false
           }
       }
     }
@@ -299,12 +321,16 @@ export default class FriendChosenScreen extends React.Component {
                   if (item.slice(-2) == "pm" && hour != 12 && time[0] != "11:30") hour += 12
                   // Year is hardcoded as 2018
                   ymd = new Date(2018,month,date,hour,min)
+
+                  member = new Object();
+                  member[id] = name;
+
                   this.props.navigation.navigate('FinalRequest', {
                   sent: sent,
                   reschedule: reschedule,
                   name: name,
-                  id: id,
-                  url: url,
+                  // id: id,
+                  members: member,
                   dateobj: ymd.toString(),
                   time: item,
                   length: 0.5,
@@ -331,12 +357,16 @@ export default class FriendChosenScreen extends React.Component {
                         if (item.slice(-2) == "pm" && hour != 12 && hour != 11) hour += 12
                         // Year is hardcoded as 2018
                         ymd = new Date(2018,month,date,hour,min)
+
+                        member = new Object();
+                        member[id] = name;
+
                         this.props.navigation.navigate('FinalRequest', {
                         sent: sent,
                         reschedule: reschedule,
                         name: name,
-                        id: id,
-                        url: url,
+                        // id: id,
+                        members: member,
                         dateobj: ymd.toString(),
                         time: item,
                         length: 1,
@@ -386,7 +416,6 @@ export default class FriendChosenScreen extends React.Component {
                 reschedule: reschedule,
                 // name: name,
                 // id: id,
-                // url: url,
                 name: groupname,
                 members: members,
                 dateobj: ymd.toString(),
@@ -420,7 +449,6 @@ export default class FriendChosenScreen extends React.Component {
                       reschedule: reschedule,
                       // name: name,
                       // id: id,
-                      // url: url,
                       name: groupname,
                       members: members,
                       dateobj: ymd.toString(),

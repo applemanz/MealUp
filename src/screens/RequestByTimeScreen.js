@@ -82,21 +82,24 @@ export default class RequestByTimeScreen extends React.Component {
     month = d.getMonth();
     date = d.getDate();
     day = d.getDay();
+    hour = d.getHours();
+    min = d.getMinutes();
+    thisIndex = (hour - 7) * 2 + Math.floor(min / 30) - 1;
 
 
-    for (dayOfWeek in this.state.time) {
+
+    for (thisday in this.state.time) {
       let temp = [];
       for (j = 0; j < 25; j++) {
-        if (this.state.time[dayOfWeek][j] === 1) {
-          temp.push({
-            time: this.printTime(j) + "-" + this.printTime(j+1,true),
-            index: j,
-            day: dayOfWeek
-          })
+        if (thisday === day && j <= thisIndex) {
+          continue;
+        }
+        if (this.state.time[thisday][j] === 1) {
+          temp.push({time: this.printTime(j) + "-" + this.printTime(j+1,true), index: j, day: thisday})
         }
       }
 
-      diff = days.indexOf(dayOfWeek) - day;
+      diff = days.indexOf(thisday) - day;
       if (diff < 0)
         diff += 7;
 
@@ -108,12 +111,11 @@ export default class RequestByTimeScreen extends React.Component {
       let temp = [];
       cur = days.indexOf(thisday);
       for (j = 0; j < 25; j++) {
+        if (thisday === day && j <= thisIndex) {
+          continue;
+        }
         if (this.state.time[thisday][j] === 1 && this.state.time[thisday][j+1] === 1) {
-          temp.push({
-            time: this.printTime(j) + "-" + this.printTime(j+2,true),
-            index: j,
-            day: thisday
-          })
+          temp.push({time: this.printTime(j) + "-" + this.printTime(j+2,true), index: j, day: thisday})
         }
       }
 
