@@ -97,9 +97,6 @@ export default class RequestByTimeScreen extends React.Component {
         }
       }
 
-      console.log("temp")
-      console.log(temp)
-
       diff = days.indexOf(thisday) - day;
       if (diff < 0)
         diff += 7;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Image, Text, StyleSheet, Button } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
-import { Avatar, Card, ListItem, ButtonGroup } from 'react-native-elements';
+import { Avatar, Card, ListItem, ButtonGroup, Icon } from 'react-native-elements';
 import firebase from "../config/firebase";
 import HeaderButtons from 'react-navigation-header-buttons'
 import Swiper from 'react-native-swiper';
@@ -13,24 +13,11 @@ import { userName, userID, userToken } from '../screens/SignInScreen';
 const db = firebase.firestore();
 
 export default class FriendsScreen extends React.Component {
+  static navigationOptions = {
+    title: 'Friends'
+  };
 
-  static navigationOptions = ({ navigation }) => {
-      const params = navigation.state.params || {};
-      return {
-        title: 'Friends',
-        headerRight: (
-          <HeaderButtons color = '#ffffff'>
-            <HeaderButtons.Item title='Edit' onPress={params.ButtonPressed} />
-          </HeaderButtons>
-        ),
-      };
-    };
-
-  state = {friends: [], groups: [], onFriends:true};
-
-  componentWillMount() {
-    this.props.navigation.setParams({ ButtonPressed: this.ButtonPressed, buttonText: 'Edit' });
-    }
+  state = {friends: [], groups: []};
 
   componentDidMount() {
     this.getFriendsAndGroups()
@@ -40,7 +27,7 @@ export default class FriendsScreen extends React.Component {
   }
 
   getFriendsAndGroups() {
-    db.collection("users").doc(userID).collection('Friends').onSnapshot((querySnapshot) => {
+    db.collection("users").doc(userID).collection('Friends') .onSnapshot((querySnapshot) => {
         var friends = [];
         querySnapshot.forEach((doc) => {
             friends.push({
@@ -56,8 +43,8 @@ export default class FriendsScreen extends React.Component {
     });
 
 
-    db.collection("users").doc(userID).collection('Groups').onSnapshot((querySnapshot) => {
-        groups = [];
+    db.collection("users").doc(userID).collection('Groups') .onSnapshot((querySnapshot) => {
+        var groups = [];
         querySnapshot.forEach((doc) => {
             let data = doc.data()
             data['id'] = doc.id
@@ -66,6 +53,7 @@ export default class FriendsScreen extends React.Component {
         this.setState({groups:groups});
     });
   }
+
 
   onRefresh  = async () => {
     // const response = await fetch(`https://graph.facebook.com/me?access_token=${userToken}&fields=friends`);
@@ -95,27 +83,29 @@ export default class FriendsScreen extends React.Component {
     this.getFriendsAndGroups()
   }
 
-  ButtonPressed = () => {
-    if (this.state.onFriends) {
-      this.props.navigation.navigate('EditFriends')
-    }
-  }
-
   compareFriends = (a,b) => {
     mealCount = b.numOfMeals - a.numOfMeals
     if (mealCount != 0) return mealCount
     else {
-      return a.Name - b.Name
+      if (a.Name < b.Name) {
+        return -1;
+      }
+      else
+        return 1
     }
   }
   compareGroups = (a,b) => {
     mealCount = b.numOfMeals - a.numOfMeals
     if (mealCount != 0) return mealCount
     else {
-      return a.groupName - b.groupName
+      if (a.groupName < b.groupName) {
+        return -1;
+      }
+      else
+        return 1
     }
   }
-  onChange
+
   render() {
     var obj = [...this.state.friends];
     obj.sort(this.compareFriends);
@@ -126,13 +116,26 @@ export default class FriendsScreen extends React.Component {
         <ScrollableTabView
           style={{marginTop: 0, flex:1}}
           renderTabBar={() => <DefaultTabBar />}
-          onChangeTab = {(i, ref) => {this.setState({onFriends: !this.state.onFriends})}}
+          // onChangeTab = {(i, ref) => {this.setState({onFriends: !this.state.onFriends})}}
           tabBarBackgroundColor = {'#f4511e'}
           tabBarActiveTextColor = {'white'}
           tabBarInactiveTextColor = {'black'}
           tabBarUnderlineStyle = {{backgroundColor:'white'}}
         >
-          <FriendList style={{flex:1}} tabLabel='Friends' data = {obj} navigation = {this.props.navigation} editOn = {false}/>
+          <View tabLabel='Friends' style={{flex:1}}>
+            <ListItem
+              title={'Edit Who Can See Your Availability'}
+              titleStyle = {{paddingLeft:10}}
+              leftIcon = {<Icon
+                name={'md-eye'}
+                type = 'ionicon'
+                color='#000'
+              />}
+              hideChevron
+              onPress = {() => this.props.navigation.navigate('EditFriends')}
+            />
+            <FriendList style={{flex:1}} data = {obj} navigation = {this.props.navigation} editOn = {false}/>
+          </View>
           <GroupList tabLabel='Groups' data = {obj2} navigation = {this.props.navigation} />
         </ScrollableTabView>
       </View>

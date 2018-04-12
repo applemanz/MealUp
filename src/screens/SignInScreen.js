@@ -42,7 +42,7 @@ export default class SignInScreen extends React.Component {
       // if (type === 'success') {
       //   try {
       //     userToken = token;
-      
+
       //     const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,friends`);
       //     const userData = await response.json();
       //     const friendsList = userData.friends.data;
@@ -52,9 +52,9 @@ export default class SignInScreen extends React.Component {
       //     userID = userData.id;
       //     console.log(userName);
       //     console.log(userID);
-      
+
       //     AsyncStorage.setItem('loggedIn', 'true');
-      
+
       //     const originalSend = XMLHttpRequest.prototype.send;
       //     XMLHttpRequest.prototype.send = function(body) {
       //       if (body === '') {
@@ -63,7 +63,7 @@ export default class SignInScreen extends React.Component {
       //         originalSend.call(this, body);
       //       }
       //     };
-      
+
       //     // const credential = provider.credential(token);
       //     // auth.signInWithCredential(credential);
       //     db.collection('users').doc(userID).set({
@@ -76,7 +76,7 @@ export default class SignInScreen extends React.Component {
       //     // The document probably doesn't exist.
       //     console.error("Error updating document: ", error);
       //     });
-      
+
       //     for (var friend of friendsList) {
       //       let thisfriend = friend;
       //       db.collection('users').doc(userID).collection('Friends').doc(thisfriend.id).get().then(function(doc) {
@@ -97,9 +97,9 @@ export default class SignInScreen extends React.Component {
       //       })
       //     }
       //     daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday','Sunday'];
-      
+
       //     docRef = db.collection('users').doc(userID).collection('Freetime').doc('Monday');
-      
+
       //     docRef.get().then(function(doc) {
       //         if (doc.exists) {
       //             console.log("Document data:", doc.data());
@@ -132,7 +132,7 @@ export default class SignInScreen extends React.Component {
       //                     }
       //                   }
       //                 })
-                       
+
       //                 // set freeFriends
       //                 for (dofW of daysOfWeek) {
       //                   db.collection('users').doc(userID).collection('FreeFriends').doc(dofW).set({
@@ -144,7 +144,7 @@ export default class SignInScreen extends React.Component {
       //               })
       //             }
 
-                 
+
       //         }
       //     }).catch(function(error) {
       //         console.log("Error getting document:", error);
@@ -153,11 +153,11 @@ export default class SignInScreen extends React.Component {
           userID = '10210889686788547'
           userName = 'Andrew Zeng'
           this.props.navigation.navigate('Main');
-      
+
       //     } catch (error) {
       //       console.error(error);
       //     }
-      
+
       // }
   };
 
@@ -187,6 +187,21 @@ export default class SignInScreen extends React.Component {
             title='Sign In With Facebook'
             iconSize={20}
             onPress={this.onSignInWithFacebook}/>
+            <Button title='Andrew' onPress={()=>{
+              userID = '10210889686788547'
+              userName = 'Andrew Zeng'
+              this.props.navigation.navigate('Main')
+            }}/>
+            <Button title='Divi' onPress={()=>{
+              userID = '1685311528229627'
+              userName = 'Divyanshu Pachisia'
+              this.props.navigation.navigate('Main')
+            }}/>
+            <Button title='Thomas' onPress={()=>{
+              userID = '598952760450186'
+              userName = 'Thomas Ferrante'
+              this.props.navigation.navigate('Main')
+            }}/>
       </View>
     );
   }
