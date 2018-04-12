@@ -152,8 +152,53 @@ const MealsStack = StackNavigator({
         fontWeight: 'bold',
       },
     },
-  }
-})
+  },
+  RequestByFriend: {
+    screen: RequestByFriendScreen,
+    navigationOptions: {
+      tabBarVisible: false
+    }
+  },
+  RequestByTime: {
+    screen: RequestByTimeScreen,
+    navigationOptions: {
+      tabBarVisible: false
+    }
+  },
+  FriendChosen: {
+    screen: FriendChosenScreen,
+    navigationOptions: {
+      tabBarVisible: false
+    }
+  },
+  TimeChosen: {
+    screen: TimeChosenScreen,
+    navigationOptions: {
+      tabBarVisible: false
+    }
+  },
+  FinalRequest: {
+    screen: FinalRequestScreen,
+    navigationOptions: {
+      tabBarVisible: false
+    }
+  },
+},
+  {
+    initialRouteName: 'Meals',
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: '#f4511e',
+        shadowColor: 'transparent',
+        elevation:0,
+        borderBottomWidth: 0,
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    },
+});
 
 export default TabNavigator(
   {

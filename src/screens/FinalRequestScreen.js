@@ -84,7 +84,15 @@ export default class FinalRequestScreen extends React.Component {
         });
     if (reschedule !== undefined) {
       console.log("RESCHEDULE: " + reschedule);
-      if (sent) {
+      if (sent == 2) {
+        db.collection("users").doc(userID).collection('Meals').doc(reschedule).delete().then(() => {
+          console.log("Document successfully deleted!");
+          db.collection("users").doc(prevData['id']).collection('Meals').doc(reschedule).delete()
+        }).catch(function(error) {
+          console.error("Error removing document: ", error);
+        });
+      }
+      else if (sent == true) {
         db.collection("users").doc(userID).collection('Sent Requests').doc(reschedule).delete().then(() => {
           console.log("Document successfully deleted!");
           db.collection("users").doc(prevData['id']).collection('Received Requests').doc(reschedule).delete()
