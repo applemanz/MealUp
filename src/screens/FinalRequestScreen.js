@@ -88,7 +88,8 @@ export default class FinalRequestScreen extends React.Component {
       if (sent == 2) {
         db.collection("users").doc(userID).collection('Meals').doc(reschedule).delete().then(() => {
           console.log("Document successfully deleted!");
-          db.collection("users").doc(prevData['id']).collection('Meals').doc(reschedule).delete()
+          for (let thisid in prevData['members']) 
+            db.collection("users").doc(thisid).collection('Meals').doc(reschedule).delete()
         }).catch(function(error) {
           console.error("Error removing document: ", error);
         });
