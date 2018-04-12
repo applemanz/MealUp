@@ -101,15 +101,26 @@ export default class FriendsScreen extends React.Component {
     }
   }
 
-  compare = (b,a) => {
-    return a.numOfMeals - b.numOfMeals;
+  compareFriends = (a,b) => {
+    mealCount = b.numOfMeals - a.numOfMeals
+    if (mealCount != 0) return mealCount
+    else {
+      return a.Name - b.Name
+    }
+  }
+  compareGroups = (a,b) => {
+    mealCount = b.numOfMeals - a.numOfMeals
+    if (mealCount != 0) return mealCount
+    else {
+      return a.groupName - b.groupName
+    }
   }
   onChange
   render() {
     var obj = [...this.state.friends];
-    obj.sort((a,b) => b.numOfMeals - a.numOfMeals);
+    obj.sort(this.compareFriends);
     var obj2 = [...this.state.groups];
-    obj2.sort((a,b) => b.numOfMeals - a.numOfMeals);
+    obj2.sort(this.compareGroups);
     return (
       <View style={{flex:1}}>
         <ScrollableTabView

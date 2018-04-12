@@ -58,8 +58,9 @@ class MyListItem extends React.PureComponent {
       <ListItem
         title={title}
         subtitle = {memberStr}
+        subtitleNumberOfLines = {2}
         leftIcon = {
-          <View style={{flexDirection:'row', overflow: 'hidden', paddingRight:10}} >
+          <View style={{flexDirection:'row', overflow: 'hidden', paddingRight:10, borderRadius:25}} >
               <View style={{overflow: 'hidden', borderTopLeftRadius: 25, borderBottomLeftRadius: 25}}>
                 <Image
                   style={{width: 25, height: 50,}}
@@ -103,7 +104,7 @@ export default class MultiSelectList extends React.PureComponent {
 
   _onLongPress = (name, members, id, numOfMeals) => {
     ActionSheetIOS.showActionSheetWithOptions({
-    options: ['Cancel', 'Leave Group', 'Rename Group', 'Add Member'],
+    options: ['Cancel', 'Leave Group', 'Rename Group', 'Add Members'],
     destructiveButtonIndex: 1,
     cancelButtonIndex: 0,
   },
@@ -124,14 +125,14 @@ export default class MultiSelectList extends React.PureComponent {
       AlertIOS.prompt(
         'Enter new name for group',
         null,
-        text => this.renameGroup(text)
+        text => this.renameGroup(text, members, id)
       )
     } else {
       //android prompt
     }
 
     }
-    if (buttonIndex === 3) {this.addMember()}
+    if (buttonIndex === 3) {this.addMember(name, members, id)}
   });
   }
 
@@ -158,12 +159,20 @@ export default class MultiSelectList extends React.PureComponent {
     });
   }
 
-  renameGroup = (text) => {
-    console.log("You entered "+text)
+  renameGroup = (newname, members, id) => {
+    for (memberID in members) {
+      db.collection("users").doc(memberID).collection("Groups").doc(id).set({
+        groupName: newname,
+      }, {merge:true})
+    }
   }
 
-  addMember = () => {
-    // TODO
+  addMember = (name, members, id) => {
+    this.props.navigation.navigate('AddMember', {
+      groupName: name,
+      members: members,
+      id: id,
+    });
   }
 
   _renderItem = ({item}) => (

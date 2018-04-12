@@ -16,6 +16,7 @@ import FriendChosenScreen from '../screens/FriendChosenScreen';
 import TimeChosenScreen from '../screens/TimeChosenScreen';
 import EditFriendsScreen from '../screens/EditFriendsScreen';
 import AddGroupScreen from '../screens/AddGroupScreen';
+import AddMemberScreen from '../screens/AddMemberScreen';
 
 const RequestsStack = StackNavigator({
   Requests: {
@@ -104,6 +105,12 @@ const FriendsStack = StackNavigator({
   },
   AddGroup: {
     screen: AddGroupScreen,
+    navigationOptions: {
+      tabBarVisible: false
+    }
+  },
+  AddMember: {
+    screen: AddMemberScreen,
     navigationOptions: {
       tabBarVisible: false
     }

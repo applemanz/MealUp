@@ -98,16 +98,14 @@ export default class SignInScreen extends React.Component {
           }
           daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday','Sunday'];
 
-          docRef = db.collection('users').doc(userID).collection('Freetime').doc('Monday');
-
-          docRef.get().then(function(doc) {
+          db.collection('users').doc(userID).collection('Freetime').doc('Monday').get().then(function(doc) {
               if (doc.exists) {
                   console.log("Document data:", doc.data());
               } else {
                   console.log("No such document!");
                   for (dofW of daysOfWeek) {
                     db.collection('users').doc(userID).collection('Freetime').doc(dofW).set({
-                      Freetime: Array.from(Array(25), () => false),
+                      Freetime: Array.from(Array(25), () => 0),
                     })
                   }
                   console.log("I'm here 0")
