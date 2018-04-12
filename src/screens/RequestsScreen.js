@@ -153,6 +153,7 @@ export default class RequestsScreen extends React.Component {
         Length: item.Length,
         docID: item.docID,
         DateTime: item.DateTime,
+        dateobj: item.DateTime.toDateString(),
         displayDate: item.DateTime.toDateString().substring(0,10)}});
   }
   // item.DateTime.toDateString() + " " + (item.DateTime.getHours() % 12 || 12) + ":" + ("0" + item.DateTime.getMinutes()).slice(-2),
@@ -346,6 +347,36 @@ export default class RequestsScreen extends React.Component {
     });
   }
 
+  // changeLocation = () => {
+  //   this.setState({respondVisible: false});
+  //   member = new Object();
+  //   member[this.state.curUser.FriendID] = this.state.curUser.FriendName;
+  //   this.props.navigation.navigate('FinalRequest', {
+  //     sent: false,
+  //     reschedule: this.state.curUser.docID,
+  //     name: this.state.curUser.FriendName,
+  //     members: member,
+  //     dateobj: this.state.curUser.displayDate,
+  //     time: this.state.curUser.TimeString,
+  //     length: this.state.curUser.Length,
+  //   });
+  // }
+
+  changeSentLocation = () => {
+    this.setState({undoVisible: false});
+    member = new Object();
+    member[this.state.curUser.FriendID] = this.state.curUser.FriendName;
+    this.props.navigation.navigate('FinalRequest', {
+      sent: true,
+      reschedule: this.state.curUser.docID,
+      name: this.state.curUser.FriendName,
+      members: member,
+      dateobj: this.state.curUser.dateobj,
+      time: this.state.curUser.TimeString,
+      length: this.state.curUser.Length,
+    });
+  }
+
   rescheduleSentRequest = () => {
     this.setState({undoVisible: false})
     this.props.navigation.navigate('FriendChosen', {
@@ -495,7 +526,7 @@ export default class RequestsScreen extends React.Component {
         backgroundColor: '#00000080'}}>
       <View style={{
         width: 300,
-        height: 400,
+        height: 460,
         backgroundColor: '#fff', padding: 20}}>
         <View style={{alignItems: 'center'}}>
         <View style={{padding: 10}}>
@@ -523,6 +554,12 @@ export default class RequestsScreen extends React.Component {
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Reschedule Meal</Text>
           </TouchableHighlight>
         </View>
+        <View style={{padding: 10}}>
+          <TouchableHighlight style={{padding: 10, backgroundColor: "#5bc0de", borderRadius: 5}}
+            onPress={this.changeSentLocation}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Change Location</Text>
+          </TouchableHighlight>
+        </View>
         <View style={{padding: 15, alignItems: 'center'}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
             onPress={() => this.setState({undoVisible: false})}>
@@ -546,7 +583,7 @@ export default class RequestsScreen extends React.Component {
         backgroundColor: '#00000080'}}>
       <View style={{
         width: 300,
-        height: 460,
+        height: 460, //520,
         backgroundColor: '#fff', padding: 20}}>
         <View style={{alignItems: 'center'}}>
         <View style={{padding: 10}}>
@@ -568,6 +605,12 @@ export default class RequestsScreen extends React.Component {
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Accept</Text>
           </TouchableHighlight>
         </View>
+        {/* <View style={{padding: 10}}>
+          <TouchableHighlight style={{padding: 10, backgroundColor: "#5bc0de", borderRadius: 5}}
+            onPress={this.changeLocation}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Change Location</Text>
+          </TouchableHighlight>
+        </View> */}
         <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
             onPress={this.rescheduleRequest}>
