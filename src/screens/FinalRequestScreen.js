@@ -49,7 +49,7 @@ export default class FinalRequestScreen extends React.Component {
         <Picker.Item label="Wilcox" value="Wilcox" />
         <Picker.Item label="Wu" value="Wu" />
         <Picker.Item label="Rocky" value="Rocky" />
-        <Picker.Item label="Matthey" value="Matthey" />
+        <Picker.Item label="Mathey" value="Mathey" />
         <Picker.Item label="Whitman" value="Whitman" />
         <Picker.Item label="Frist" value="Frist" />
 				<Picker.Item label="Forbes" value="Forbes" />
