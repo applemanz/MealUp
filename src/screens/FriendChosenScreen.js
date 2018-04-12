@@ -120,7 +120,7 @@ export default class FriendChosenScreen extends React.Component {
           continue;
         } 
         for (friend in freeTimeObj)
-          if (freeTimeObj[friend][day][i] === false) {
+          if (freeTimeObj[friend][day][i] != 1) {
             matches[day][i] = false
           }
       }
@@ -159,7 +159,7 @@ export default class FriendChosenScreen extends React.Component {
           continue;
         } 
         for (friend in freeTimeObj)
-          if (freeTimeObj[friend][day][i] === false) {
+          if (freeTimeObj[friend][day][i] != 1) {
             matches[day][i] = false
             if (i != 0)
               matches[day][i-1] = false
@@ -178,7 +178,7 @@ export default class FriendChosenScreen extends React.Component {
     console.log("HERE 2")
     matches1 = this.match30min(freeTimeObj);
     matches2 = this.match1hr(freeTimeObj);
-    this.setState({matches1:matches1,matches2:matches2}) 
+    this.setState({matches1:matches1,matches2:matches2})
   }
 
   async componentDidMount() {
@@ -210,7 +210,7 @@ export default class FriendChosenScreen extends React.Component {
         </View>
       )
     }
-    
+
     if (this.state.matches1) {
       // match1 = [];
       // match2 = [];
@@ -288,12 +288,14 @@ export default class FriendChosenScreen extends React.Component {
       // for individual
       if (params.name) {
         return(
-          <View style={{flex:1, alignItems:'center'}}>
+          <View style={{flex:1}}>
+            <View style={{alignItems:'center'}}>
             <Image
               style={{width: 100, height: 100, borderRadius: 50}}
               source={{uri: url}}
             />
             <Text>Choose a time to get a meal with {name.split(" ")[0]}</Text>
+          </View>
             <ScrollableTabView
               style={{marginTop: 0, flex:1}}
               renderTabBar={() => <DefaultTabBar />}
@@ -379,7 +381,7 @@ export default class FriendChosenScreen extends React.Component {
       }
 
       // for group
-      // *** FINAL REQUEST PAGE NOT CHANGED YET 
+      // *** FINAL REQUEST PAGE NOT CHANGED YET
       // *** instead of passing name, id, url, passed groupname, members
       else return(
         <View style={{flex:1, alignItems:'center'}}>
@@ -469,126 +471,127 @@ export default class FriendChosenScreen extends React.Component {
       );
     }
   }
-
-  renderBottom() {
-    const { params } = this.props.navigation.state;
-    const id = params ? params.id : "1893368474007587";
-    const url = params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=square`;
-    const name = params ? params.name : "Chi Yu";
-    const reschedule = params ? params.reschedule : undefined;
-    const sent = params ? params.sent : undefined;
-
-    match1 = [];
-    match2 = [];
-    d = new Date();
-    month = d.getMonth();
-    date = d.getDate();
-    day = d.getDay();
-
-    for (thisday in this.state.matches1) {
-      temp = [];
-      cur = days.indexOf(thisday);
-      for (j = 0; j < 25; j++) {
-        if (this.state.matches1[thisday][j]) {
-          temp.push(this.printTime(j) + "-" + this.printTime(j+1,true))
-        }
-      }
-
-      diff = days.indexOf(thisday) - day;
-      if (diff < 0) diff += 7;
-
-      if (temp.length > 0) match1.push({title: diff, data: temp})
-    }
-
-    for (thisday in this.state.matches2) {
-      temp = [];
-      for (j = 0; j < 25; j++) {
-        if (this.state.matches2[thisday][j]) {
-          temp.push(this.printTime(j) + "-" + this.printTime(j+2,true))
-        }
-      }
-
-      diff = days.indexOf(thisday) - day;
-      if (diff < 0) diff += 7;
-
-      if (temp.length > 0) match2.push({title: diff, data: temp})
-    }
-
-    match1.sort((a,b) => a.title - b.title)
-    match2.sort((a,b) => a.title - b.title)
-
-    for (i of match1) {
-      i.title = this.printDate(month,date,day,i.title)
-    }
-
-    for (i of match2) {
-      i.title = this.printDate(month,date,day,i.title)
-    }
-
-    if (this.state.index == 0)
-        return <SectionList
-        sections={match1}
-        renderItem={({item,section}) =>
-        <ListItem
-          title={item}
-          onPress={() => {
-            t = section.title.split(", ");
-            month = months.indexOf(t[1].slice(0, 3));
-            date = parseInt(t[1].slice(4));
-            time = item.split("-")
-            hour = parseInt(time[0].split(":")[0])
-            min = parseInt(time[0].split(":")[1])
-            if (item.slice(-2) == "pm" && hour != 12 && time[0] != "11:30") hour += 12
-            // Year is hardcoded as 2018
-            ymd = new Date(2018,month,date,hour,min)
-            this.props.navigation.navigate('FinalRequest', {
-            sent: sent,
-            reschedule: reschedule,
-            name: name,
-            id: id,
-            url: url,
-            dateobj: ymd.toString(),
-            time: item,
-            length: 0.5,
-          })}}
-        />}
-        renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-        keyExtractor={(item, index) => index}
-      />
-    return <SectionList
-            style = {{flex:1}}
-            sections={match2}
-            renderItem={({item,section}) =>
-
-              <ListItem
-              title={item}
-              onPress={() => {
-                t = section.title.split(", ");
-                month = months.indexOf(t[1].slice(0, 3));
-                date = parseInt(t[1].slice(4));
-                time = item.split("-")
-                hour = parseInt(time[0].split(":")[0])
-                min = parseInt(time[0].split(":")[1])
-                if (item.slice(-2) == "pm" && hour != 12 && hour != 11) hour += 12
-                // Year is hardcoded as 2018
-                ymd = new Date(2018,month,date,hour,min)
-                this.props.navigation.navigate('FinalRequest', {
-                sent: sent,
-                reschedule: reschedule,
-                name: name,
-                id: id,
-                url: url,
-                dateobj: ymd.toString(),
-                time: item,
-                length: 1,
-              })}}
-            />}
-
-            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-            keyExtractor={(item, index) => index}
-          />;
-  }
 }
+
+//   renderBottom() {
+//     const { params } = this.props.navigation.state;
+//     const id = params ? params.id : "1893368474007587";
+//     const url = params ? params.url : `http://graph.facebook.com/1893368474007587/picture?type=square`;
+//     const name = params ? params.name : "Chi Yu";
+//     const reschedule = params ? params.reschedule : undefined;
+//     const sent = params ? params.sent : undefined;
+//
+//     match1 = [];
+//     match2 = [];
+//     d = new Date();
+//     month = d.getMonth();
+//     date = d.getDate();
+//     day = d.getDay();
+//
+//     for (thisday in this.state.matches1) {
+//       temp = [];
+//       cur = days.indexOf(thisday);
+//       for (j = 0; j < 25; j++) {
+//         if (this.state.matches1[thisday][j]) {
+//           temp.push(this.printTime(j) + "-" + this.printTime(j+1,true))
+//         }
+//       }
+//
+//       diff = days.indexOf(thisday) - day;
+//       if (diff < 0) diff += 7;
+//
+//       if (temp.length > 0) match1.push({title: diff, data: temp})
+//     }
+//
+//     for (thisday in this.state.matches2) {
+//       temp = [];
+//       for (j = 0; j < 25; j++) {
+//         if (this.state.matches2[thisday][j]) {
+//           temp.push(this.printTime(j) + "-" + this.printTime(j+2,true))
+//         }
+//       }
+//
+//       diff = days.indexOf(thisday) - day;
+//       if (diff < 0) diff += 7;
+//
+//       if (temp.length > 0) match2.push({title: diff, data: temp})
+//     }
+//
+//     match1.sort((a,b) => a.title - b.title)
+//     match2.sort((a,b) => a.title - b.title)
+//
+//     for (i of match1) {
+//       i.title = this.printDate(month,date,day,i.title)
+//     }
+//
+//     for (i of match2) {
+//       i.title = this.printDate(month,date,day,i.title)
+//     }
+//
+//     if (this.state.index == 0)
+//         return <SectionList
+//         sections={match1}
+//         renderItem={({item,section}) =>
+//         <ListItem
+//           title={item}
+//           onPress={() => {
+//             t = section.title.split(", ");
+//             month = months.indexOf(t[1].slice(0, 3));
+//             date = parseInt(t[1].slice(4));
+//             time = item.split("-")
+//             hour = parseInt(time[0].split(":")[0])
+//             min = parseInt(time[0].split(":")[1])
+//             if (item.slice(-2) == "pm" && hour != 12 && time[0] != "11:30") hour += 12
+//             // Year is hardcoded as 2018
+//             ymd = new Date(2018,month,date,hour,min)
+//             this.props.navigation.navigate('FinalRequest', {
+//             sent: sent,
+//             reschedule: reschedule,
+//             name: name,
+//             id: id,
+//             url: url,
+//             dateobj: ymd.toString(),
+//             time: item,
+//             length: 0.5,
+//           })}}
+//         />}
+//         renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+//         keyExtractor={(item, index) => index}
+//       />
+//     return <SectionList
+//             style = {{flex:1}}
+//             sections={match2}
+//             renderItem={({item,section}) =>
+//
+//               <ListItem
+//               title={item}
+//               onPress={() => {
+//                 t = section.title.split(", ");
+//                 month = months.indexOf(t[1].slice(0, 3));
+//                 date = parseInt(t[1].slice(4));
+//                 time = item.split("-")
+//                 hour = parseInt(time[0].split(":")[0])
+//                 min = parseInt(time[0].split(":")[1])
+//                 if (item.slice(-2) == "pm" && hour != 12 && hour != 11) hour += 12
+//                 // Year is hardcoded as 2018
+//                 ymd = new Date(2018,month,date,hour,min)
+//                 this.props.navigation.navigate('FinalRequest', {
+//                 sent: sent,
+//                 reschedule: reschedule,
+//                 name: name,
+//                 id: id,
+//                 url: url,
+//                 dateobj: ymd.toString(),
+//                 time: item,
+//                 length: 1,
+//               })}}
+//             />}
+//
+//             renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+//             keyExtractor={(item, index) => index}
+//           />;
+//   }
+// }
 
 const styles = StyleSheet.create({
   container: {

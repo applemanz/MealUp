@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Image, Text, TouchableHighlight, SectionList, StyleSheet } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
 import { Avatar, Card, ListItem, Button, ButtonGroup} from 'react-native-elements';
+import ScrollableTabView, {DefaultTabBar, } from 'react-native-scrollable-tab-view';
 import firebase from "../config/firebase";
 import { userName, userID } from '../screens/SignInScreen';
 
@@ -19,10 +20,16 @@ export default class RequestByTimeScreen extends React.Component {
       };
     };
 
-  state = {time: {}, index: 0};
+  state = {time: {}};
 
-  updateIndex = (index) => {
-    this.setState({index})
+  componentDidMount() {
+    time = Object.assign(this.state.time);
+    db.collection("users").doc(userID).collection('Freetime').get().then((querySnapshot) => {
+        querySnapshot.forEach(function(doc) {
+            time[doc.id] = doc.data().Freetime
+        });
+        this.setState({time:time});
+    });
   }
 
   printTime = (num, ampm = false) => {
@@ -47,18 +54,7 @@ export default class RequestByTimeScreen extends React.Component {
     return days[day] + ", " + months[month] + " " + date;
   }
 
-  componentDidMount() {
-    time = Object.assign(this.state.time);
-    db.collection("users").doc(userID).collection('Freetime').get().then((querySnapshot) => {
-        querySnapshot.forEach(function(doc) {
-            time[doc.id] = doc.data().Freetime
-        });
-        this.setState({time:time});
-    });
-  }
-
-
-  _onPress = (item,section,length) => {
+  _onPress = (item, section, length) => {
     t = section.title.split(", ");
     month = months.indexOf(t[1].slice(0, 3));
     date = t[1].slice(4);
@@ -71,14 +67,15 @@ export default class RequestByTimeScreen extends React.Component {
     // Year is hardcoded as 2018
     ymd = new Date(2018,month,date,hour,min)
     this.props.navigation.navigate('TimeChosen', {
-    dateobj: ymd.toString(),
-    time: item['time'],
-    length: length,
-    index: item['index'],
-    day: item['day']
-  })}
+      dateobj: ymd.toString(),
+      time: item['time'],
+      length: length,
+      index: item['index'],
+      day: item['day']
+    })
+  }
 
-  renderBottom() {
+  render() {
     time1 = [];
     time2 = [];
     d = new Date();
@@ -90,40 +87,44 @@ export default class RequestByTimeScreen extends React.Component {
     thisIndex = (hour - 7) * 2 + Math.floor(min / 30) - 1;
 
 
-    for (thisday in this.state.time) {
-      temp = [];
-      cur = days.indexOf(thisday);
+
+    for (dayOfWeek in this.state.time) {
+      let temp = [];
       for (j = 0; j < 25; j++) {
         if (thisday === day && j <= thisIndex) {
           continue;
         }
-        if (this.state.time[thisday][j]) {
+        if (this.state.time[thisday][j] === 1) {
           temp.push({time: this.printTime(j) + "-" + this.printTime(j+1,true), index: j, day: thisday})
         }
       }
 
-      diff = days.indexOf(thisday) - day;
-      if (diff < 0) diff += 7;
+      diff = days.indexOf(dayOfWeek) - day;
+      if (diff < 0)
+        diff += 7;
 
-      if (temp.length > 0) time1.push({title: diff, data: temp})
+      if (temp.length > 0)
+        time1.push({title: diff, data: temp})
     }
 
     for (thisday in this.state.time) {
-      temp = [];
+      let temp = [];
       cur = days.indexOf(thisday);
       for (j = 0; j < 25; j++) {
         if (thisday === day && j <= thisIndex) {
           continue;
         }
-        if (this.state.time[thisday][j] && this.state.time[thisday][j+1]) {
+        if (this.state.time[thisday][j] === 1 && this.state.time[thisday][j+1] === 1) {
           temp.push({time: this.printTime(j) + "-" + this.printTime(j+2,true), index: j, day: thisday})
         }
       }
 
       diff = days.indexOf(thisday) - day;
-      if (diff < 0) diff += 7;
+      if (diff < 0)
+        diff += 7;
 
-      if (temp.length > 0) time2.push({title: diff, data: temp})
+      if (temp.length > 0)
+        time2.push({title: diff, data: temp})
     }
 
     time1.sort((a,b) => a.title - b.title)
@@ -136,44 +137,44 @@ export default class RequestByTimeScreen extends React.Component {
       i.title = this.printDate(month,date,day,i.title)
     }
 
-    if (this.state.index == 0)
-      return <SectionList
-      sections={time1}
-      renderItem={({item,section}) =>
-      <ListItem
-        title={item['time']}
-        onPress={() => this._onPress(item,section,length = 0.5)}
-      />}
-      renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-      keyExtractor={(item, index) => index}
-    />
-    return <SectionList
-    sections={time2}
-    renderItem={({item,section}) =>
-    <ListItem
-      title={item['time']}
-      onPress={() => this._onPress(item,section,length = 1)}
-    />}
-    renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-    keyExtractor={(item, index) => index}
-  />
-
-    }
-
-render() {
-    //console.log(this.state.time)
-
     return (
       <View style={{flex:1}}>
-      <ButtonGroup
-      onPress={this.updateIndex}
-      selectedIndex={this.state.index}
-      buttons={['30 min', '1 hr']}
-      containerStyle={{height: 30}} />
-        {this.renderBottom()}
+        <ScrollableTabView
+          style={{marginTop: 0, flex:1}}
+          renderTabBar={() => <DefaultTabBar />}
+          onChangeTab = {(i, ref) => {this.setState({onFriends: !this.state.onFriends})}}
+          tabBarBackgroundColor = {'#f4511e'}
+          tabBarActiveTextColor = {'white'}
+          tabBarInactiveTextColor = {'black'}
+          tabBarUnderlineStyle = {{backgroundColor:'white'}}
+        >
+          <SectionList
+            tabLabel='30 minutes'
+            sections={time1}
+            renderItem={({item,section}) =>
+              <ListItem
+                title={item['time']}
+                onPress={() => this._onPress(item,section,length = 0.5)}
+              />}
+            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+            keyExtractor={(item, index) => index}
+          />
+          <SectionList
+            tabLabel='1 hour'
+            sections={time2}
+            renderItem={({item,section}) =>
+              <ListItem
+                title={item['time']}
+                onPress={() => this._onPress(item,section,length = 1)}
+              />}
+            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+            keyExtractor={(item, index) => index}
+          />
+        </ScrollableTabView>
       </View>
-    );
+    )
   }
+
 }
 
 const styles = StyleSheet.create({
@@ -196,3 +197,30 @@ const styles = StyleSheet.create({
     height: 44,
   },
 })
+
+
+
+// renderBottom() {
+//   if (this.state.index == 0)
+//     return <SectionList
+//     sections={time1}
+//     renderItem={({item,section}) =>
+//     <ListItem
+//       title={item['time']}
+//       onPress={() => this._onPress(item,section,length = 0.5)}
+//     />}
+//     renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+//     keyExtractor={(item, index) => index}
+//   />
+//
+//   return <SectionList
+//   sections={time2}
+//   renderItem={({item,section}) =>
+//   <ListItem
+//     title={item['time']}
+//     onPress={() => this._onPress(item,section,length = 1)}
+//   />}
+//   renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+//   keyExtractor={(item, index) => index}
+// />
+//   }

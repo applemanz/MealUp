@@ -35,7 +35,8 @@ class MyListItem extends React.PureComponent {
           }
         />
       );
-    } else if (this.props.addGroup) {
+    }
+    else if (this.props.addGroup) {
       return (
         <ListItem
           roundAvatar
@@ -55,19 +56,43 @@ class MyListItem extends React.PureComponent {
           }
         />
       );
-    } else {
-    return (
-      <ListItem
-        roundAvatar
-        title={this.props.name}
-        avatar={{ uri: this.props.url}}
-        onPress = {this._onPress}
-        // switchButton
-        // badge={{ value: 3, textStyle: { color: 'white' }, containerStyle: { marginTop: 0, marginRight: 10 } }}
-        rightIcon = {{name: 'chevron-right'}}
-      />
-    );
-  }
+    }
+    else if(this.props.addMember) {
+      if (!(this.props.id in this.props.currentMembers)) {
+        return (
+          <ListItem
+            roundAvatar
+            title={this.props.name}
+            avatar={{ uri: this.props.url}}
+            onPress = {this.onSelect}
+            rightIcon = {
+              <Icon
+                name={this.props.selected ? 'ios-checkmark-circle' : 'ios-radio-button-off'}
+                iconStyle = {{padding:5}}
+                type = 'ionicon'
+                color='#f4511e'
+                size = {30}
+                underlayColor = 'transparent'
+                onPress = {this.onSelect}
+              />
+            }
+          />
+        )
+      } else {return null}
+    }
+    else {
+      return (
+        <ListItem
+          roundAvatar
+          title={this.props.name}
+          avatar={{ uri: this.props.url}}
+          onPress = {this._onPress}
+          // switchButton
+          // badge={{ value: 3, textStyle: { color: 'white' }, containerStyle: { marginTop: 0, marginRight: 10 } }}
+          rightIcon = {{name: 'chevron-right'}}
+        />
+      );
+    }
   }
 
   changeViewPermissions = (id, bool) => {
@@ -80,20 +105,26 @@ class MyListItem extends React.PureComponent {
   }
 }
 
-export default class MultiSelectList extends React.PureComponent {
+export default class FriendList extends React.PureComponent {
   constructor(props) {
     super(props);
+    this.state = {selected: new Map()}
+  }
 
-    var selected = new Map()
-    console.log(this.props.data)
-    for (item of this.props.data) {
-      selected.set(item.id, false)
+  componentDidMount() {
+    if (this.props.currentMembers) {
+      console.log("data")
+      console.log(this.props.data)
+
+      var selected = new Map()
+      for (item of this.props.data) {
+        if (item.id in this.props.currentMembers)
+          selected.set(item.id, true)
+      }
+      this.setState({selected:selected})
+      console.log("current members")
+      console.log(this.state.selected)
     }
-    console.log('in constructor')
-    // console.log(selected)
-    this.state = {selected: selected}
-    console.log(this.state.selected)
-
   }
 
   _keyExtractor = (item, index) => item.id;
@@ -129,25 +160,26 @@ export default class MultiSelectList extends React.PureComponent {
       CanViewFriend = {item.CanViewFriend}
       editOn = {this.props.editOn}
       addGroup = {this.props.addGroup}
+      addMember = {this.props.addMember}
+      currentMembers = {this.props.currentMembers}
     />
   );
 
   render() {
     return (
       <View style={{flex:1}}>
-        <ScrollView>
-      <FlatList
-        data={this.props.data}
-        extraData={this.state}
-        keyExtractor={this._keyExtractor}
-        renderItem={this._renderItem}
-      />
-      </ScrollView>
-      {this.renderBottom()}
-    </View>
-    );
+        <FlatList
+          data={this.props.data}
+          extraData={this.state}
+          keyExtractor={this._keyExtractor}
+          renderItem={this._renderItem}
+        />
+        {this.renderBottom()}
+      </View>
+    )
   }
 
+  // Add Group Screen Friend List Code
   countSelected = () => {
     count = 0
     if (this.state.selected) {
@@ -161,31 +193,52 @@ export default class MultiSelectList extends React.PureComponent {
   createGroup = () => {
     if (this.countSelected() == 1) return;
     data = new Object()
-    // console.log(this.prop.data)
+    members = new Object()
     for (var [key, value] of this.state.selected) {
       if (value) {
-        data[key] = this.props.data.find(item => item.id === key).Name
+        members[key] = this.props.data.find(item => item.id === key).Name
       }
     }
+    members[userID] = userName
     var groupName = this.props.groupName
-    if (this.props.groupName == "") {
-      var names = [];
-      for (var id in data) {
-      names.push(data[id]);
-      }
-      names.sort()
-      for (name of names) {
-        groupName = groupName + name.split(" ")[0] + ", "
-      }
-      groupName = groupName.slice(0, -2)
-    }
-    data[userID] = userName
-    db.collection("users").doc(userID).collection('Groups').doc(groupName).set(data)
+    data['groupName'] = groupName
+    data['members'] = members
+    data['numOfMeals'] = 0
+
+    db.collection("users").doc(userID).collection('Groups').add(data)
         .then((docRef) => {
             console.log("Document written successfully");
-            for (var id in data) {
+            for (id in members) {
               if (id != userID) {
-                db.collection("users").doc(id).collection('Groups').doc(groupName).set(data)
+                db.collection("users").doc(id).collection('Groups').doc(docRef.id).set(data)
+              }
+            }
+        })
+        .catch(function(error) {
+            console.error("Error adding document: ", error);
+        });
+    this.props.navigation.goBack();
+  }
+
+  addMember = (groupID) => {
+    if (this.countSelected() == 2) return;
+    var data = new Object()
+    var members = new Object()
+    for (var [key, value] of this.state.selected) {
+      if (value) {
+        members[key] = this.props.data.find(item => item.id === key).Name
+      }
+    }
+    members[userID] = userName
+    var groupName = this.props.groupName
+    data['members'] = members
+
+    db.collection("users").doc(userID).collection('Groups').doc(groupID).set(data,{merge:true})
+        .then((docRef) => {
+            console.log("Document written successfully");
+            for (id in members) {
+              if (id != userID) {
+                db.collection("users").doc(id).collection('Groups').doc(groupID).set(data,{merge:true})
               }
             }
         })
@@ -196,31 +249,65 @@ export default class MultiSelectList extends React.PureComponent {
   }
 
   renderBottom = () => {
-    buttonActive = this.countSelected() >= 2 ? '#f4511e' : '#d3d3d3'
-    buttonFont = this.countSelected() >= 2 ? 'bold' : 'normal'
-    if (this.props.addGroup && this.countSelected() >= 1) {
-      return <View >
-        <ListItem
-          title={''}
-          rightIcon = {
-            <TouchableOpacity
-              style={{backgroundColor: 'transparent',}}
-              onPress={this.createGroup}>
-              <Text style = {{color:buttonActive, fontWeight: 'bold'}}>Create Group</Text>
-            </TouchableOpacity>}
-          leftIcon = {
-            <View style={{flex: 4, flexDirection: 'row',}}>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator = {false}
-                // contentContainerStyle={{justifyContent:''}}
-                >
-              {this.renderAvatars()}
-              </ScrollView>
-            </View>
-          }
-        />
-      </View>
+    if (this.props.addGroup || this.props.addMember) {
+      if (this.props.addGroup && this.countSelected() >= 1) {
+        buttonActive = this.countSelected() >= 2 ? '#f4511e' : '#d3d3d3'
+        buttonFont = this.countSelected() >= 2 ? 'bold' : 'normal'
+        return (
+          <View >
+            <ListItem
+              title={''}
+              rightIcon = {
+                <TouchableOpacity
+                  style={{backgroundColor: 'transparent',}}
+                  onPress={this.createGroup}>
+                  <Text style = {{color:buttonActive, fontWeight: 'bold'}}>Create Group</Text>
+                </TouchableOpacity>}
+              leftIcon = {
+                <View style={{flex: 4, flexDirection: 'row',}}>
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator = {false}
+                    // contentContainerStyle={{justifyContent:''}}
+                    >
+                  {this.renderAvatars()}
+                  </ScrollView>
+                </View>
+              }
+            />
+          </View>
+        )
+      }
+      console.log(this.countSelected())
+      console.log(Object.keys(this.props.currentMembers).length)
+      if (this.props.addMember) {
+        buttonActive = this.countSelected()-Object.keys(this.props.currentMembers).length >= 0 ? '#f4511e' : '#d3d3d3'
+        buttonFont = this.countSelected()-Object.keys(this.props.currentMembers).length >= 0 ? 'bold' : 'normal'
+      return (
+        <View >
+          <ListItem
+            title={''}
+            rightIcon = {
+              <TouchableOpacity
+                style={{backgroundColor: 'transparent',}}
+                onPress={() => this.addMember(this.props.groupID)}>
+                <Text style = {{color:buttonActive, fontWeight: 'bold'}}>Add Member(s)</Text>
+              </TouchableOpacity>}
+            leftIcon = {
+              <View style={{flex: 4, flexDirection: 'row',}}>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator = {false}
+                  // contentContainerStyle={{justifyContent:''}}
+                  >
+                {this.renderAvatars()}
+                </ScrollView>
+              </View>
+            }
+          />
+        </View>
+      )
+    }
     }
   }
 

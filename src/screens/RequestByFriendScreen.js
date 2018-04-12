@@ -52,8 +52,6 @@ export default class RequestByFriendScreen extends React.Component {
       });
     }
 
-
-
     compare = (b,a) => {
       return a.numOfMeals - b.numOfMeals;
     }
@@ -61,6 +59,8 @@ export default class RequestByFriendScreen extends React.Component {
     render() {
       var obj = [...this.state.friends];
       obj.sort((a,b) => b.numOfMeals - a.numOfMeals);
+      var obj2 = [...this.state.groups];
+      obj2.sort((a,b) => b.numOfMeals - a.numOfMeals);
       return (
         <View style={{flex:1}}>
           <ScrollableTabView
@@ -74,7 +74,7 @@ export default class RequestByFriendScreen extends React.Component {
 
           >
             <FriendList style={{flex:1}} tabLabel='Friends' data = {obj} navigation = {this.props.navigation} editOn = {false}/>
-            <GroupList tabLabel='Groups' data = {this.state.groups} navigation = {this.props.navigation} />
+            <GroupList tabLabel='Groups' data = {obj2} navigation = {this.props.navigation} />
 
           </ScrollableTabView>
         </View>

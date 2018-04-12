@@ -10,12 +10,12 @@ import { userName, userID } from '../screens/SignInScreen';
 
 const db = firebase.firestore();
 
-export default class AddGroupScreen extends React.Component {
+export default class AddMember extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
       const params = navigation.state.params || {};
       return {
-        title: 'New Group',
+        title: 'Add New Members',
         headerLeft: (
           <HeaderButtons color = '#ffffff'>
             <HeaderButtons.Item title='Cancel' onPress={params.CancelButtonPressed} />
@@ -24,16 +24,16 @@ export default class AddGroupScreen extends React.Component {
       };
     };
 
-  state = {friends: [], groupName: ""};
+  state = {friends: [], groupName: "", doneLoading:false};
 
   componentWillMount() {
-    this.props.navigation.setParams({ DoneButtonPressed: this.DoneButtonPressed, CancelButtonPressed: this.CancelButtonPressed});
+    this.props.navigation.setParams({CancelButtonPressed: this.CancelButtonPressed});
   }
 
   componentDidMount() {
-    db.collection("users").doc(userID).collection('Friends').onSnapshot((querySnapshot) => {
-        friends = [];
-        querySnapshot.forEach(function(doc) {
+    var friends = [];
+    db.collection("users").doc(userID).collection('Friends').get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
             friends.push({
               Name: doc.data().Name,
               url:`http://graph.facebook.com/${doc.id}/picture?type=normal`,
@@ -43,31 +43,34 @@ export default class AddGroupScreen extends React.Component {
               numOfMeals: doc.data().numOfMeals
             })
         });
-        this.setState({friends:friends});
+        console.log("in componentDidMount")
+        console.log(friends)
+        this.setState({friends:friends, doneLoading:true});
     });
+
   }
 
   CancelButtonPressed = () => {
     this.props.navigation.goBack(null)
   }
 
-  DoneButtonPressed = () => {
-    // TODO add group to database
-    this.props.navigation.goBack(null)
-  }
 
   render() {
+    const { params } = this.props.navigation.state;
+    const groupName = params.groupName
+    const members = params.members
+    const id = params.id
+    data = this.state.friends
+    if (this.state.doneLoading) {
     return (
       <View style={{flex:1}}>
-        <TextInput
-          underlineColorAndroid = 'transparent'
-          placeholder = {'Name this group'}
-          onChangeText = {(text) => {this.setState({groupName:text})}}
-          style={{height: 30, fontSize: 20, color: 'black', marginTop:20, marginBottom:20, marginLeft:20}}
-        />
+        <Text style={{height: 30, fontSize: 20, color: 'black', marginTop:20, marginBottom:20, marginLeft:20}}>
+          {"Group Name: " + groupName}
+        </Text>
         <Divider style={{ backgroundColor: '#f4511e', height: 3 }} />
-        <FriendList data = {this.state.friends} navigation = {this.props.navigation} addGroup = {true} groupName = {this.state.groupName}/>
+        <FriendList data = {data} navigation = {this.props.navigation} currentMembers = {members} addMember = {true} groupName = {groupName} groupID={id}/>
       </View>
     );
+  } else return null
   }
 }

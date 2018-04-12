@@ -1,6 +1,16 @@
 import React from 'react';
-import { View, Image, Text, StyleSheet, FlatList, TouchableOpacity, ActionSheetIOS } from 'react-native';
-// import { ActionSheetProvider, connectActionSheet } from '@expo/react-native-action-sheet';
+import {
+  View,
+  Image,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  ActionSheetIOS,
+  Alert,
+  AlertIOS,
+  Modal,
+  Platform } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
 import { Avatar, Card, ListItem, Button, ButtonGroup, Icon } from 'react-native-elements';
 import firebase from "../config/firebase";
@@ -12,33 +22,45 @@ const db = firebase.firestore();
 
 class MyListItem extends React.PureComponent {
   _onPress = () => {
-    this.props.onPressItem(this.props.name, this.props.Members);
+    this.props.onPressItem(this.props.name, this.props.members);
+  };
+
+  _onLongPress = () => {
+    this.props.onLongPressItem(this.props.name, this.props.members, this.props.id, this.props.numOfMeals);
   };
 
   render() {
-    var memberStr = ""
-    urls = []
     var names = [];
-    for (var memberID in this.props.Members) {
+    for (var memberID in this.props.members) {
       if (memberID != userID)
-        names.push(this.props.Members[memberID]);
+        names.push(this.props.members[memberID].split(" ")[0]);
     }
     names.sort()
-    for (memberID in this.props.Members) {
-      urls.push(`http://graph.facebook.com/${memberID}/picture?type=normal`)
-      // memberStr = memberStr + this.props.Members[memberID].split(" ")[0] + ", "
-    }
+
+    var memberStr = ""
     for (name of names) {
-      memberStr = memberStr + name.split(" ")[0] + ", "
+      memberStr = memberStr + name + ", "
+    }
+    memberStr = memberStr.slice(0, -2)
+
+    urls = []
+    for (memberID in this.props.members) {
+      urls.push(`http://graph.facebook.com/${memberID}/picture?type=normal`)
     }
     urls.push(`http://graph.facebook.com/${userID}/picture?type=normal`)
-    memberStr = memberStr.slice(0, -2)
+
+    if (this.props.name == "") {
+      title = memberStr
+      memberStr = ""
+    } else { title = this.props.name}
+
     return (
       <ListItem
-        title={this.props.name}
+        title={title}
         subtitle = {memberStr}
+        subtitleNumberOfLines = {2}
         leftIcon = {
-          <View style={{flexDirection:'row', overflow: 'hidden', paddingRight:10}} >
+          <View style={{flexDirection:'row', overflow: 'hidden', paddingRight:10, borderRadius:25}} >
               <View style={{overflow: 'hidden', borderTopLeftRadius: 25, borderBottomLeftRadius: 25}}>
                 <Image
                   style={{width: 25, height: 50,}}
@@ -58,42 +80,18 @@ class MyListItem extends React.PureComponent {
       />
     );
   }
-
-  // _onLongPress = () => {
-  //   this.props.onLongPressItem(this.props.name, this.props.Members);
-  // };
-
-  // _onOpenActionSheet = () => {
-  //   // Same interface as https://facebook.github.io/react-native/docs/actionsheetios.html
-  //   let options = ['Delete', 'Save', 'Cancel'];
-  //   let destructiveButtonIndex = 0;
-  //   let cancelButtonIndex = 2;
-  //
-  //   this.props.showActionSheetWithOptions({
-  //     options,
-  //     cancelButtonIndex,
-  //     destructiveButtonIndex,
-  //   },
-  //   (buttonIndex) => {
-  //     // Do something here depending on the button index selected
-  //   });
-  //
-  // }
-  // onLongPress = () => {
-  //   ActionSheetIOS.showActionSheetWithOptions({
-  //   options: ['Cancel', 'Remove'],
-  //   destructiveButtonIndex: 1,
-  //   cancelButtonIndex: 0,
-  // },
-  // (buttonIndex) => {
-  //   if (buttonIndex === 1) { /* destructive action */ }
-  // });
-  // }
-
 }
 
 export default class MultiSelectList extends React.PureComponent {
-  state = {selected: (new Map(): Map<string, boolean>)};
+  state = {
+     modalVisible: false,
+   };
+
+   setModalVisible(visible) {
+     this.setState({modalVisible: visible});
+     console.log('show modal')
+   }
+
 
   _keyExtractor = (item, index) => item.id;
 
@@ -104,24 +102,87 @@ export default class MultiSelectList extends React.PureComponent {
     });
   };
 
-  _onLongPress = (name, members) => {
+  _onLongPress = (name, members, id, numOfMeals) => {
     ActionSheetIOS.showActionSheetWithOptions({
-    options: ['Cancel', 'Remove', 'Rename'],
+    options: ['Cancel', 'Leave Group', 'Rename Group', 'Add Members'],
     destructiveButtonIndex: 1,
     cancelButtonIndex: 0,
   },
   (buttonIndex) => {
-    if (buttonIndex === 1) { /* destructive action */ }
+    if (buttonIndex === 1) {
+      Alert.alert(
+        'Leave Group?',
+        "You won't be able to get meals with this group anymore.",
+        [
+          {text: 'Leave', onPress: () => this.leaveGroup(name, members, id, numOfMeals), style:'destructive'},
+          {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+        ],
+        { cancelable: true }
+      )}
+    if (buttonIndex === 2) {
+
+    if (Platform.OS === 'ios') {
+      AlertIOS.prompt(
+        'Enter new name for group',
+        null,
+        text => this.renameGroup(text, members, id)
+      )
+    } else {
+      //android prompt
+    }
+
+    }
+    if (buttonIndex === 3) {this.addMember(name, members, id)}
   });
+  }
+
+  leaveGroup = (name, members, id, numOfMeals) => {
+    db.collection("users").doc(userID).collection("Groups").doc(id).delete().then(function() {
+        console.log("Document successfully deleted!");
+        delete members[userID]
+        if (Object.keys(members).length < 3) {
+          for (memberID in members) {
+            db.collection("users").doc(memberID).collection("Groups").doc(id).delete()
+          }
+        } else {
+          for (memberID in members) {
+            // group name change
+            db.collection("users").doc(memberID).collection("Groups").doc(id).set({
+              groupName: name,
+              members: members,
+              numOfMeals: numOfMeals
+            })
+          }
+        }
+    }).catch(function(error) {
+        console.error("Error removing document: ", error);
+    });
+  }
+
+  renameGroup = (newname, members, id) => {
+    for (memberID in members) {
+      db.collection("users").doc(memberID).collection("Groups").doc(id).set({
+        groupName: newname,
+      }, {merge:true})
+    }
+  }
+
+  addMember = (name, members, id) => {
+    this.props.navigation.navigate('AddMember', {
+      groupName: name,
+      members: members,
+      id: id,
+    });
   }
 
   _renderItem = ({item}) => (
     <MyListItem
       id={item.id}
+      name={item.groupName}
+      members = {item.members}
       onPressItem={this._onPressItem}
-      name={item.Name}
-      Members = {item.Members}
       onLongPressItem={this._onLongPress}
+      numOfMeals={item.numOfMeals}
     />
   );
 
@@ -130,6 +191,7 @@ export default class MultiSelectList extends React.PureComponent {
   }
 
   render() {
+    console.log('group list data')
     console.log(this.props.data)
     return (
       <View style={{flex:1}}>

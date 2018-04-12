@@ -17,12 +17,19 @@ class MyListItem extends React.PureComponent {
     this.props.onPressItem(this.props.id);
   };
 
-  render() {
-    const textColor = this.props.selected ? "gray" : "green";
-    return (
-      <Button onPress={this._onPress} title={this.props.title} backgroundColor={textColor}/>
-    );
-  }
+  render() { 
+    // const textColor = this.props.selected ? "gray" : "green";
+    if (this.props.selected === 2) {
+      return (
+      <Button onPress={this._onPress} title={this.props.title} backgroundColor="black"/>
+    );} else if (this.props.selected === 1) {
+      return (
+        <Button onPress={this._onPress} title={this.props.title} backgroundColor="green"/>
+    );} else {
+      return (
+        <Button onPress={this._onPress} title={this.props.title} backgroundColor="gray"/>
+    );}
+  } 
 }
 
 export default class FlatListSelector extends React.PureComponent {
@@ -76,8 +83,16 @@ export default class FlatListSelector extends React.PureComponent {
   updateState = (id) => {
     // copy the map rather than modifying state.
     selected = this.state.selected.slice(0);
-    if (selected.length == 0) selected = Array.from(Array(25), () => false);
-    selected[id] = !selected[id];
+    if (selected.length == 0) selected = Array.from(Array(25), () => 0);
+    if (selected[id] === 0) {
+      selected[id] = 1;
+    } else if (selected[id] === 1) {
+      selected[id] = 0;
+    } else if (selected[id] === true) {
+      selected[id] = 0;
+    } else if (selected[id] === false) {
+      selected[id] = 1;
+    }
     // selected.set(id, !selected.get(id)); // toggle
 
     // update all your friends that you're free / not free on tap
@@ -141,7 +156,7 @@ export default class FlatListSelector extends React.PureComponent {
     <MyListItem
       id={item.key}
       onPressItem={this._onPressItem}
-      selected={!this.state.selected[item.key]}
+      selected={this.state.selected[item.key]}
       title={item.time}
     />
   );
