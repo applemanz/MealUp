@@ -15,7 +15,7 @@ import {
 import NavigationBar from 'navigationbar-react-native';
 import { Avatar, Card, ListItem, Button, ButtonGroup, Icon } from 'react-native-elements';
 import firebase from "../config/firebase";
-import prompt from 'react-native-prompt-android';
+// import prompt from 'react-native-prompt-android';
 import { Ionicons } from '@expo/vector-icons';
 import { userName, userID } from '../screens/SignInScreen';
 
@@ -123,11 +123,11 @@ export default class MultiSelectList extends React.PureComponent {
             { cancelable: true }
           )}
         if (buttonIndex === 2) {
-          AlertIOS.prompt(
-            'Enter new name for group',
-            null,
-            text => this.renameGroup(text, members, id)
-          )
+          // AlertIOS.prompt(
+          //   'Enter new name for group',
+          //   null,
+          //   text => this.renameGroup(text, members, id)
+          // )
         }
         if (buttonIndex === 3) {this.addMember(name, members, id)}
         }

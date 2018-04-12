@@ -61,7 +61,7 @@ export default class FlatListSelector extends React.PureComponent {
     });
     this.setState({friends:friends})
 
-  // freeFriends : {id: [day]{friendid : name}}
+  // freeFriends : {id: [time]{friendid : name}}
     for (key of Object.keys(friends)) {
       let temp = key;
       fdRef = db.collection("users").doc(temp).collection('FreeFriends').doc(this.props.dayOfWeek);
