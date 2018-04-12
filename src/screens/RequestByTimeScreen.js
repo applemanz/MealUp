@@ -85,11 +85,18 @@ export default class RequestByTimeScreen extends React.Component {
     month = d.getMonth();
     date = d.getDate();
     day = d.getDay();
+    hour = d.getHours();
+    min = d.getMinutes();
+    thisIndex = (hour - 7) * 2 + Math.floor(min / 30) - 1;
+
 
     for (thisday in this.state.time) {
       temp = [];
       cur = days.indexOf(thisday);
       for (j = 0; j < 25; j++) {
+        if (thisday === day && j <= thisIndex) {
+          continue;
+        }
         if (this.state.time[thisday][j]) {
           temp.push({time: this.printTime(j) + "-" + this.printTime(j+1,true), index: j, day: thisday})
         }
@@ -105,6 +112,9 @@ export default class RequestByTimeScreen extends React.Component {
       temp = [];
       cur = days.indexOf(thisday);
       for (j = 0; j < 25; j++) {
+        if (thisday === day && j <= thisIndex) {
+          continue;
+        }
         if (this.state.time[thisday][j] && this.state.time[thisday][j+1]) {
           temp.push({time: this.printTime(j) + "-" + this.printTime(j+2,true), index: j, day: thisday})
         }

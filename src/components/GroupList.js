@@ -54,7 +54,7 @@ class MyListItem extends React.PureComponent {
               </View>
             </View>}
         onPress = {this._onPress}
-        // onLongPress = {this._onLongPress}
+        onLongPress = {this._onLongPress}
       />
     );
   }
@@ -106,7 +106,7 @@ export default class MultiSelectList extends React.PureComponent {
 
   _onLongPress = (name, members) => {
     ActionSheetIOS.showActionSheetWithOptions({
-    options: ['Cancel', 'Remove'],
+    options: ['Cancel', 'Remove', 'Rename'],
     destructiveButtonIndex: 1,
     cancelButtonIndex: 0,
   },

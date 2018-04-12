@@ -125,7 +125,9 @@ export default class TimeChosenScreen extends React.Component {
       return <SectionList
         // in previous version no need object.keys
         sections={[{title: "Friends", data: Object.keys(this.state.free)}]}
-        renderItem={({item}) =>
+        renderItem={({item}) => {
+          member = new Object();
+          member[item] = this.state.free[item];
         <ListItem
           // title={item['name']}
           title = {this.state.free[item]}
@@ -134,13 +136,12 @@ export default class TimeChosenScreen extends React.Component {
             // id: item['id'],
             // url: `http://graph.facebook.com/${item['id']}/picture?type=square`,
             name: this.state.free[item],
-            id: item,
-            url: `http://graph.facebook.com/${item}/picture?type=square`,
+            members: member,
             dateobj: params.dateobj,
             time: params.time,
             length: params.length,
           })}
-        />}
+        />}}
         renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
         keyExtractor={(item, index) => index}
       />

@@ -21,8 +21,8 @@ export default class FinalRequestScreen extends React.Component {
 	render() {
 		const { params } = this.props.navigation.state;
 		const name = params ? params.name : null;
-		const friendID = params ? params.id : null;
-		const url = params ? params.url : null;
+    // const friendID = params ? params.id : null;
+    const members = params ? params.members : null;
     const time = params ? params.time : null;
     const dateobj = params ? params.dateobj : null;
     const length = params ? params.length : null;
@@ -33,7 +33,7 @@ export default class FinalRequestScreen extends React.Component {
 			<View style={{justifyContent: "center",alignItems: "center",padding:30}}>
 			<Image
          		style={{width: 100, height: 100, borderRadius: 50}}
-         		source={{uri: `http://graph.facebook.com/${friendID}/picture?type=large`}}
+         		source={{uri: `http://graph.facebook.com/${Object.keys(members)[0]}/picture?type=large`}}
        		/>
 			<Text style={{fontSize:20, fontWeight:'bold'}}>{name.split(" ")[0]}</Text>
       <Text style={{fontSize:15}}>{dateobj.substring(0,10)}</Text>
@@ -67,7 +67,7 @@ export default class FinalRequestScreen extends React.Component {
     sent = prevData['sent'];
     data = new Object()
     data['FriendName'] = prevData['name']
-    data['FriendID'] = prevData['id']
+    data['FriendID'] = Object.keys(prevData['members'])[0]
     data['Location'] = this.state.location
     data['DateTime'] = new Date(prevData['dateobj'])
     data['Length'] = prevData['length']
@@ -77,7 +77,8 @@ export default class FinalRequestScreen extends React.Component {
             console.log("Document written with ID: ", docRef.id);
             data['FriendName'] = userName
             data['FriendID'] = userID
-            db.collection("users").doc(prevData['id']).collection('Received Requests').doc(docRef.id).set(data)
+            for (let thisid in prevData['members']) 
+              db.collection("users").doc(thisid).collection('Received Requests').doc(docRef.id).set(data)
         })
         .catch(function(error) {
             console.error("Error adding document: ", error);
@@ -87,14 +88,15 @@ export default class FinalRequestScreen extends React.Component {
       if (sent) {
         db.collection("users").doc(userID).collection('Sent Requests').doc(reschedule).delete().then(() => {
           console.log("Document successfully deleted!");
-          db.collection("users").doc(prevData['id']).collection('Received Requests').doc(reschedule).delete()
+          for (let thisid in prevData['members']) 
+            db.collection("users").doc(thisid).collection('Received Requests').doc(reschedule).delete()
         }).catch(function(error) {
           console.error("Error removing document: ", error);
         });
       } else {
         db.collection("users").doc(userID).collection('Received Requests').doc(reschedule).delete().then(() => {
           console.log("Document successfully deleted!");
-          db.collection("users").doc(prevData['id']).collection('Sent Requests').doc(reschedule).delete()
+          db.collection("users").doc(Object.keys(prevData['members'])[0]).collection('Sent Requests').doc(reschedule).delete()
         }).catch(function(error) {
           console.error("Error removing document: ", error);
         });
