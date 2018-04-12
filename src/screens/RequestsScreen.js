@@ -182,7 +182,7 @@ export default class RequestsScreen extends React.Component {
     data['Location'] = this.state.curUser.Location
     data['TimeString'] = this.state.curUser.TimeString
 
-    day = weekdays[this.state.curUser.DateTime.getDay()].day
+    day = weekdays[data['DateTime'].getDay()].day
     amPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
     hours = (data['DateTime'].getHours() % 12 || 12) + ":" + ("0" + data['DateTime'].getMinutes()).slice(-2) + " " + amPM
     index = data_flip[hours]
@@ -194,10 +194,10 @@ export default class RequestsScreen extends React.Component {
       freetimeData['Freetime'][index] = 2
       if (data['Length'] === 1) {
         freetimeData['Freetime'][index+1] = 2
-      }
-       console.log(freetimeData)
-    db.collection("users").doc(userID).collection('Freetime').doc(day).update(freetimeData).then(() => {
-      console.log("Document updated");
+      } 
+       console.log("my data", freetimeData)
+    freetimeRef.set(freetimeData).then(() => {
+      console.log("My Document updated");
       })
       .catch(function(error) {
         console.error("Error updating", error);
@@ -212,7 +212,7 @@ export default class RequestsScreen extends React.Component {
         freetimeData_other['Freetime'][index+1] = 2
       }
        console.log(freetimeData_other)
-    db.collection("users").doc(data['FriendID']).collection('Freetime').doc(day).update(freetimeData_other).then(() => {
+    freetimeRef_other.set(freetimeData_other).then(() => {
       console.log("Document updated");
       })
       .catch(function(error) {
@@ -230,7 +230,7 @@ export default class RequestsScreen extends React.Component {
         }, {merge: true})
       } else {
         friendData['numOfMeals']++
-        db.collection("users").doc(userID).collection('Friends').doc(data['FriendID']).update(friendData)
+        friendRef.update(friendData)
       }
     })
 
@@ -243,7 +243,7 @@ export default class RequestsScreen extends React.Component {
          }, {merge: true})
       } else {
         friendData_toMe['numOfMeals']++
-        db.collection("users").doc(data['FriendID']).collection('Friends').doc(userID).update(friendData_toMe)
+        friendRef_toMe.update(friendData_toMe)
       }
     })
 

@@ -87,8 +87,7 @@ export default class RequestByTimeScreen extends React.Component {
     for (dayOfWeek in this.state.time) {
       let temp = [];
       for (j = 0; j < 25; j++) {
-        // TODO change to if == 1
-        if (this.state.time[dayOfWeek][j]) {
+        if (this.state.time[dayOfWeek][j] === 1) {
           temp.push({
             time: this.printTime(j) + "-" + this.printTime(j+1,true),
             index: j,
@@ -109,7 +108,7 @@ export default class RequestByTimeScreen extends React.Component {
       let temp = [];
       cur = days.indexOf(thisday);
       for (j = 0; j < 25; j++) {
-        if (this.state.time[thisday][j] && this.state.time[thisday][j+1]) {
+        if (this.state.time[thisday][j] === 1 && this.state.time[thisday][j+1] === 1) {
           temp.push({
             time: this.printTime(j) + "-" + this.printTime(j+2,true),
             index: j,
