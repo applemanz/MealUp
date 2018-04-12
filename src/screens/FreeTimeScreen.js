@@ -60,7 +60,6 @@ export default class FreeTimeScreen extends React.Component {
           </View>)
         })
       )
-
     }
 
     addDays = (date, days) => {

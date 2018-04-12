@@ -17,7 +17,7 @@ class MyListItem extends React.PureComponent {
     this.props.onPressItem(this.props.id);
   };
 
-  render() { 
+  render() {
     // const textColor = this.props.selected ? "gray" : "green";
     if (this.props.selected === 2) {
       return (
@@ -29,7 +29,7 @@ class MyListItem extends React.PureComponent {
       return (
         <Button onPress={this._onPress} title={this.props.title} backgroundColor="gray"/>
     );}
-  } 
+  }
 }
 
 export default class FlatListSelector extends React.PureComponent {
@@ -38,30 +38,32 @@ export default class FlatListSelector extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {selected: [], friends: {}, freeFriends: {}}
+  }
+
+  componentDidMount() {
     userRef = db.collection('users').doc(userID).collection('Freetime').doc(this.props.dayOfWeek);
-    userRef.get().then(doc => {
+    userRef.onSnapshot((doc) => {
       if (doc.exists) {
-          // console.log("Document data:", this.props.dayOfWeek, doc.data().Freetime);
-          this.setState(previousState => {
-        return { selected: doc.data().Freetime };
-      });
-      } else {
-          // doc.data() will be undefined in this case
-          console.log("No such document!");
+        this.setState({selected: doc.data().Freetime})
       }
-  }).catch(function(error) {
-      console.log("Error getting document:", error);
-  });
+      else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+      }
+    })
+    // .catch(function(error) {
+    //   console.log("Error getting document:", error);
+    // })
 
-  // friends : {id: name}
-  friends = new Object()
-  db.collection("users").doc(userID).collection('Friends').get().then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-      friends[doc.id] = doc.data().Name
-    });
-    this.setState({friends:friends})
+    // friends : {id: name}
+    friends = new Object()
+    db.collection("users").doc(userID).collection('Friends').get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        friends[doc.id] = doc.data().Name
+      });
+      this.setState({friends:friends})
 
-  // freeFriends : {id: [day]{friendid : name}}
+      // freeFriends : {id: [day]{friendid : name}}
     for (key of Object.keys(friends)) {
       let temp = key;
       fdRef = db.collection("users").doc(temp).collection('FreeFriends').doc(this.props.dayOfWeek);
@@ -71,13 +73,13 @@ export default class FlatListSelector extends React.PureComponent {
           freeFriends = this.state.freeFriends
           freeFriends[temp] = doc.data().Freefriends;
           this.setState({freeFriends:freeFriends})
-        }
-        else {
-         // console.log("Does not exist")
-        }
-      })
-    }
-});
+          }
+          else {
+           // console.log("Does not exist")
+          }
+        })
+      }
+  });
 }
 
   updateState = (id) => {

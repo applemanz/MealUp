@@ -15,8 +15,7 @@ import {
 import NavigationBar from 'navigationbar-react-native';
 import { Avatar, Card, ListItem, Button, ButtonGroup, Icon } from 'react-native-elements';
 import firebase from "../config/firebase";
-import prompt from 'react-native-prompt-android';
-import { Ionicons } from '@expo/vector-icons';
+Cimport { Ionicons } from '@expo/vector-icons';
 import { userName, userID } from '../screens/SignInScreen';
 
 const db = firebase.firestore();
@@ -234,18 +233,18 @@ export default class MultiSelectList extends React.PureComponent {
               <Button
                 title="Rename Group"
                 onPress = {() => {
-                  prompt(
-                      'Change group name',
-                      'Enter a new name for you group',
-                      [
-                       {text: 'Cancel', onPress: () => this.setState({modalVisible: false}), style: 'cancel'},
-                       {text: 'OK', onPress: text => this.renameGroup(text, this.state.members, this.state.id)},
-                      ],
-                      {
-                        cancelable: true,
-                        // placeholder: {this.state.name}
-                      }
-                  )
+                  // prompt(
+                  //     'Change group name',
+                  //     'Enter a new name for you group',
+                  //     [
+                  //      {text: 'Cancel', onPress: () => this.setState({modalVisible: false}), style: 'cancel'},
+                  //      {text: 'OK', onPress: text => this.renameGroup(text, this.state.members, this.state.id)},
+                  //     ],
+                  //     {
+                  //       cancelable: true,
+                  //       // placeholder: {this.state.name}
+                  //     }
+                  // )
                 }}
               />
               <Button
