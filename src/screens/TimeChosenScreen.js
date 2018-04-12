@@ -58,66 +58,36 @@ export default class TimeChosenScreen extends React.Component {
     const { params } = this.props.navigation.state;
     // console.log(this.state.free)
     if (this.state.free)
-      return <SectionList
-        // in previous version no need object.keys
-        sections={[{title: "Friends", data: Object.keys(this.state.free)}]}
-        renderItem={({item}) => {
-          member = new Object();
-          member[item] = this.state.free[item];
-        <ListItem
-          // title={item['name']}
-          title = {this.state.free[item]}
-          onPress={() => this.props.navigation.navigate('FinalRequest', {
-            // name: item['name'],
-            // id: item['id'],
-            // url: `http://graph.facebook.com/${item['id']}/picture?type=square`,
-            name: this.state.free[item],
-            members: member,
-            dateobj: params.dateobj,
-            time: params.time,
-            length: params.length,
-          })}
-        />}}
-        renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-        keyExtractor={(item, index) => index}
-      />
-    return(
+      return (
       <View>
         <SectionList
-            // in previous version no need object.keys
-            sections={[{title: "Friends", data: Object.keys(this.state.free)}]}
-            renderItem={({item}) =>
-              <ListItem
-                roundAvatar
-                // title={item['name']}
-                title = {this.state.free[item]}
-                avatar={{uri:`http://graph.facebook.com/${item}/picture?type=normal`}}
-                onPress={() => this.props.navigation.navigate('FinalRequest', {
-                  // name: item['name'],
-                  // id: item['id'],
-                  // url: `http://graph.facebook.com/${item['id']}/picture?type=square`,
-                  name: this.state.free[item],
-                  id: item,
-                  url: `http://graph.facebook.com/${item}/picture?type=normal`,
-                  dateobj: params.dateobj,
-                  time: params.time,
-                  length: params.length,
-                })}
-                rightIcon = {{name: 'chevron-right'}}
-              />}
-            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-            keyExtractor={(item, index) => index}
-          />
+          // in previous version no need object.keys
+          sections={[{title: "Friends", data: Object.keys(this.state.free)}]}
+          renderItem={({item}) =>
+          <ListItem
+            // title={item['name']}
+            title = {this.state.free[item]}
+            onPress={() => this.props.navigation.navigate('FinalRequest', {
+              // name: item['name'],
+              // id: item['id'],
+              // url: `http://graph.facebook.com/${item['id']}/picture?type=square`,
+              name: this.state.free[item],
+              members: {[item]: this.state.free[item]},
+              url: `http://graph.facebook.com/${item}/picture?type=square`,
+              dateobj: params.dateobj,
+              time: params.time,
+              length: params.length,
+            })}
+          />}
+          renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+          keyExtractor={(item, index) => index}
+        />
+      </View>)
+    return(
+      <View>
+        <ActivityIndicator size="large" color="#0000ff" />
       </View>
     )
-    } else {
-      return(
-        <View>
-          <ActivityIndicator size="large" color="#0000ff" />
-        </View>
-      )
-    }
-
   }
 }
 
