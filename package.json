@@ -22,6 +22,7 @@
     "react-native-elements": "^0.19.1",
     "react-native-keyboard-spacer": "^0.4.1",
     "react-native-loading-spinner-overlay": "^0.5.2",
+    "react-native-prompt-android": "^0.3.3",
     "react-native-redux-listener": "^0.3.0",
     "react-native-router-flux": "^4.0.0-beta.28",
     "react-native-scrollable-tab-view": "^0.8.0",

@@ -6,6 +6,7 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  TouchableHighlight,
   ActionSheetIOS,
   Alert,
   AlertIOS,
@@ -14,7 +15,7 @@ import {
 import NavigationBar from 'navigationbar-react-native';
 import { Avatar, Card, ListItem, Button, ButtonGroup, Icon } from 'react-native-elements';
 import firebase from "../config/firebase";
-import Swiper from 'react-native-swiper';
+import prompt from 'react-native-prompt-android';
 import { Ionicons } from '@expo/vector-icons';
 import { userName, userID } from '../screens/SignInScreen';
 
@@ -90,6 +91,7 @@ export default class MultiSelectList extends React.PureComponent {
    setModalVisible(visible) {
      this.setState({modalVisible: visible});
      console.log('show modal')
+     console.log(this.state.modalVisible)
    }
 
 
@@ -103,37 +105,43 @@ export default class MultiSelectList extends React.PureComponent {
   };
 
   _onLongPress = (name, members, id, numOfMeals) => {
-    ActionSheetIOS.showActionSheetWithOptions({
-    options: ['Cancel', 'Leave Group', 'Rename Group', 'Add Members'],
-    destructiveButtonIndex: 1,
-    cancelButtonIndex: 0,
-  },
-  (buttonIndex) => {
-    if (buttonIndex === 1) {
-      Alert.alert(
-        'Leave Group?',
-        "You won't be able to get meals with this group anymore.",
-        [
-          {text: 'Leave', onPress: () => this.leaveGroup(name, members, id, numOfMeals), style:'destructive'},
-          {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-        ],
-        { cancelable: true }
-      )}
-    if (buttonIndex === 2) {
-
     if (Platform.OS === 'ios') {
-      AlertIOS.prompt(
-        'Enter new name for group',
-        null,
-        text => this.renameGroup(text, members, id)
+      ActionSheetIOS.showActionSheetWithOptions({
+        options: ['Cancel', 'Leave Group', 'Rename Group', 'Add Members'],
+        destructiveButtonIndex: 1,
+        cancelButtonIndex: 0,
+        },
+      (buttonIndex) => {
+        if (buttonIndex === 1) {
+          Alert.alert(
+            'Leave Group?',
+            "You won't be able to get meals with this group anymore.",
+            [
+              {text: 'Leave', onPress: () => this.leaveGroup(name, members, id, numOfMeals), style:'destructive'},
+              {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+            ],
+            { cancelable: true }
+          )}
+        if (buttonIndex === 2) {
+          AlertIOS.prompt(
+            'Enter new name for group',
+            null,
+            text => this.renameGroup(text, members, id)
+          )
+        }
+        if (buttonIndex === 3) {this.addMember(name, members, id)}
+        }
       )
-    } else {
-      //android prompt
     }
-
+    else {
+      this.setState({
+        name:name,
+        members:members,
+        id:id,
+        numOfMeals:numOfMeals
+      })
+      this.setModalVisible(true);
     }
-    if (buttonIndex === 3) {this.addMember(name, members, id)}
-  });
   }
 
   leaveGroup = (name, members, id, numOfMeals) => {
@@ -189,6 +197,102 @@ export default class MultiSelectList extends React.PureComponent {
   addGroup = () => {
     this.props.navigation.navigate("AddGroup")
   }
+  renderModal() {
+    return (
+      <View style={{marginTop: 22}}>
+    <Modal
+      transparent={true}
+      visible={this.state.modalVisible}
+      onRequestClose={() => this.setState({modalVisible: false})}>
+      <View style={{
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000080'}}>
+          <View style={{
+            width: 300,
+            height: 300,
+            backgroundColor: 'transparent',
+            // padding: 20
+          }}>
+              <Button
+                title="Leave Group"
+                onPress={()=> {
+                  Alert.alert(
+                    'Leave Group?',
+                    "You won't be able to get meals with this group anymore.",
+                    [
+                      {text: 'Leave', onPress: () => this.leaveGroup(this.state.name, this.state.members, this.state.id, this.state.numOfMeals), style:'destructive'},
+                      {text: 'Cancel', onPress: () => this.setState({modalVisible: false}), style: 'cancel'},
+                    ],
+                    { cancelable: true }
+                  )
+                  this.setState({modalVisible: false})
+                }}
+                />
+              <Button
+                title="Rename Group"
+                onPress = {() => {
+                  prompt(
+                      'Change group name',
+                      'Enter a new name for you group',
+                      [
+                       {text: 'Cancel', onPress: () => this.setState({modalVisible: false}), style: 'cancel'},
+                       {text: 'OK', onPress: text => this.renameGroup(text, this.state.members, this.state.id)},
+                      ],
+                      {
+                        cancelable: true,
+                        // placeholder: {this.state.name}
+                      }
+                  )
+                }}
+              />
+              <Button
+                title="Add Members"
+                onPress = {()=>{
+                  this.setState({modalVisible: false})
+                  this.addMember(this.state.name, this.state.members, this.state.id)}}
+              />
+          </View>
+      </View>
+    </Modal>
+  </View>
+    )
+  //     <View>
+  //   <Modal
+  //     onRequestClose={() => this.setState({modalVisible: false})}
+  //     transparent={false}
+  //     visible={this.state.modalVisible}>
+  //     <View style={{
+  //       flex: 1,
+  //       flexDirection: 'column',
+  //       justifyContent: 'center',
+  //       alignItems: 'center',
+  //       backgroundColor: '#00000080'}}>
+  //       <View style={{
+  //         width: 300,
+  //         height: 300,
+  //         backgroundColor: '#fff', padding: 20}}>
+  //           <Button
+  //             onPress={()=>
+  //               Alert.alert(
+  //                 'Leave Group?',
+  //                 "You won't be able to get meals with this group anymore.",
+  //                 [
+  //                   {text: 'Leave', onPress: () => {}, style:'destructive'},
+  //                   {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+  //                 ],
+  //                 { cancelable: true }
+  //               )}
+  //             title="Leave Group"/>
+  //           <Button onPress = {()=>{}} title="Rename Group"/>
+  //           <Button onPress = {this.addMember(name, members, id)} title="Add Members"/>
+  //       </View>
+  //     </View>
+  //   </Modal>
+  // </View>;
+  }
 
   render() {
     console.log('group list data')
@@ -212,6 +316,9 @@ export default class MultiSelectList extends React.PureComponent {
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
         />
+        {this.renderModal()}
+
+
       </View>
     );
   }

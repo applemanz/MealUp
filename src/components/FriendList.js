@@ -78,7 +78,8 @@ class MyListItem extends React.PureComponent {
             }
           />
         )
-      } else {return null}
+      }
+      else {return null}
     }
     else {
       return (
@@ -113,17 +114,12 @@ export default class FriendList extends React.PureComponent {
 
   componentDidMount() {
     if (this.props.currentMembers) {
-      console.log("data")
-      console.log(this.props.data)
-
       var selected = new Map()
       for (item of this.props.data) {
         if (item.id in this.props.currentMembers)
           selected.set(item.id, true)
       }
       this.setState({selected:selected})
-      console.log("current members")
-      console.log(this.state.selected)
     }
   }
 
@@ -168,6 +164,7 @@ export default class FriendList extends React.PureComponent {
   render() {
     return (
       <View style={{flex:1}}>
+
         <FlatList
           data={this.props.data}
           extraData={this.state}
@@ -179,14 +176,14 @@ export default class FriendList extends React.PureComponent {
     )
   }
 
-  // Add Group Screen Friend List Code
+  // Add Group/Add Member Screen Code
   countSelected = () => {
     count = 0
     if (this.state.selected) {
-    for (var [key, value] of this.state.selected) {
-      if (value) count += 1
+      for (var [key, value] of this.state.selected) {
+        if (value) count += 1
+      }
     }
-  }
     return count
   }
 
@@ -278,8 +275,6 @@ export default class FriendList extends React.PureComponent {
           </View>
         )
       }
-      console.log(this.countSelected())
-      console.log(Object.keys(this.props.currentMembers).length)
       if (this.props.addMember) {
         buttonActive = this.countSelected()-Object.keys(this.props.currentMembers).length >= 0 ? '#f4511e' : '#d3d3d3'
         buttonFont = this.countSelected()-Object.keys(this.props.currentMembers).length >= 0 ? 'bold' : 'normal'
@@ -289,9 +284,9 @@ export default class FriendList extends React.PureComponent {
             title={''}
             rightIcon = {
               <TouchableOpacity
-                style={{backgroundColor: 'transparent',}}
+                style={{backgroundColor: 'transparent', }}
                 onPress={() => this.addMember(this.props.groupID)}>
-                <Text style = {{color:buttonActive, fontWeight: 'bold'}}>Add Member(s)</Text>
+                <Text style = {{color:buttonActive, fontWeight: 'bold', padding: 10}}>Add Member(s)</Text>
               </TouchableOpacity>}
             leftIcon = {
               <View style={{flex: 4, flexDirection: 'row',}}>
