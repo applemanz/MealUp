@@ -137,6 +137,7 @@ export default class HomeScreen extends Component {
       //console.log("HERE" + meal['docid'])
       mealEntry['meal'] = meal
       mealEntry['displaydate'] = meal.DateTime.toDateString().substring(0,10);
+      mealEntry['datetime'] = meal.DateTime;
       mealItems.push(mealEntry)
       items[dateID] = mealItems
     }
@@ -146,6 +147,11 @@ export default class HomeScreen extends Component {
 
     for (dateID in updatedItems) {
       if (dateID in items) {
+        items[dateID].sort(function(a, b) {
+          a = a.datetime;
+          b = b.datetime;
+          return a>b ? 1 : a<b ? -1 : 0;
+        });
         updatedItems[dateID] = items[dateID]
         //console.log("DOCID " + items[dateID][0].displaydate)
       }
