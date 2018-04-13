@@ -62,25 +62,6 @@ export default class FlatListSelector extends React.PureComponent {
         friends[doc.id] = doc.data().Name
       });
       this.setState({friends:friends})
-
-      // freeFriends : {id: [day]{friendid : name}}
-      // freeFriends : {id: [time]{friendid : name}}
-
-    for (key of Object.keys(friends)) {
-      let temp = key;
-      fdRef = db.collection("users").doc(temp).collection('FreeFriends').doc(this.props.dayOfWeek);
-      fdRef.get().then(doc => {
-        if (doc.exists) {
-          // console.log("EXISTS",friends[temp],this.props.dayOfWeek)
-          freeFriends = this.state.freeFriends
-          freeFriends[temp] = doc.data().Freefriends;
-          this.setState({freeFriends:freeFriends})
-          }
-          else {
-           // console.log("Does not exist")
-          }
-        })
-      }
   });
 }
 
@@ -99,30 +80,7 @@ export default class FlatListSelector extends React.PureComponent {
     }
     // selected.set(id, !selected.get(id)); // toggle
 
-    // update all your friends that you're free / not free on tap
-    freeFriends = Object.assign(this.state.freeFriends)
-    for (key of Object.keys(this.state.friends)) {
-      if (key in freeFriends) {
-        if (userID in freeFriends[key][id]) {
-          delete freeFriends[key][id][userID];
-        }
-        else {
-          // store name but it's not necessary
-          if (selected[id] === 1)
-          freeFriends[key][id][userID] = userName;
-        }
-      }
-      else {
-        // initialize empty array (time) of arrays
-        freeFriends[key] = []
-        for (i = 0; i < 25; i++) {
-          freeFriends[key].push({})
-        }
-        if (selected[id] === 1)
-          freeFriends[key][id][userID] = userName;
-      }
-    }
-    return {selected:selected,freeFriends:freeFriends};
+    return {selected:selected};
   };
 
   _onPressItem = (id: int) => {
@@ -138,14 +96,19 @@ export default class FlatListSelector extends React.PureComponent {
       Freetime: this.state.selected
       }, { merge: true });
 
-      // merge for each friend you have
-      for (friendID of Object.keys(this.state.freeFriends)) {
+      // for each friend updates newfreefriends
+      for (friendID of Object.keys(this.state.friends)) {
         //console.log(friendID)
-        fdRef = db.collection("users").doc(friendID).collection('FreeFriends').doc(this.props.dayOfWeek)
+        fdRef = db.collection("users").doc(friendID).collection('NewFreeFriends').doc(this.props.dayOfWeek)
         // console.log(this.state.freeFriends[friendID])
-        fdRef.set({
-          Freefriends: this.state.freeFriends[friendID]
-        }, {merge: true});
+        newRef = "Freefriends" + "." + id + "." + userID
+        foo = new Object();
+        console.log(newRef);
+
+        if (!fdRef.exists) 
+          fdRef.set({Freefriends:{}})
+        foo[newRef] = this.state.selected[id] == 1 ? true : false;
+        fdRef.update(foo);
       }
     })
 

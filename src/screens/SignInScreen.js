@@ -114,9 +114,9 @@ export default class SignInScreen extends React.Component {
                   // create new freeFriends object
                   freeFriends = new Object()
                   for (dofW of daysOfWeek) {
-                    freeFriends[dofW] = [];
+                    freeFriends[dofW] = {};
                     for (i = 0; i < 25; i++) {
-                      freeFriends[dofW].push({})
+                      freeFriends[dofW][i] = {}
                     }
                   }
                   console.log("I'm here 1")
@@ -127,8 +127,8 @@ export default class SignInScreen extends React.Component {
                       console.log("I'm in then 1")
                       querySnapshot.forEach(function(doc) {
                         for (i = 0; i < 25; i++) {
-                          if (doc.data().Freetime[i]) {
-                            freeFriends[doc.id][i][thisfriend.id] = thisfriend.name
+                          if (doc.data().Freetime[i] === 1) {
+                            freeFriends[doc.id][i][thisfriend.id] = true;
                           }
                         }
                       })
