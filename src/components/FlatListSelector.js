@@ -69,7 +69,7 @@ export default class FlatListSelector extends React.PureComponent {
     for (key of Object.keys(friends)) {
       let temp = key;
       fdRef = db.collection("users").doc(temp).collection('FreeFriends').doc(this.props.dayOfWeek);
-      fdRef.get().then(doc => {
+      fdRef.onSnapshot(doc => {
         if (doc.exists) {
           // console.log("EXISTS",friends[temp],this.props.dayOfWeek)
           freeFriends = this.state.freeFriends
