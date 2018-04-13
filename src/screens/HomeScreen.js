@@ -351,7 +351,7 @@ mealModal() {
       backgroundColor: '#00000080'}}>
     <View style={{
         width: 300,
-        height: 400,
+        height: 420,
         backgroundColor: '#fff', padding: 20}}>
         <View style={{alignItems: 'center'}}>
         <View style={{padding: 10}}>
