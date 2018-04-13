@@ -259,8 +259,8 @@ export default class HomeScreen extends Component {
           source={{uri: item.url}}
         />
         <View>
-          <Text style = {{fontSize:18}}>{item.text}</Text>
-          <Text style = {{fontSize:18}}>{item.subtext}</Text>
+          <Text style = {{fontSize:15}}>{item.text}</Text>
+          <Text style = {{fontSize:15}}>{item.subtext}</Text>
         </View>
       </View>
       </TouchableHighlight>
