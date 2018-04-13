@@ -150,8 +150,8 @@ export default class SignInScreen extends React.Component {
               console.log("Error getting document:", error);
           });
 
-          userID = '10210889686788547'
-          userName = 'Andrew Zeng'
+          // userID = '10210889686788547'
+          // userName = 'Andrew Zeng'
           this.props.navigation.navigate('Main');
 
           } catch (error) {

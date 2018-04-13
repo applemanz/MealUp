@@ -201,6 +201,11 @@ export default class MultiSelectList extends React.PureComponent {
   }
   renderAlert() {
     return (
+      // <View style={{
+      //   flex: 1,
+      //   flexDirection: 'column',
+      //   justifyContent: 'center',
+      //   alignItems: 'center',}} >
       <Prompt
     title="Enter new group name"
     visible={this.state.promptVisible}
@@ -220,6 +225,7 @@ export default class MultiSelectList extends React.PureComponent {
 
     }}
   />
+// </View>
     )
   }
   renderModal() {
@@ -259,6 +265,7 @@ export default class MultiSelectList extends React.PureComponent {
               <Button
                 title="Rename Group"
                 onPress = {() => {
+                  this.setState({modalVisible: false})
                   this.setState({promptVisible: true});
                   // prompt(
                   //     'Change group name',
