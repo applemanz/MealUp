@@ -221,7 +221,8 @@ export default class RequestsScreen extends React.Component {
       });
     })
     
-    // update freefriends for acceptor
+
+    // update freefriends for acceptor (if other person in the freefriend list also delete it)
     friendsRef = db.collection("users").doc(userID).collection('Friends');
     friendsRef.get().then((querySnapshot) => {
       friends = [];
@@ -233,37 +234,51 @@ export default class RequestsScreen extends React.Component {
 
       for (let friend of friends) {
         thisday = weekdays[data['DateTime'].getDay()].day;
-        freefriendsRef = db.collection("users").doc(friend).collection('FreeFriends').doc(thisday);
+        let freefriendsRef = db.collection("users").doc(friend).collection('FreeFriends').doc(thisday);
         freefriendsRef.get().then(function(doc) {
-          console.log("current friend ", friend, "day:", thisday, "index: ", index)
-          temp = doc.data().Freefriends;
+          console.log("IN 1, current friend ", friend, "day:", thisday, "index: ", index)
+          let temp = doc.data().Freefriends;
+          if (userID in temp[index]) {
           delete temp[index][userID];
+          console.log(userName, "deleted")
+          }
+          if (data['FriendID'] in temp[index]) {
+            delete temp[index][data['FriendID']]
+            console.log("common friend", data['FriendName'], "deleted")
+          }
           freefriendsRef.set({Freefriends: temp}).then(() => {
-            
-            console.log("Free friends updated for", friend)
+            console.log("Info put", temp[index])
+            console.log("In 1, Free friends updated for", friend)
           })
         })
       }
     })
     
-    // update freefriends for other person
-    friendsRef = db.collection("users").doc(data['FriendID']).collection('Friends');
-    friendsRef.get().then((querySnapshot) => {
-      friends = [];
+    // update freefriends for other person if not already updated
+    friendsRef2 = db.collection("users").doc(data['FriendID']).collection('Friends');
+    friendsRef2.get().then((querySnapshot) => {
+      friends2 = [];
       querySnapshot.forEach((doc) => {
-        friends.push(doc.id)
+        friends2.push(doc.id)
       })
+      console.log("friends2", friends2)
 
-      for (let friend of friends) {
+      for (let friend of friends2) {
         thisday = weekdays[data['DateTime'].getDay()].day;
         let freefriendsRef = db.collection("users").doc(friend).collection('FreeFriends').doc(thisday);
         freefriendsRef.get().then(function(doc) {
-          console.log("current friend ", friend, "day:", thisday, "index: ", index)
-          temp = doc.data().Freefriends;
-          delete temp[index][data['FriendID']];
-          freefriendsRef.set({Freefriends: temp}).then(() => {
-            console.log("Free friends updated for", friend)
-          })
+          console.log("IN 2, current friend ", friend, "day:", thisday, "index: ", index)
+          let temp2 = doc.data().Freefriends;
+          if (friends.indexOf(friend) != -1) {
+            console.log("Friend already encountered", friend)
+          }
+          else {
+            delete temp2[index][data['FriendID']];
+            freefriendsRef.set({Freefriends: temp2}).then(() => {
+              console.log("Info put", temp2[index])
+              console.log("In 2, Free friends updated for", friend)
+            })
+          }
         })
       }
     })
