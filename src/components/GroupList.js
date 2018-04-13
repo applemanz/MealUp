@@ -17,6 +17,8 @@ import { Avatar, Card, ListItem, Button, ButtonGroup, Icon } from 'react-native-
 import firebase from "../config/firebase";
 import { Ionicons } from '@expo/vector-icons';
 import { userName, userID } from '../screens/SignInScreen';
+import Prompt from 'react-native-prompt-simple';
+
 
 const db = firebase.firestore();
 
@@ -85,6 +87,7 @@ class MyListItem extends React.PureComponent {
 export default class MultiSelectList extends React.PureComponent {
   state = {
      modalVisible: false,
+     promptVisible: false,
    };
 
    setModalVisible(visible) {
@@ -122,11 +125,11 @@ export default class MultiSelectList extends React.PureComponent {
             { cancelable: true }
           )}
         if (buttonIndex === 2) {
-          // AlertIOS.prompt(
-          //   'Enter new name for group',
-          //   null,
-          //   text => this.renameGroup(text, members, id)
-          // )
+          AlertIOS.prompt(
+            'Enter new name for group',
+            null,
+            text => this.renameGroup(text, members, id)
+          )
         }
         if (buttonIndex === 3) {this.addMember(name, members, id)}
         }
@@ -196,6 +199,35 @@ export default class MultiSelectList extends React.PureComponent {
   addGroup = () => {
     this.props.navigation.navigate("AddGroup")
   }
+  renderAlert() {
+    return (
+      // <View style={{
+      //   flex: 1,
+      //   flexDirection: 'column',
+      //   justifyContent: 'center',
+      //   alignItems: 'center',}} >
+      <Prompt
+    title="Enter new group name"
+    visible={this.state.promptVisible}
+    placeholder= {this.state.name}
+    textCancel="Cancel"
+    textAccept="Submit"
+    onChange={(text) => {this.setState({groupName:text})}}
+    onCancel={(v) => {
+      this.setState({modalVisible: false});
+      this.setState({promptVisible: false});
+    }}
+
+    onAccept={(text) => {
+      this.setState({groupName:text})
+      this.renameGroup(text, this.state.members, this.state.id)
+      this.setState({promptVisible: false});
+
+    }}
+  />
+// </View>
+    )
+  }
   renderModal() {
     return (
       <View style={{marginTop: 22}}>
@@ -233,6 +265,8 @@ export default class MultiSelectList extends React.PureComponent {
               <Button
                 title="Rename Group"
                 onPress = {() => {
+                  this.setState({modalVisible: false})
+                  this.setState({promptVisible: true});
                   // prompt(
                   //     'Change group name',
                   //     'Enter a new name for you group',
@@ -258,39 +292,6 @@ export default class MultiSelectList extends React.PureComponent {
     </Modal>
   </View>
     )
-  //     <View>
-  //   <Modal
-  //     onRequestClose={() => this.setState({modalVisible: false})}
-  //     transparent={false}
-  //     visible={this.state.modalVisible}>
-  //     <View style={{
-  //       flex: 1,
-  //       flexDirection: 'column',
-  //       justifyContent: 'center',
-  //       alignItems: 'center',
-  //       backgroundColor: '#00000080'}}>
-  //       <View style={{
-  //         width: 300,
-  //         height: 300,
-  //         backgroundColor: '#fff', padding: 20}}>
-  //           <Button
-  //             onPress={()=>
-  //               Alert.alert(
-  //                 'Leave Group?',
-  //                 "You won't be able to get meals with this group anymore.",
-  //                 [
-  //                   {text: 'Leave', onPress: () => {}, style:'destructive'},
-  //                   {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-  //                 ],
-  //                 { cancelable: true }
-  //               )}
-  //             title="Leave Group"/>
-  //           <Button onPress = {()=>{}} title="Rename Group"/>
-  //           <Button onPress = {this.addMember(name, members, id)} title="Add Members"/>
-  //       </View>
-  //     </View>
-  //   </Modal>
-  // </View>;
   }
 
   render() {
@@ -316,6 +317,7 @@ export default class MultiSelectList extends React.PureComponent {
           renderItem={this._renderItem}
         />
         {this.renderModal()}
+        {this.renderAlert()}
 
 
       </View>

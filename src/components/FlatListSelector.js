@@ -108,7 +108,7 @@ export default class FlatListSelector extends React.PureComponent {
         }
         else {
           // store name but it's not necessary
-          if (selected[id])
+          if (selected[id] === 1)
           freeFriends[key][id][userID] = userName;
         }
       }
@@ -118,7 +118,7 @@ export default class FlatListSelector extends React.PureComponent {
         for (i = 0; i < 25; i++) {
           freeFriends[key].push({})
         }
-        if (selected[id])
+        if (selected[id] === 1)
           freeFriends[key][id][userID] = userName;
       }
     }
