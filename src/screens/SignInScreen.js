@@ -107,7 +107,7 @@ export default class SignInScreen extends React.Component {
                   console.log("No such document!");
                   for (dofW of daysOfWeek) {
                     db.collection('users').doc(userID).collection('Freetime').doc(dofW).set({
-                      Freetime: Array.from(Array(25), () => false),
+                      Freetime: Array.from(Array(25), () => 0),
                     })
                   }
                   console.log("I'm here 0")
