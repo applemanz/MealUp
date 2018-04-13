@@ -131,12 +131,14 @@ export default class HomeScreen extends Component {
         mealItems = []
       }
       mealEntry = new Object()
-      mealEntry['text'] = `Meal with ${meal['FriendName']}`
+      mealEntry['text'] = meal['FriendName'].split(" ")[0]
       mealEntry['subtext'] = `${meal['TimeString']} at ${meal['Location']}`
       mealEntry['docid'] = meal['docid']
+      mealEntry['url'] = `http://graph.facebook.com/${meal['FriendID']}/picture?type=large`
       //console.log("HERE" + meal['docid'])
       mealEntry['meal'] = meal
       mealEntry['displaydate'] = meal.DateTime.toDateString().substring(0,10);
+      mealEntry['datetime'] = meal.DateTime;
       mealItems.push(mealEntry)
       items[dateID] = mealItems
     }
@@ -146,6 +148,11 @@ export default class HomeScreen extends Component {
 
     for (dateID in updatedItems) {
       if (dateID in items) {
+        items[dateID].sort(function(a, b) {
+          a = a.datetime;
+          b = b.datetime;
+          return a>b ? 1 : a<b ? -1 : 0;
+        });
         updatedItems[dateID] = items[dateID]
         //console.log("DOCID " + items[dateID][0].displaydate)
       }
@@ -251,10 +258,16 @@ export default class HomeScreen extends Component {
   renderItem = (item) => {
     //console.log(item.docid);
     return (
-      <TouchableHighlight onPress={() => this.itemPressed(item)} underlayColor='transparent'>
-      <View style={[styles.item, {height: item.height}]}>
-        <Text>{item.text}</Text>
-        <Text>{item.subtext}</Text>
+      <TouchableHighlight style={{marginTop:17,}} onPress={() => this.itemPressed(item)} underlayColor='transparent'>
+      <View style={[styles.item, {height: item.height, flexDirection:'row'}]}>
+        <Image
+          style={{width: 35, height: 35, borderRadius: 17.5, marginRight:10}}
+          source={{uri: item.url}}
+        />
+        <View>
+          <Text style = {{fontSize:15}}>{item.text}</Text>
+          <Text style = {{fontSize:15}}>{item.subtext}</Text>
+        </View>
       </View>
       </TouchableHighlight>
     );
@@ -265,7 +278,7 @@ export default class HomeScreen extends Component {
 
   renderEmptyDate() {
     return (
-        <TouchableHighlight onPress={this.requestPressed} underlayColor='transparent'>
+        <TouchableHighlight onPress={this.requestPressed} style={{marginTop:20}} underlayColor='transparent'>
         <View style={[styles.empty, {height: 40}]}>
           <Text>No meals scheduled. Schedule a meal?</Text>
         </View>
