@@ -96,17 +96,21 @@ export default class FlatListSelector extends React.PureComponent {
       }, { merge: true });
 
       // for each friend updates newfreefriends
-      for (friendID of Object.keys(this.state.friends)) {
+      for (let friendID of Object.keys(this.state.friends)) {
         //console.log(friendID)
-        fdRef = db.collection("users").doc(friendID).collection('NewFreeFriends').doc(this.props.dayOfWeek)
-        // console.log(this.state.freeFriends[friendID])
-        newRef = "Freefriends" + "." + id + "." + userID
-        foo = new Object();
+        let fdRef = db.collection("users").doc(friendID).collection('NewFreeFriends').doc(this.props.dayOfWeek)
+        console.log(this.state.freeFriends[friendID])
+        let newRef = "Freefriends" + "." + id + "." + userID
+        let foo = new Object();
         console.log(newRef);
 
+<<<<<<< HEAD
         // if (!fdRef.exists)
         //   fdRef.set({Freefriends:{}})
         foo[newRef] = this.state.selected[id] === 1 ? true : false;
+=======
+        foo[newRef] = this.state.selected[id] == 1 ? true : false;
+>>>>>>> a8e77d0a36e98a5e1d214785d187b196c4ee75d5
         fdRef.update(foo);
       }
     })
