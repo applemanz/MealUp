@@ -134,6 +134,7 @@ export default class RequestsScreen extends React.Component {
     roundAvatar
     title={item.FriendName}
     subtitle={item.DateTime.toDateString().substring(0,10) + " " + item.TimeString + " at " + item.Location}
+    subtitleNumberOfLines={2}
     avatar={{uri:item.url}}
     onPress={() => this._onPressSent(item)}
     />;
@@ -145,6 +146,7 @@ export default class RequestsScreen extends React.Component {
     roundAvatar
     title={item.FriendName}
     subtitle={item.DateTime.toDateString().substring(0,10) + " " + item.TimeString + " at " + item.Location}
+    subtitleNumberOfLines={2}
     avatar={{uri:item.url}}
     onPress={() => this._onPressReceived(item)}
     />;
@@ -206,7 +208,7 @@ export default class RequestsScreen extends React.Component {
       freetimeData['Freetime'][index] = 2
       if (data['Length'] === 1) {
         freetimeData['Freetime'][index+1] = 2
-      } 
+      }
       // console.log("my data", freetimeData)
     freetimeRef.set(freetimeData).then(() => {
       console.log("My Document updated");
@@ -231,7 +233,7 @@ export default class RequestsScreen extends React.Component {
         console.error("Error updating", error);
       });
     })
-    
+
 
     // update freefriends for acceptor
     friendsRef = db.collection("users").doc(userID).collection('Friends');
@@ -252,7 +254,7 @@ export default class RequestsScreen extends React.Component {
         fdRef.update(foo);
       }
     })
-    
+
     // update freefriends for other person if not already updated
     friendsRef2 = db.collection("users").doc(data['FriendID']).collection('Friends');
     friendsRef2.get().then((querySnapshot) => {

@@ -82,7 +82,7 @@ export default class FinalRequestScreen extends React.Component {
       </Picker>);
     } else {
       return (<View>
-      <TextInput 
+      <TextInput
         style = {{height: 40, borderWidth: 0.5, backgroundColor: 'white', margin: 20, padding: 10}}
         onChangeText = {(text) => this.setState({location: text})}
         // value = {this.state.location}
@@ -91,7 +91,7 @@ export default class FinalRequestScreen extends React.Component {
       />
       <Button title="< Back" backgroundColor='#f4511e' borderRadius={50} raised onPress={() => {this.setState({location: "Wilcox"})}}/>
       </View>);
-    } 
+    }
   }
 
 	render() {
@@ -118,7 +118,7 @@ export default class FinalRequestScreen extends React.Component {
 			<View style={{justifyContent: "center",alignItems: "center"}}>
 			<Text>Select a Location:</Text>
 			</View>
-      <View style = {{marginBottom:20}}>
+      <View style = {{marginBottom:50}}>
         { this.renderOptions() }
       </View>
 			<Button title="Submit" backgroundColor='#f4511e' borderRadius={50} raised onPress={this.submitRequest}/>
@@ -143,7 +143,7 @@ export default class FinalRequestScreen extends React.Component {
               console.log("Document written with ID: ", docRef.id);
               data['FriendName'] = userName
               data['FriendID'] = userID
-              for (let thisid in prevData['members']) 
+              for (let thisid in prevData['members'])
                 db.collection("users").doc(thisid).collection('Received Requests').doc(docRef.id).set(data)
           })
           .catch(function(error) {
@@ -154,7 +154,7 @@ export default class FinalRequestScreen extends React.Component {
         if (sent == 2) {
           db.collection("users").doc(userID).collection('Meals').doc(reschedule).delete().then(() => {
             console.log("Document successfully deleted!");
-            for (let thisid in prevData['members']) 
+            for (let thisid in prevData['members'])
               db.collection("users").doc(thisid).collection('Meals').doc(reschedule).delete()
           }).catch(function(error) {
             console.error("Error removing document: ", error);
@@ -163,7 +163,7 @@ export default class FinalRequestScreen extends React.Component {
         else if (sent == true) {
           db.collection("users").doc(userID).collection('Sent Requests').doc(reschedule).delete().then(() => {
             console.log("Document successfully deleted!");
-            for (let thisid in prevData['members']) 
+            for (let thisid in prevData['members'])
               db.collection("users").doc(thisid).collection('Received Requests').doc(reschedule).delete()
           }).catch(function(error) {
             console.error("Error removing document: ", error);

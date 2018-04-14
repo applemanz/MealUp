@@ -21,7 +21,7 @@ class MyListItem extends React.PureComponent {
     // const textColor = this.props.selected ? "gray" : "green";
     if (this.props.selected === 2) {
       return (
-      <Button onPress={this._onPress} title={this.props.title} backgroundColor="black"/>
+      <Button onPress={()=>{}} title={'Meal'} backgroundColor="black"/>
     );} else if (this.props.selected === 1) {
       return (
         <Button onPress={this._onPress} title={this.props.title} backgroundColor="green"/>
@@ -41,13 +41,12 @@ export default class FlatListSelector extends React.PureComponent {
   }
 
   componentDidMount() {
-    userRef = db.collection('users').doc(userID).collection('Freetime').doc(this.props.dayOfWeek);
-    userRef.onSnapshot((doc) => {
+    // userRef = db.collection('users').doc(userID).collection('Freetime').doc(this.props.dayOfWeek);
+    this.userRef.onSnapshot((doc) => {
       if (doc.exists) {
         this.setState({selected: doc.data().Freetime})
       }
       else {
-        // doc.data() will be undefined in this case
         console.log("No such document!");
       }
     })
@@ -62,32 +61,10 @@ export default class FlatListSelector extends React.PureComponent {
         friends[doc.id] = doc.data().Name
       });
       this.setState({friends:friends})
-<<<<<<< HEAD
-
-      // freeFriends : {id: [day]{friendid : name}}
-      // freeFriends : {id: [time]{friendid : name}}
-
-    for (key of Object.keys(friends)) {
-      let temp = key;
-      fdRef = db.collection("users").doc(temp).collection('FreeFriends').doc(this.props.dayOfWeek);
-      fdRef.get().then(doc => {
-        if (doc.exists) {
-          // console.log("EXISTS",friends[temp],this.props.dayOfWeek)
-          freeFriends = this.state.freeFriends
-          freeFriends[temp] = doc.data().Freefriends;
-          this.setState({freeFriends:freeFriends})
-          }
-          else {
-           // console.log("Does not exist")
-          }
-        })
-      }
-=======
->>>>>>> 6d5155a01ad49828ca74899317c2075e5c001f15
   });
 }
 
-  updateStateSelected = (id) => {
+  updateState = (id) => {
     // copy the map rather than modifying state.
     selected = this.state.selected.slice(0);
     if (selected.length == 0) selected = Array.from(Array(25), () => 0);
@@ -103,43 +80,11 @@ export default class FlatListSelector extends React.PureComponent {
     // selected.set(id, !selected.get(id)); // toggle
 
     return {selected:selected};
-<<<<<<< HEAD
-  };
-
-  updateStateFreeFriends = (id) => {
-    // selected.set(id, !selected.get(id)); // toggle
-
-    // update all your friends that you're free / not free on tap
-    freeFriends = Object.assign(this.state.freeFriends)
-    for (key of Object.keys(this.state.friends)) {
-      if (key in freeFriends) {
-        if (userID in freeFriends[key][id]) {
-          delete freeFriends[key][id][userID];
-        }
-        else {
-          // store name but it's not necessary
-          if (this.state.selected[id] === 1)
-          freeFriends[key][id][userID] = userName;
-        }
-      }
-      else {
-        // initialize empty array (time) of arrays
-        freeFriends[key] = []
-        for (i = 0; i < 25; i++) {
-          freeFriends[key].push({})
-        }
-        if (this.state.selected[id] === 1)
-          freeFriends[key][id][userID] = userName;
-      }
-    }
-    return {freeFriends:freeFriends};
-=======
->>>>>>> 6d5155a01ad49828ca74899317c2075e5c001f15
   };
 
   _onPressItem = (id: int) => {
     // updater functions are preferred for transactional updates
-    this.setState(this.updateStateSelected(id), () => {
+    this.setState(this.updateState(id), () => {
       // console.log(this.state.selected);
       // console.log(this.state.freeFriends);
       // console.log(this.state.friends)
@@ -148,23 +93,6 @@ export default class FlatListSelector extends React.PureComponent {
       // merge
       var setWithMerge = this.userRef.set({
       Freetime: this.state.selected
-<<<<<<< HEAD
-    }, { merge: true }).then(
-
-            this.setState(this.updateStateFreeFriends(id), ()=>{
-              for (friendID of Object.keys(this.state.freeFriends)) {
-                //console.log(friendID)
-                fdRef = db.collection("users").doc(friendID).collection('FreeFriends').doc(this.props.dayOfWeek)
-                console.log(this.state.freeFriends[friendID])
-                fdRef.set({
-                  Freefriends: this.state.freeFriends[friendID]
-                }, {merge: true});
-              }
-            })
-    );
-
-
-=======
       }, { merge: true });
 
       // for each friend updates newfreefriends
@@ -176,15 +104,12 @@ export default class FlatListSelector extends React.PureComponent {
         foo = new Object();
         console.log(newRef);
 
-        if (!fdRef.exists) 
-          fdRef.set({Freefriends:{}})
-        foo[newRef] = this.state.selected[id] == 1 ? true : false;
+        // if (!fdRef.exists)
+        //   fdRef.set({Freefriends:{}})
+        foo[newRef] = this.state.selected[id] === 1 ? true : false;
         fdRef.update(foo);
       }
->>>>>>> 6d5155a01ad49828ca74899317c2075e5c001f15
     })
-
-
 
     //this.setState(this.updateState2()
   }
@@ -196,33 +121,23 @@ export default class FlatListSelector extends React.PureComponent {
     //   return <Button onPress={this._onPressItem.bind(this, item.key)} title={item.time}/>
     <MyListItem
       id={item.key}
-      onPressItem={(id) => {
-        this._onPressItem(id)
-      }}
+      onPressItem={this._onPressItem}
       selected={this.state.selected[item.key]}
       title={item.time}
     />
   );
-slowStuff() {
 
-  return null
-}
   render() {
-    // merge for each friend you have
-
     //console.log(this.state.selected);
     // console.log(this.state.freeFriends);
     //console.log(this.state.friends)
     return (
-<View>
       <FlatList
         data={this.props.data}
         extraData={this.state}
         // keyExtractor={this._keyExtractor}
         renderItem={this._renderItem}
       />
-      {this.slowStuff()}
-    </View>
     );
   }
 }

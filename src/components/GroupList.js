@@ -17,7 +17,7 @@ import { Avatar, Card, ListItem, Button, ButtonGroup, Icon } from 'react-native-
 import firebase from "../config/firebase";
 import { Ionicons } from '@expo/vector-icons';
 import { userName, userID } from '../screens/SignInScreen';
-import Prompt from 'react-native-prompt-simple';
+import Prompt from 'rn-prompt';
 
 
 const db = firebase.firestore();
@@ -207,24 +207,19 @@ export default class MultiSelectList extends React.PureComponent {
       //   justifyContent: 'center',
       //   alignItems: 'center',}} >
       <Prompt
-    title="Enter new group name"
-    visible={this.state.promptVisible}
-    placeholder= {this.state.name}
-    textCancel="Cancel"
-    textAccept="Submit"
-    onChange={(text) => {this.setState({groupName:text})}}
-    onCancel={(v) => {
-      this.setState({modalVisible: false});
-      this.setState({promptVisible: false});
-    }}
-
-    onAccept={(text) => {
-      this.setState({groupName:text})
-      this.renameGroup(text, this.state.members, this.state.id)
-      this.setState({promptVisible: false});
-
-    }}
-  />
+      title="Enter new group name"
+      placeholder={this.state.name}
+      // defaultValue="Hello"
+      visible={ this.state.promptVisible }
+      onCancel={ () => {
+        this.setState({modalVisible: false});
+        this.setState({promptVisible: false});
+      }}
+      onSubmit={ (value) => {
+        this.setState({groupName:value})
+        this.renameGroup(text, this.state.members, this.state.id)
+        this.setState({promptVisible: false});
+      }}/>
 // </View>
     )
   }
@@ -299,6 +294,8 @@ export default class MultiSelectList extends React.PureComponent {
     console.log(this.props.data)
     return (
       <View style={{flex:1}}>
+        {this.renderAlert()}
+
         <ListItem
           title={'Add Group'}
           titleStyle = {{paddingLeft:10}}
@@ -317,7 +314,6 @@ export default class MultiSelectList extends React.PureComponent {
           renderItem={this._renderItem}
         />
         {this.renderModal()}
-        {this.renderAlert()}
 
 
       </View>
