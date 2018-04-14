@@ -62,6 +62,7 @@ export default class FlatListSelector extends React.PureComponent {
         friends[doc.id] = doc.data().Name
       });
       this.setState({friends:friends})
+<<<<<<< HEAD
 
       // freeFriends : {id: [day]{friendid : name}}
       // freeFriends : {id: [time]{friendid : name}}
@@ -81,6 +82,8 @@ export default class FlatListSelector extends React.PureComponent {
           }
         })
       }
+=======
+>>>>>>> 6d5155a01ad49828ca74899317c2075e5c001f15
   });
 }
 
@@ -100,6 +103,7 @@ export default class FlatListSelector extends React.PureComponent {
     // selected.set(id, !selected.get(id)); // toggle
 
     return {selected:selected};
+<<<<<<< HEAD
   };
 
   updateStateFreeFriends = (id) => {
@@ -129,6 +133,8 @@ export default class FlatListSelector extends React.PureComponent {
       }
     }
     return {freeFriends:freeFriends};
+=======
+>>>>>>> 6d5155a01ad49828ca74899317c2075e5c001f15
   };
 
   _onPressItem = (id: int) => {
@@ -142,6 +148,7 @@ export default class FlatListSelector extends React.PureComponent {
       // merge
       var setWithMerge = this.userRef.set({
       Freetime: this.state.selected
+<<<<<<< HEAD
     }, { merge: true }).then(
 
             this.setState(this.updateStateFreeFriends(id), ()=>{
@@ -157,6 +164,24 @@ export default class FlatListSelector extends React.PureComponent {
     );
 
 
+=======
+      }, { merge: true });
+
+      // for each friend updates newfreefriends
+      for (friendID of Object.keys(this.state.friends)) {
+        //console.log(friendID)
+        fdRef = db.collection("users").doc(friendID).collection('NewFreeFriends').doc(this.props.dayOfWeek)
+        // console.log(this.state.freeFriends[friendID])
+        newRef = "Freefriends" + "." + id + "." + userID
+        foo = new Object();
+        console.log(newRef);
+
+        if (!fdRef.exists) 
+          fdRef.set({Freefriends:{}})
+        foo[newRef] = this.state.selected[id] == 1 ? true : false;
+        fdRef.update(foo);
+      }
+>>>>>>> 6d5155a01ad49828ca74899317c2075e5c001f15
     })
 
 
