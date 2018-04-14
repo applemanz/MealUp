@@ -322,10 +322,10 @@ export default class RequestsScreen extends React.Component {
     this.setState({respondVisible: false})
   }
 
-  ignoreRequest = () => {
+  declineRequest = () => {
     db.collection("users").doc(userID).collection('Received Requests').doc(this.state.curUser.docID).delete().then(() => {
       console.log("Document successfully deleted!");
-      // db.collection("users").doc(this.state.curUser.id).collection('Sent Requests').doc(this.state.curUser.docID).delete()
+      db.collection("users").doc(this.state.curUser.id).collection('Sent Requests').doc(this.state.curUser.docID).delete()
     }).catch(function(error) {
       console.error("Error removing document: ", error);
     });
@@ -635,8 +635,8 @@ export default class RequestsScreen extends React.Component {
         </View>
         <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
-            onPress={this.ignoreRequest}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Ignore</Text>
+            onPress={this.declineRequest}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Decline</Text>
           </TouchableHighlight>
         </View>
         <View style={{padding: 15, alignItems: 'center'}}>
