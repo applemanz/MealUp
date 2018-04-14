@@ -15,7 +15,7 @@ export default class TimeChosenScreen extends React.Component {
     };
   };
 
-  state = {free:new Object()}
+  state = {}
 
   async componentDidMount() {
     const { params } = this.props.navigation.state;
@@ -50,10 +50,13 @@ export default class TimeChosenScreen extends React.Component {
         console.log("BEFORE", free)
         freeCanView = new Object()
         querySnapShot.forEach(doc => {
+
+          // check if your friend blocks you
           if (doc.id in free)
             if (doc.data().CanViewFriend)
-              freeCanView[doc.id] = free[doc.id]
+              freeCanView[doc.id] = doc.data().Name
         })
+
         console.log("AFTER", freeCanView)
         this.setState({free:freeCanView})
       })

@@ -249,7 +249,7 @@ export default class RequestsScreen extends React.Component {
         newRef = "Freefriends" + "." + index + "." + userID
         foo = new Object();
         foo[newRef] = false;
-        fdRef.update(foo);
+        freefriendsRef.update(foo);
       }
     })
     
@@ -268,7 +268,7 @@ export default class RequestsScreen extends React.Component {
         newRef = "Freefriends" + "." + index + "." + data['FriendID']
         foo = new Object();
         foo[newRef] = false;
-        fdRef.update(foo);
+        freefriendsRef.update(foo);
       }
     })
 
