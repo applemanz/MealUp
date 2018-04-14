@@ -69,7 +69,7 @@ export default class FlatListSelector extends React.PureComponent {
     for (key of Object.keys(friends)) {
       let temp = key;
       fdRef = db.collection("users").doc(temp).collection('FreeFriends').doc(this.props.dayOfWeek);
-      fdRef.onSnapshot(doc => {
+      fdRef.get().then(doc => {
         if (doc.exists) {
           // console.log("EXISTS",friends[temp],this.props.dayOfWeek)
           freeFriends = this.state.freeFriends
@@ -84,7 +84,7 @@ export default class FlatListSelector extends React.PureComponent {
   });
 }
 
-  updateState = (id) => {
+  updateStateSelected = (id) => {
     // copy the map rather than modifying state.
     selected = this.state.selected.slice(0);
     if (selected.length == 0) selected = Array.from(Array(25), () => 0);
@@ -99,6 +99,12 @@ export default class FlatListSelector extends React.PureComponent {
     }
     // selected.set(id, !selected.get(id)); // toggle
 
+    return {selected:selected};
+  };
+
+  updateStateFreeFriends = (id) => {
+    // selected.set(id, !selected.get(id)); // toggle
+
     // update all your friends that you're free / not free on tap
     freeFriends = Object.assign(this.state.freeFriends)
     for (key of Object.keys(this.state.friends)) {
@@ -108,7 +114,7 @@ export default class FlatListSelector extends React.PureComponent {
         }
         else {
           // store name but it's not necessary
-          if (selected[id] === 1)
+          if (this.state.selected[id] === 1)
           freeFriends[key][id][userID] = userName;
         }
       }
@@ -118,16 +124,16 @@ export default class FlatListSelector extends React.PureComponent {
         for (i = 0; i < 25; i++) {
           freeFriends[key].push({})
         }
-        if (selected[id] === 1)
+        if (this.state.selected[id] === 1)
           freeFriends[key][id][userID] = userName;
       }
     }
-    return {selected:selected,freeFriends:freeFriends};
+    return {freeFriends:freeFriends};
   };
 
   _onPressItem = (id: int) => {
     // updater functions are preferred for transactional updates
-    this.setState(this.updateState(id), () => {
+    this.setState(this.updateStateSelected(id), () => {
       // console.log(this.state.selected);
       // console.log(this.state.freeFriends);
       // console.log(this.state.friends)
@@ -136,18 +142,24 @@ export default class FlatListSelector extends React.PureComponent {
       // merge
       var setWithMerge = this.userRef.set({
       Freetime: this.state.selected
-      }, { merge: true });
+    }, { merge: true }).then(
 
-      // merge for each friend you have
-      for (friendID of Object.keys(this.state.freeFriends)) {
-        //console.log(friendID)
-        fdRef = db.collection("users").doc(friendID).collection('FreeFriends').doc(this.props.dayOfWeek)
-        // console.log(this.state.freeFriends[friendID])
-        fdRef.set({
-          Freefriends: this.state.freeFriends[friendID]
-        }, {merge: true});
-      }
+            this.setState(this.updateStateFreeFriends(id), ()=>{
+              for (friendID of Object.keys(this.state.freeFriends)) {
+                //console.log(friendID)
+                fdRef = db.collection("users").doc(friendID).collection('FreeFriends').doc(this.props.dayOfWeek)
+                console.log(this.state.freeFriends[friendID])
+                fdRef.set({
+                  Freefriends: this.state.freeFriends[friendID]
+                }, {merge: true});
+              }
+            })
+    );
+
+
     })
+
+
 
     //this.setState(this.updateState2()
   }
@@ -159,24 +171,33 @@ export default class FlatListSelector extends React.PureComponent {
     //   return <Button onPress={this._onPressItem.bind(this, item.key)} title={item.time}/>
     <MyListItem
       id={item.key}
-      onPressItem={this._onPressItem}
+      onPressItem={(id) => {
+        this._onPressItem(id)
+      }}
       selected={this.state.selected[item.key]}
       title={item.time}
     />
   );
+slowStuff() {
 
+  return null
+}
   render() {
+    // merge for each friend you have
+
     //console.log(this.state.selected);
     // console.log(this.state.freeFriends);
     //console.log(this.state.friends)
     return (
-
+<View>
       <FlatList
         data={this.props.data}
         extraData={this.state}
         // keyExtractor={this._keyExtractor}
         renderItem={this._renderItem}
       />
+      {this.slowStuff()}
+    </View>
     );
   }
 }
