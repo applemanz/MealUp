@@ -56,7 +56,7 @@ export default class FreeTimeScreen extends React.Component {
           return (
           <View key={i} style={{alignItems:'center'}}>
             <Text style={{fontWeight:'bold'}}>{d.substring(0,10)}</Text>
-            <FlatListSelector data={data} dayOfWeek={daysOfWeek[i]}/>
+            <FlatListSelector navigation={this.props.navigation} data={data} dayOfWeek={daysOfWeek[i]}/>
           </View>)
         })
       )

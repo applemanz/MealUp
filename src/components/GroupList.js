@@ -217,7 +217,7 @@ export default class MultiSelectList extends React.PureComponent {
       }}
       onSubmit={ (value) => {
         this.setState({groupName:value})
-        this.renameGroup(text, this.state.members, this.state.id)
+        this.renameGroup(value, this.state.members, this.state.id)
         this.setState({promptVisible: false});
       }}/>
 // </View>

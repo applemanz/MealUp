@@ -55,13 +55,27 @@ export default class FlatListSelector extends React.PureComponent {
     // })
 
     // friends : {id: name}
-    friends = new Object()
-    db.collection("users").doc(userID).collection('Friends').get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        friends[doc.id] = doc.data().Name
-      });
-      this.setState({friends:friends})
-  });
+  //   friends = new Object()
+  //   db.collection("users").doc(userID).collection('Friends').get().then((querySnapshot) => {
+  //     querySnapshot.forEach((doc) => {
+  //       friends[doc.id] = doc.data().Name
+  //     });
+  //     this.setState({friends:friends})
+  // })
+
+  // this.props.navigation.addListener('willFocus', ()=>{this.onRefresh()});
+
+}
+
+onRefresh = () => {
+  this.userRef.get().then((doc) => {
+    if (doc.exists) {
+      this.setState({selected: doc.data().Freetime})
+    }
+    else {
+      console.log("No such document!");
+    }
+  })
 }
 
   updateState = (id) => {
@@ -96,23 +110,19 @@ export default class FlatListSelector extends React.PureComponent {
       }, { merge: true });
 
       // for each friend updates newfreefriends
-      for (let friendID of Object.keys(this.state.friends)) {
-        //console.log(friendID)
-        let fdRef = db.collection("users").doc(friendID).collection('NewFreeFriends').doc(this.props.dayOfWeek)
-        console.log(this.state.freeFriends[friendID])
-        let newRef = "Freefriends" + "." + id + "." + userID
-        let foo = new Object();
-        console.log(newRef);
-
-<<<<<<< HEAD
-        // if (!fdRef.exists)
-        //   fdRef.set({Freefriends:{}})
-        foo[newRef] = this.state.selected[id] === 1 ? true : false;
-=======
-        foo[newRef] = this.state.selected[id] == 1 ? true : false;
->>>>>>> a8e77d0a36e98a5e1d214785d187b196c4ee75d5
-        fdRef.update(foo);
-      }
+      // for (let friendID of Object.keys(this.state.friends)) {
+      //   //console.log(friendID)
+      //   let fdRef = db.collection("users").doc(friendID).collection('NewFreeFriends').doc(this.props.dayOfWeek)
+      //   console.log(this.state.freeFriends[friendID])
+      //   let newRef = "Freefriends" + "." + id + "." + userID
+      //   let foo = new Object();
+      //   console.log(newRef);
+      //
+      //   // if (!fdRef.exists)
+      //   //   fdRef.set({Freefriends:{}})
+      //   foo[newRef] = this.state.selected[id] === 1 ? true : false;
+      //   fdRef.update(foo);
+      // }
     })
 
     //this.setState(this.updateState2()
