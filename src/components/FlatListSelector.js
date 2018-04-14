@@ -21,7 +21,7 @@ class MyListItem extends React.PureComponent {
     // const textColor = this.props.selected ? "gray" : "green";
     if (this.props.selected === 2) {
       return (
-      <Button onPress={()=>{}} title={'Meal'} backgroundColor="black"/>
+      <Button onPress={()=>{}} title={'Meal'} disabled=true backgroundColor="black"/>
     );} else if (this.props.selected === 1) {
       return (
         <Button onPress={this._onPress} title={this.props.title} backgroundColor="green"/>
