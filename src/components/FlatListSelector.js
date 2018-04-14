@@ -41,7 +41,6 @@ export default class FlatListSelector extends React.PureComponent {
   }
 
   componentDidMount() {
-    // userRef = db.collection('users').doc(userID).collection('Freetime').doc(this.props.dayOfWeek);
     this.userRef.onSnapshot((doc) => {
       if (doc.exists) {
         this.setState({selected: doc.data().Freetime})
@@ -63,8 +62,7 @@ export default class FlatListSelector extends React.PureComponent {
   //     this.setState({friends:friends})
   // })
 
-  // this.props.navigation.addListener('willFocus', ()=>{this.onRefresh()});
-
+  this.props.navigation.addListener('willFocus', ()=>{this.onRefresh()});
 }
 
 onRefresh = () => {
@@ -92,12 +90,10 @@ onRefresh = () => {
       selected[id] = 1;
     }
     // selected.set(id, !selected.get(id)); // toggle
-
     return {selected:selected};
-  };
+  }
 
   _onPressItem = (id: int) => {
-    // updater functions are preferred for transactional updates
     this.setState(this.updateState(id), () => {
       // console.log(this.state.selected);
       // console.log(this.state.freeFriends);
@@ -108,31 +104,10 @@ onRefresh = () => {
       var setWithMerge = this.userRef.set({
       Freetime: this.state.selected
       }, { merge: true });
-
-      // for each friend updates newfreefriends
-      // for (let friendID of Object.keys(this.state.friends)) {
-      //   //console.log(friendID)
-      //   let fdRef = db.collection("users").doc(friendID).collection('NewFreeFriends').doc(this.props.dayOfWeek)
-      //   console.log(this.state.freeFriends[friendID])
-      //   let newRef = "Freefriends" + "." + id + "." + userID
-      //   let foo = new Object();
-      //   console.log(newRef);
-      //
-      //   // if (!fdRef.exists)
-      //   //   fdRef.set({Freefriends:{}})
-      //   foo[newRef] = this.state.selected[id] === 1 ? true : false;
-      //   fdRef.update(foo);
-      // }
     })
-
-    //this.setState(this.updateState2()
   }
 
   _renderItem = ({item}) => (
-    // if (this.state.selected[index] == true)
-    //   return <Button backgroundColor='green' onPress={this._onPressItem.bind(this, item.key)} title={item.time}/>
-    // else
-    //   return <Button onPress={this._onPressItem.bind(this, item.key)} title={item.time}/>
     <MyListItem
       id={item.key}
       onPressItem={this._onPressItem}
@@ -155,3 +130,22 @@ onRefresh = () => {
     );
   }
 }
+// if (this.state.selected[index] == true)
+//   return <Button backgroundColor='green' onPress={this._onPressItem.bind(this, item.key)} title={item.time}/>
+// else
+//   return <Button onPress={this._onPressItem.bind(this, item.key)} title={item.time}/>
+
+      // for each friend updates newfreefriends
+      // for (let friendID of Object.keys(this.state.friends)) {
+      //   //console.log(friendID)
+      //   let fdRef = db.collection("users").doc(friendID).collection('NewFreeFriends').doc(this.props.dayOfWeek)
+      //   console.log(this.state.freeFriends[friendID])
+      //   let newRef = "Freefriends" + "." + id + "." + userID
+      //   let foo = new Object();
+      //   console.log(newRef);
+      //
+      //   // if (!fdRef.exists)
+      //   //   fdRef.set({Freefriends:{}})
+      //   foo[newRef] = this.state.selected[id] === 1 ? true : false;
+      //   fdRef.update(foo);
+      // }

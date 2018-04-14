@@ -59,3 +59,32 @@ exports.updateFreeFriends = functions.firestore
         return Promise.all(promises)
       })
     })
+
+
+exports.initializeFreeFriends = functions.firestore
+  .document('users/{userId}/Freetime/{dayOfWeek}')
+  .onCreate((snap, context) => {
+
+    const userID = context.params.userId
+    const dayOfWeek = context.params.dayOfWeek
+
+    const userDocRef = admin.firestore().collection("users").doc(userID).collection('Friends')
+
+    return userDocRef.get().then((querySnapshot)=>{
+      friends = []
+      querySnapshot.forEach((doc) => {
+        friends.push(doc.id)
+      })
+      promises = []
+      for (friendID of friends) {
+        let friendRef = admin.firestore().collection('users').doc(friendID).collection('NewFreeFriends').doc(dayOfWeek)
+        let foo = new Object()
+        for (i=0; i<25; i++) {
+          let newRef = "Freefriends" + "." + i + "." + userID
+          foo[newRef] = false
+        }
+        promises.push(friendRef.update(foo))
+      }
+      return Promise.all(promises)
+    })
+  })

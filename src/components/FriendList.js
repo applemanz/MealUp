@@ -227,8 +227,8 @@ export default class FriendList extends React.PureComponent {
       }
     }
     members[userID] = userName
-    var groupName = this.props.groupName
     data['members'] = members
+    data['groupName'] = this.props.groupName
 
     db.collection("users").doc(userID).collection('Groups').doc(groupID).set(data,{merge:true})
         .then((docRef) => {

@@ -118,7 +118,7 @@ export default class FriendChosenScreen extends React.Component {
         if (day === thisDay && i <= thisIndex) {
           matches[day][i] = false
           continue;
-        } 
+        }
         for (friend in freeTimeObj)
           if (freeTimeObj[friend][day][i] != 1) {
             matches[day][i] = false
@@ -150,14 +150,14 @@ export default class FriendChosenScreen extends React.Component {
     thisHour = today.getHours();
     thisMin = today.getMinutes();
     thisIndex = (thisHour - 7) * 2 + Math.floor(thisMin / 30) - 1;
-    
+
     for (const day in freeTimeObj[userID]) {
       matches[day] = Array.from(Array(24), () => true)
       for (i=0; i < 25; i++) {
         if (day === thisDay && i <= thisIndex) {
           matches[day][i] = false
           continue;
-        } 
+        }
         for (friend in freeTimeObj)
           if (freeTimeObj[friend][day][i] != 1) {
             matches[day][i] = false
@@ -212,29 +212,6 @@ export default class FriendChosenScreen extends React.Component {
     }
 
     if (this.state.matches1) {
-      // match1 = [];
-      // match2 = [];
-      //
-      // for (day in this.state.matches1) {
-      //   temp = [];
-      //   for (j = 0; j < 25; j++) {
-      //     if (this.state.matches1[day][j]) {
-      //       temp.push(this.printTime(j) + "-" + this.printTime(j+1,true))
-      //     }
-      //   }
-      //   if (temp.length > 0) match1.push({title: day, data: temp})
-      // }
-      //
-      // for (day in this.state.matches2) {
-      //   temp = [];
-      //   for (j = 0; j < 25; j++) {
-      //     if (this.state.matches2[day][j]) {
-      //       temp.push(this.printTime(j) + "-" + this.printTime(j+2,true))
-      //     }
-      //   }
-      //   if (temp.length > 0) match2.push({title: day, data: temp})
-      // }
-
       const reschedule = params ? params.reschedule : undefined;
       const sent = params ? params.sent : undefined;
 
@@ -384,8 +361,10 @@ export default class FriendChosenScreen extends React.Component {
       // *** FINAL REQUEST PAGE NOT CHANGED YET
       // *** instead of passing name, id, url, passed groupname, members
       else return(
-        <View style={{flex:1, alignItems:'center'}}>
+        <View style={{flex:1}}>
+          <View style={{alignItems:'center'}}>
           <Text>Choose a time to get a meal with {groupname}</Text>
+          </View>
           <ScrollableTabView
             style={{marginTop: 0, flex:1}}
             renderTabBar={() => <DefaultTabBar />}
