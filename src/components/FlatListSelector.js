@@ -18,17 +18,25 @@ class MyListItem extends React.PureComponent {
   };
 
   render() {
-    // const textColor = this.props.selected ? "gray" : "green";
+    if (this.props.disable) {
+      return (
+        <Button disabled={true} title={''} disabledStyle={{backgroundColor:"black"}}/>
+      )
+    }
     if (this.props.selected === 2) {
       return (
-      <Button disabled={true} title={'Meal'} disabledStyle={{backgroundColor:"#17bebb"}}/>
-    );} else if (this.props.selected === 1) {
+        <Button disabled={true} title={'Meal'} disabledStyle={{backgroundColor:"#17bebb"}}/>
+      )
+    }
+    if (this.props.selected === 1) {
       return (
         <Button onPress={this._onPress} title={this.props.title} backgroundColor="#37b737"/>
-    );} else {
-      return (
-        <Button onPress={this._onPress} title={this.props.title} backgroundColor="#93929b"/>
-    );}
+      )
+    }
+    return (
+      <Button onPress={this._onPress} title={this.props.title} backgroundColor="#93929b"/>
+    )
+
   }
 }
 
@@ -37,7 +45,8 @@ export default class FlatListSelector extends React.PureComponent {
 
   constructor(props) {
     super(props);
-    this.state = {selected: [], friends: {}, freeFriends: {}}
+
+    this.state = {selected: [], friends: {}}
   }
 
   componentDidMount() {
@@ -49,32 +58,31 @@ export default class FlatListSelector extends React.PureComponent {
         console.log("No such document!");
       }
     })
-    // .catch(function(error) {
-    //   console.log("Error getting document:", error);
-    // })
+    this.setState({timeIndex: this.getTimeIndex()})
+    this.props.navigation.addListener('willFocus', ()=>{this.onRefresh()});
+  }
 
-    // friends : {id: name}
-  //   friends = new Object()
-  //   db.collection("users").doc(userID).collection('Friends').get().then((querySnapshot) => {
-  //     querySnapshot.forEach((doc) => {
-  //       friends[doc.id] = doc.data().Name
-  //     });
-  //     this.setState({friends:friends})
-  // })
+  getTimeIndex() {
+    d = new Date();
+    month = d.getMonth();
+    date = d.getDate();
+    day = d.getDay();
+    hour = d.getHours();
+    min = d.getMinutes();
+    i = (hour - 7) * 2 + Math.floor(min / 30) - 1;
+    return i
+  }
 
-  this.props.navigation.addListener('willFocus', ()=>{this.onRefresh()});
-}
-
-onRefresh = () => {
-  this.userRef.get().then((doc) => {
-    if (doc.exists) {
-      this.setState({selected: doc.data().Freetime})
-    }
-    else {
-      console.log("No such document!");
-    }
-  })
-}
+  onRefresh = () => {
+    this.userRef.get().then((doc) => {
+      if (doc.exists) {
+        this.setState({selected: doc.data().Freetime})
+      }
+      else {
+        console.log("No such document!");
+      }
+    })
+  }
 
   updateState = (id) => {
     // copy the map rather than modifying state.
@@ -113,6 +121,7 @@ onRefresh = () => {
       onPressItem={this._onPressItem}
       selected={this.state.selected[item.key]}
       title={item.time}
+      disable = {(this.props.curr && item.key < this.state.timeIndex) ? true : false}
     />
   );
 

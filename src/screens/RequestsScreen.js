@@ -108,6 +108,7 @@ export default class RequestsScreen extends React.Component {
       });
         this.setState({receivedRequests: requestR});
     });
+    // TODO get group requests
     this.props.navigation.addListener('willFocus', ()=>{
       this.refreshReceived()
       this.refreshSent()
@@ -123,10 +124,6 @@ export default class RequestsScreen extends React.Component {
     this.setState({modalVisible: false});
     this.props.navigation.navigate('RequestByTime');
   }
-
-  // renderItem = ({item, index}) => {
-  //   return <ListItem key={item.key} title={item.key}/>;
-  // }
 
   renderSentRequest = ({item, index}) => {
     return <ListItem
@@ -152,7 +149,11 @@ export default class RequestsScreen extends React.Component {
     />;
   }
 
+// TODO render group requests
+
   _keyExtractor = (item, index) => item.docID;
+
+// TODO on press group requests
 
   _onPressSent = (item) => {
     this.setState({
@@ -168,7 +169,6 @@ export default class RequestsScreen extends React.Component {
         dateobj: item.DateTime.toDateString(),
         displayDate: item.DateTime.toDateString().substring(0,10)}});
   }
-  // item.DateTime.toDateString() + " " + (item.DateTime.getHours() % 12 || 12) + ":" + ("0" + item.DateTime.getMinutes()).slice(-2),
 
   _onPressReceived = (item) => {
     this.setState({
@@ -184,7 +184,6 @@ export default class RequestsScreen extends React.Component {
         dateobj: item.DateTime.toDateString(),
         displayDate: item.DateTime.toDateString().substring(0,10)}});
   }
-  //item.DateTime.toDateString() + " " + (item.DateTime.getHours() % 12 || 12) + ":" + ("0" + item.DateTime.getMinutes()).slice(-2),
 
   acceptRequest = () => {
     console.log(this.state.curUser.docID)
@@ -393,6 +392,7 @@ export default class RequestsScreen extends React.Component {
       url: `http://graph.facebook.com/${this.state.curUser.FriendID}/picture?type=large`
     });
   }
+
   refreshReceived = () => {
     this.setState({refreshingR: true});
     db.collection("users").doc(userID).collection('Received Requests').onSnapshot((querySnapshot) => {
@@ -465,6 +465,7 @@ export default class RequestsScreen extends React.Component {
     this.setState({refreshingS: false});
   }
 
+// convert to SectionLists
   render() {
     return (
       <View style={{flex:1}}>

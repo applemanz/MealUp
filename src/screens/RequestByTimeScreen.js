@@ -89,7 +89,7 @@ export default class RequestByTimeScreen extends React.Component {
     for (thisday in this.state.time) {
       let temp = [];
       for (j = 0; j < 25; j++) {
-        if (thisday === day && j <= thisIndex) {
+        if (days.indexOf(thisday) == day && j <= thisIndex) {
           continue;
         }
         if (this.state.time[thisday][j] === 1) {
@@ -110,9 +110,8 @@ export default class RequestByTimeScreen extends React.Component {
 
     for (thisday in this.state.time) {
       let temp = [];
-      cur = days.indexOf(thisday);
       for (j = 0; j < 25; j++) {
-        if (thisday === day && j <= thisIndex) {
+        if (days.indexOf(thisday) == day && j <= thisIndex) {
           continue;
         }
         if (this.state.time[thisday][j] === 1 && this.state.time[thisday][j+1] === 1) {

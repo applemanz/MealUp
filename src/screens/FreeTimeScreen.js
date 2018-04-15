@@ -25,11 +25,23 @@ export default class FreeTimeScreen extends React.Component {
 
   componentDidMount() {
     this.props.navigation.addListener('willFocus', ()=>{this.onRefresh()});
+    console.log(this.getTimeIndex())
   }
 
   onRefresh = () => {
     currentDay = new Date()
     this.setState({today:currentDay})
+  }
+
+  getTimeIndex() {
+    d = new Date();
+    month = d.getMonth();
+    date = d.getDate();
+    day = d.getDay();
+    hour = d.getHours();
+    min = d.getMinutes();
+    i = (hour - 7) * 2 + Math.floor(min / 30) - 1;
+    return i
   }
 
   render() {
@@ -45,18 +57,29 @@ export default class FreeTimeScreen extends React.Component {
   renderDaysofWeek = (today) => {
       daysOfWeek = []
       dates = []
+      if (this.getTimeIndex() >= 24) {
+        today = this.addDays(today,1)
+        dayOver = true
+      }
       for (i = 0; i < 7; i++) {
         day = this.addDays(today, i)
+        console.log(day)
         daysOfWeek.push(days[day.getDay()])
         dates.push(day.toDateString())
       }
 
       return (
         dates.map((d, i)=> {
+          if (dayOver) curr = false
+          else if (i == 0) curr =  true
           return (
           <View key={i} style={{alignItems:'center'}}>
             <Text style={{fontWeight:'bold'}}>{d.substring(0,10)}</Text>
-            <FlatListSelector navigation={this.props.navigation} data={data} dayOfWeek={daysOfWeek[i]}/>
+            <FlatListSelector
+              navigation={this.props.navigation}
+              data={data}
+              dayOfWeek={daysOfWeek[i]}
+              curr={curr}/>
           </View>)
         })
       )
