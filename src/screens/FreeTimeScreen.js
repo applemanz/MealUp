@@ -59,7 +59,7 @@ export default class FreeTimeScreen extends React.Component {
       dates = []
       if (this.getTimeIndex() >= 24) {
         today = this.addDays(today,1)
-        dayOver = true
+        var dayOver = true
       }
       for (i = 0; i < 7; i++) {
         day = this.addDays(today, i)

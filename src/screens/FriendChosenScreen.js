@@ -202,7 +202,8 @@ export default class FriendChosenScreen extends React.Component {
               style={{width: 100, height: 100, borderRadius: 50}}
               source={{uri: url}}
             />
-            <Text>Choose a time to get a meal with {name.split(" ")[0]}</Text>
+            <Text style={{fontSize:15}}>Choose a time to get a meal with </Text>
+            <Text style={{fontSize:15, fontWeight:'bold'}}>{name.split(" ")[0]}</Text>
           </View>
           <ScrollableTabView
             style={{marginTop: 0, flex:1}}

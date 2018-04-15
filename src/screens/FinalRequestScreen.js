@@ -97,34 +97,97 @@ export default class FinalRequestScreen extends React.Component {
 	render() {
 		const { params } = this.props.navigation.state;
 		const name = params ? params.name : null;
-    // const friendID = params ? params.id : null;
     const members = params ? params.members : null;
     const time = params ? params.time : null;
     const dateobj = params ? params.dateobj : null;
     const length = params ? params.length : null;
-    const firstName = name.split(' ')[0];
-    console.log(dateobj)
-		return (
-			<View style = {{flex:1}}>
-			<View style={{justifyContent: "center",alignItems: "center",padding:30}}>
-			<Image
-         		style={{width: 100, height: 100, borderRadius: 50}}
-         		source={{uri: `http://graph.facebook.com/${Object.keys(members)[0]}/picture?type=large`}}
-       		/>
-			<Text style={{fontSize:20, fontWeight:'bold'}}>{name.split(" ")[0]}</Text>
-      <Text style={{fontSize:15}}>{dateobj.substring(0,10)}</Text>
-			<Text style={{fontSize:15}}>{time}</Text>
-			</View>
-			<View style={{justifyContent: "center",alignItems: "center"}}>
-			<Text>Select a Location:</Text>
-			</View>
-      <View style = {{marginBottom:50}}>
-        { this.renderOptions() }
-      </View>
-			<Button title="Submit" backgroundColor='#f4511e' borderRadius={50} raised onPress={this.submitRequest}/>
-			</View>
-		);
+    const isGroup = params.isGroup ? true : false;
+    urls = []
+    for (memberID in members) {
+      urls.push(`http://graph.facebook.com/${memberID}/picture?type=large`)
+    }
+    urls.push(`http://graph.facebook.com/${userID}/picture?type=large`)
+    if (isGroup) {
+      return (
+        <View style = {{flex:1}}>
+          <View style={{justifyContent: "center",alignItems: "center",padding:30}}>
+            <View style={{flexDirection:'row', overflow: 'hidden', paddingRight:10, borderRadius:50}} >
+                  <View style={{overflow: 'hidden', borderTopLeftRadius: 50, borderBottomLeftRadius: 50}}>
+                    <Image
+                      style={{width: 50, height: 100,}}
+                      source={{uri:urls[0]}} />
+                  </View>
+                  <View style ={{overflow: 'hidden', borderTopRightRadius: 50, borderBottomRightRadius: 50}}>
+                    <Image
+                      style={{width: 50, height: 50, }}
+                      source={{uri:urls[1]}} />
+                    <Image
+                      style={{width: 50, height: 50, }}
+                      source={{uri:urls[2]}}/>
+                  </View>
+                </View>
+            <Text style={{fontSize:20, fontWeight:'bold'}}>{name}</Text>
+            <Text style={{fontSize:15}}>{dateobj.substring(0,10)}</Text>
+            <Text style={{fontSize:15}}>{time}</Text>
+          </View>
+          <View style={{justifyContent: "center",alignItems: "center"}}>
+               <Text>Select a Location:</Text>
+          </View>
+          <View style = {{marginBottom:50}}>
+            { this.renderOptions() }
+          </View>
+          <Button title="Submit" backgroundColor='#f4511e' borderRadius={50} raised onPress={this.submitGroupRequest}/>
+        </View>
+      )
+    }
+    else {
+      return (
+  			<View style = {{flex:1}}>
+    			<View style={{justifyContent: "center",alignItems: "center",padding:30}}>
+      			<Image
+               		style={{width: 100, height: 100, borderRadius: 50}}
+               		source={{uri: `http://graph.facebook.com/${Object.keys(members)[0]}/picture?type=large`}}
+             		/>
+      			<Text style={{fontSize:20, fontWeight:'bold'}}>{name.split(" ")[0]}</Text>
+            <Text style={{fontSize:15}}>{dateobj.substring(0,10)}</Text>
+      			<Text style={{fontSize:15}}>{time}</Text>
+    			</View>
+    			<View style={{justifyContent: "center",alignItems: "center"}}>
+    			     <Text>Select a Location:</Text>
+    			</View>
+          <View style = {{marginBottom:50}}>
+            { this.renderOptions() }
+          </View>
+    			<Button title="Submit" backgroundColor='#f4511e' borderRadius={50} raised onPress={this.submitRequest}/>
+  			</View>
+  		)
+    }
 	}
+  submitGroupRequest = () => {
+    prevData = this.props.navigation.state.params
+    reschedule = prevData['reschedule'];
+    sent = prevData['sent'];
+    data = new Object()
+    data['members'] = prevData['members']
+    data['groupName'] = prevData['name']
+    data['Location'] = this.state.location
+    data['DateTime'] = new Date(prevData['dateobj'])
+    data['Length'] = prevData['length']
+    data['TimeString'] = prevData['time']
+    if (data['Location'] != "" && data['Location'] != "Custom Location") {
+      db.collection("users").doc(userID).collection('Sent Group Requests').add(data)
+          .then(function(docRef) {
+              console.log("Document written with ID: ", docRef.id);
+              for (let thisid in prevData['members'])
+                db.collection("users").doc(thisid).collection('Received Group Requests').doc(docRef.id).set(data)
+          })
+          .catch(function(error) {
+              console.error("Error adding document: ", error);
+          });
+    }
+    this.props.navigation.popToTop()
+
+  }
 
   submitRequest = () => {
     prevData = this.props.navigation.state.params

@@ -61,7 +61,7 @@ exports.updateFreeFriends = functions.firestore
     })
 
 
-exports.initializeFreeFriends = functions.firestore
+initializeFreeFriends = functions.firestore
   .document('users/{userId}/Freetime/{dayOfWeek}')
   .onCreate((snap, context) => {
 

@@ -130,7 +130,7 @@ export default class GroupChosenScreen extends React.Component {
 
   render() {
     const { params } = this.props.navigation.state;
-    const groupName = params.name
+    const groupName = params.groupName
     const id = params.id
     const members = params.members
 
@@ -184,11 +184,31 @@ export default class GroupChosenScreen extends React.Component {
       for (i of match2) {
         i.title = this.printDate(month,date,day,i.title)
       }
-
+      urls = []
+      for (memberID in members) {
+        urls.push(`http://graph.facebook.com/${memberID}/picture?type=large`)
+      }
+      urls.push(`http://graph.facebook.com/${userID}/picture?type=large`)
       return(
         <View style={{flex:1}}>
           <View style={{alignItems:'center'}}>
-          <Text>Choose a time to get a meal with {groupName}</Text>
+            <View style={{flexDirection:'row', overflow: 'hidden', paddingRight:10, borderRadius:50}} >
+                <View style={{overflow: 'hidden', borderTopLeftRadius: 50, borderBottomLeftRadius: 50}}>
+                  <Image
+                    style={{width: 50, height: 100,}}
+                    source={{uri:urls[0]}} />
+                </View>
+                <View style ={{overflow: 'hidden', borderTopRightRadius: 50, borderBottomRightRadius: 50}}>
+                  <Image
+                    style={{width: 50, height: 50, }}
+                    source={{uri:urls[1]}} />
+                  <Image
+                    style={{width: 50, height: 50, }}
+                    source={{uri:urls[2]}}/>
+                </View>
+              </View>
+          <Text style={{fontSize:15}}>{'Choose a time to get a meal with '}</Text>
+          <Text style={{fontSize:15, fontWeight:'bold'}}>{groupName}</Text>
           </View>
           <ScrollableTabView
             style={{marginTop: 0, flex:1}}
@@ -226,6 +246,7 @@ export default class GroupChosenScreen extends React.Component {
                   dateobj: ymd.toString(),
                   time: item,
                   length: 0.5,
+                  isGroup: true,
                 })
               }}
             />}

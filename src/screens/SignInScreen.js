@@ -55,15 +55,6 @@ export default class SignInScreen extends React.Component {
 
           AsyncStorage.setItem('loggedIn', 'true');
 
-          const originalSend = XMLHttpRequest.prototype.send;
-          XMLHttpRequest.prototype.send = function(body) {
-            if (body === '') {
-              originalSend.call(this);
-            } else {
-              originalSend.call(this, body);
-            }
-          };
-
           // const credential = provider.credential(token);
           // auth.signInWithCredential(credential);
           db.collection('users').doc(userID).set({
@@ -110,7 +101,7 @@ export default class SignInScreen extends React.Component {
                       Freetime: Array.from(Array(25), () => 0),
                     })
                   }
-                  
+
                   console.log("I'm here 0")
                   // create new freeFriends object
                   freeFriends = new Object()
@@ -151,8 +142,7 @@ export default class SignInScreen extends React.Component {
               console.log("Error getting document:", error);
           });
 
-          // userID = '10210889686788547'
-          // userName = 'Andrew Zeng'
+
           this.props.navigation.navigate('Main');
 
           } catch (error) {
