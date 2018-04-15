@@ -126,16 +126,70 @@ export default class FriendChosenScreen extends React.Component {
     return matches;
   }
 
+  onPress30 = () => {
+    t = section.title.split(", ");
+    month = months.indexOf(t[1].slice(0, 3));
+    date = parseInt(t[1].slice(4));
+    time = item.split("-")
+    hour = parseInt(time[0].split(":")[0])
+    min = parseInt(time[0].split(":")[1])
+    if (item.slice(-2) == "pm" && hour != 12 && time[0] != "11:30") hour += 12
+    // Year is hardcoded as 2018
+    ymd = new Date(2018,month,date,hour,min)
+
+    member = new Object();
+    member[id] = name;
+
+    this.props.navigation.navigate('FinalRequest',
+      {
+        sent: sent,
+        reschedule: reschedule,
+        name: name,
+        // id: id,
+        members: member,
+        dateobj: ymd.toString(),
+        time: item,
+        length: 0.5,
+      }
+    )
+  }
+
+  onPress1hr = () => {
+    t = section.title.split(", ");
+    month = months.indexOf(t[1].slice(0, 3));
+    date = parseInt(t[1].slice(4));
+    time = item.split("-")
+    hour = parseInt(time[0].split(":")[0])
+    min = parseInt(time[0].split(":")[1])
+    if (item.slice(-2) == "pm" && hour != 12 && hour != 11) hour += 12
+    // Year is hardcoded as 2018
+    ymd = new Date(2018,month,date,hour,min)
+
+    member = new Object();
+    member[id] = name;
+
+    this.props.navigation.navigate('FinalRequest',
+      {
+        sent: sent,
+        reschedule: reschedule,
+        name: name,
+        // id: id,
+        members: member,
+        dateobj: ymd.toString(),
+        time: item,
+        length: 1,
+      }
+    )
+  }
+
   render() {
     const { params } = this.props.navigation.state;
-    console.log(params.name)
-      const name = params.name
-      const id = params.id
-      const url = params.url
-      //|| (Object.keys(this.state.matches1).length==0 && Object.keys(this.state.matches2).length==0)
+    const name = params.name
+    const id = params.id
+    const url = params.url
 
-    console.log("Url",params.url)
-    if (params.CanViewFriend == false) {
+    // TODO also check if both matches1 and matches2 are empty
+    if (params.CanViewFriend == false || ()) {
       return (
         <View style={{alignItems:'center'}}>
           <Image
@@ -197,99 +251,51 @@ export default class FriendChosenScreen extends React.Component {
         i.title = this.printDate(month,date,day,i.title)
       }
 
-      // for individual
-        return(
-          <View style={{flex:1}}>
-            <View style={{alignItems:'center'}}>
+      return(
+        <View style={{flex:1}}>
+          <View style={{alignItems:'center'}}>
             <Image
               style={{width: 100, height: 100, borderRadius: 50}}
               source={{uri: url}}
             />
             <Text>Choose a time to get a meal with {name.split(" ")[0]}</Text>
           </View>
-            <ScrollableTabView
-              style={{marginTop: 0, flex:1}}
-              renderTabBar={() => <DefaultTabBar />}
-              onChangeTab = {()=>{}}
-              tabBarBackgroundColor = {'white'}
-              tabBarActiveTextColor = {'black'}
-              tabBarInactiveTextColor = {'black'}
-              tabBarUnderlineStyle = {{backgroundColor:'#f4511e'}}
-            >
-              <SectionList
-                tabLabel='30 min'
-                sections={match1}
-                renderItem={({item,section}) =>
-                  <ListItem
-                title={item}
-                onPress={() => {
-                  t = section.title.split(", ");
-                  month = months.indexOf(t[1].slice(0, 3));
-                  date = parseInt(t[1].slice(4));
-                  time = item.split("-")
-                  hour = parseInt(time[0].split(":")[0])
-                  min = parseInt(time[0].split(":")[1])
-                  if (item.slice(-2) == "pm" && hour != 12 && time[0] != "11:30") hour += 12
-                  // Year is hardcoded as 2018
-                  ymd = new Date(2018,month,date,hour,min)
-
-                  member = new Object();
-                  member[id] = name;
-
-                  this.props.navigation.navigate('FinalRequest', {
-                  sent: sent,
-                  reschedule: reschedule,
-                  name: name,
-                  // id: id,
-                  members: member,
-                  dateobj: ymd.toString(),
-                  time: item,
-                  length: 0.5,
-                })}}
+          <ScrollableTabView
+            style={{marginTop: 0, flex:1}}
+            renderTabBar={() => <DefaultTabBar />}
+            onChangeTab = {()=>{}}
+            tabBarBackgroundColor = {'white'}
+            tabBarActiveTextColor = {'black'}
+            tabBarInactiveTextColor = {'black'}
+            tabBarUnderlineStyle = {{backgroundColor:'#f4511e'}}
+          >
+            <SectionList
+              tabLabel='30 min'
+              sections={match1}
+              renderItem={({item,section}) =>
+                <ListItem
+                  title={item}
+                  onPress={this.onPress}
                 />}
-                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-                keyExtractor={(item, index) => index}
-              />
-              <SectionList
-                tabLabel='1 hr'
-                style = {{flex:1}}
-                sections={match2}
-                renderItem={({item,section}) =>
-
-                      <ListItem
-                      title={item}
-                      onPress={() => {
-                        t = section.title.split(", ");
-                        month = months.indexOf(t[1].slice(0, 3));
-                        date = parseInt(t[1].slice(4));
-                        time = item.split("-")
-                        hour = parseInt(time[0].split(":")[0])
-                        min = parseInt(time[0].split(":")[1])
-                        if (item.slice(-2) == "pm" && hour != 12 && hour != 11) hour += 12
-                        // Year is hardcoded as 2018
-                        ymd = new Date(2018,month,date,hour,min)
-
-                        member = new Object();
-                        member[id] = name;
-
-                        this.props.navigation.navigate('FinalRequest', {
-                        sent: sent,
-                        reschedule: reschedule,
-                        name: name,
-                        // id: id,
-                        members: member,
-                        dateobj: ymd.toString(),
-                        time: item,
-                        length: 1,
-                      })}}
-                    />}
-                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-                keyExtractor={(item, index) => index}
-              />
-            </ScrollableTabView>
-          </View>
-        )
-      }
+              renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+              keyExtractor={(item, index) => index}
+            />
+            <SectionList
+              tabLabel='1 hr'
+              style = {{flex:1}}
+              sections={match2}
+              renderItem={({item,section}) =>
+                <ListItem
+                  title={item}
+                  onPress={}
+                />}
+              renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+              keyExtractor={(item, index) => index}
+            />
+          </ScrollableTabView>
+        </View>
+      )
+    }
     else {
       return (
         <View>
