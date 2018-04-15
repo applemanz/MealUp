@@ -130,7 +130,7 @@ export default class FriendList extends React.PureComponent {
       name: name,
       id: id,
       url:url,
-      CanViewFriend: bool
+      CanViewFriend: bool,
     });
   };
 

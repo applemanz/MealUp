@@ -24,7 +24,7 @@ const db = firebase.firestore();
 
 class MyListItem extends React.PureComponent {
   _onPress = () => {
-    this.props.onPressItem(this.props.name, this.props.members);
+    this.props.onPressItem(this.props.name, this.props.members, this.props.id);
   };
 
   _onLongPress = () => {
@@ -92,19 +92,122 @@ export default class MultiSelectList extends React.PureComponent {
 
    setModalVisible(visible) {
      this.setState({modalVisible: visible});
-     console.log('show modal')
-     console.log(this.state.modalVisible)
    }
-
 
   _keyExtractor = (item, index) => item.id;
 
-  _onPressItem = (name, members) => {
-    this.props.navigation.navigate('FriendChosen', {
-      groupname: name,
+  _onPressItem = (name, members, id) => {
+    this.props.navigation.navigate('GroupChosen', {
+      groupName: name,
       members: members,
+      id: id
     });
   };
+
+  _renderItem = ({item}) => (
+    <MyListItem
+      id={item.id}
+      name={item.groupName}
+      members = {item.members}
+      onPressItem={this._onPressItem}
+      onLongPressItem={this._onLongPress}
+      numOfMeals={item.numOfMeals}
+    />
+  );
+
+  render() {
+    return (
+      <View style={{flex:1}}>
+        <ListItem
+          title={'Add Group'}
+          titleStyle = {{paddingLeft:10}}
+          leftIcon = {<Icon
+            name={'ios-people'}
+            type = 'ionicon'
+            color='#000'
+          />}
+          hideChevron
+          onPress = {() => this.props.navigation.navigate("AddGroup")}
+        />
+        <FlatList
+          data={this.props.data}
+          extraData={this.state}
+          keyExtractor={this._keyExtractor}
+          renderItem={this._renderItem}
+        />
+        {this.renderModal()}
+        {this.renderAlert()}
+      </View>
+    )
+  }
+
+  renderAlert() {
+    return (
+      <Prompt
+      title="Enter new group name"
+      placeholder={this.state.name}
+      // defaultValue="Hello"
+      visible={ this.state.promptVisible }
+      onCancel={ () => {
+        this.setState({modalVisible: false});
+        this.setState({promptVisible: false});
+      }}
+      onSubmit={ (value) => {
+        this.setState({groupName:value})
+        this.renameGroup(value, this.state.members, this.state.id)
+        this.setState({promptVisible: false});
+      }}/>
+    )
+  }
+
+  renderModal() {
+    return (
+      <Modal
+        transparent={true}
+        visible={this.state.modalVisible}
+        onRequestClose={() => this.setState({modalVisible: false})}>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: '#00000080'}}>
+          <View style={{width: 300, height: 300, backgroundColor: 'transparent',}}>
+            <Button
+              title="Leave Group"
+              onPress={()=> {
+                Alert.alert(
+                  'Leave Group?',
+                  "You won't be able to get meals with this group anymore.",
+                  [
+                    {text: 'Leave', onPress: () => this.leaveGroup(this.state.name, this.state.members, this.state.id, this.state.numOfMeals), style:'destructive'},
+                    {text: 'Cancel', onPress: () => this.setState({modalVisible: false}), style: 'cancel'},
+                  ],
+                  { cancelable: true }
+                )
+                this.setState({modalVisible: false})
+              }}
+              />
+            <Button
+              title="Rename Group"
+              onPress = {() => {
+                this.setState({modalVisible: false})
+                this.setState({promptVisible: true});
+              }}
+              />
+            <Button
+              title="Add Members"
+              onPress = {()=>{
+                this.setState({modalVisible: false})
+                this.addMember(this.state.name, this.state.members, this.state.id)}}
+              />
+          </View>
+        </View>
+      </Modal>
+    )
+  }
+
 
   _onLongPress = (name, members, id, numOfMeals) => {
     if (Platform.OS === 'ios') {
@@ -135,6 +238,7 @@ export default class MultiSelectList extends React.PureComponent {
         }
       )
     }
+    // Android Code
     else {
       this.setState({
         name:name,
@@ -184,139 +288,23 @@ export default class MultiSelectList extends React.PureComponent {
       id: id,
     });
   }
-
-  _renderItem = ({item}) => (
-    <MyListItem
-      id={item.id}
-      name={item.groupName}
-      members = {item.members}
-      onPressItem={this._onPressItem}
-      onLongPressItem={this._onLongPress}
-      numOfMeals={item.numOfMeals}
-    />
-  );
-
-  addGroup = () => {
-    this.props.navigation.navigate("AddGroup")
-  }
-  renderAlert() {
-    return (
-      // <View style={{
-      //   flex: 1,
-      //   flexDirection: 'column',
-      //   justifyContent: 'center',
-      //   alignItems: 'center',}} >
-      <Prompt
-      title="Enter new group name"
-      placeholder={this.state.name}
-      // defaultValue="Hello"
-      visible={ this.state.promptVisible }
-      onCancel={ () => {
-        this.setState({modalVisible: false});
-        this.setState({promptVisible: false});
-      }}
-      onSubmit={ (value) => {
-        this.setState({groupName:value})
-        this.renameGroup(value, this.state.members, this.state.id)
-        this.setState({promptVisible: false});
-      }}/>
-// </View>
-    )
-  }
-  renderModal() {
-    return (
-      <View style={{marginTop: 22}}>
-    <Modal
-      transparent={true}
-      visible={this.state.modalVisible}
-      onRequestClose={() => this.setState({modalVisible: false})}>
-      <View style={{
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#00000080'}}>
-          <View style={{
-            width: 300,
-            height: 300,
-            backgroundColor: 'transparent',
-            // padding: 20
-          }}>
-              <Button
-                title="Leave Group"
-                onPress={()=> {
-                  Alert.alert(
-                    'Leave Group?',
-                    "You won't be able to get meals with this group anymore.",
-                    [
-                      {text: 'Leave', onPress: () => this.leaveGroup(this.state.name, this.state.members, this.state.id, this.state.numOfMeals), style:'destructive'},
-                      {text: 'Cancel', onPress: () => this.setState({modalVisible: false}), style: 'cancel'},
-                    ],
-                    { cancelable: true }
-                  )
-                  this.setState({modalVisible: false})
-                }}
-                />
-              <Button
-                title="Rename Group"
-                onPress = {() => {
-                  this.setState({modalVisible: false})
-                  this.setState({promptVisible: true});
-                  // prompt(
-                  //     'Change group name',
-                  //     'Enter a new name for you group',
-                  //     [
-                  //      {text: 'Cancel', onPress: () => this.setState({modalVisible: false}), style: 'cancel'},
-                  //      {text: 'OK', onPress: text => this.renameGroup(text, this.state.members, this.state.id)},
-                  //     ],
-                  //     {
-                  //       cancelable: true,
-                  //       // placeholder: {this.state.name}
-                  //     }
-                  // )
-                }}
-              />
-              <Button
-                title="Add Members"
-                onPress = {()=>{
-                  this.setState({modalVisible: false})
-                  this.addMember(this.state.name, this.state.members, this.state.id)}}
-              />
-          </View>
-      </View>
-    </Modal>
-  </View>
-    )
-  }
-
-  render() {
-    console.log('group list data')
-    console.log(this.props.data)
-    return (
-      <View style={{flex:1}}>
-        {this.renderAlert()}
-
-        <ListItem
-          title={'Add Group'}
-          titleStyle = {{paddingLeft:10}}
-          leftIcon = {<Icon
-            name={'ios-people'}
-            type = 'ionicon'
-            color='#000'
-          />}
-          hideChevron
-          onPress = {this.addGroup}
-        />
-        <FlatList
-          data={this.props.data}
-          extraData={this.state}
-          keyExtractor={this._keyExtractor}
-          renderItem={this._renderItem}
-        />
-        {this.renderModal()}
-
-
-      </View>
-    );
-  }
 }
+
+const styles = StyleSheet.create({
+  item: {
+    backgroundColor: '#f9a56a',
+    flex: 1,
+    borderRadius: 5,
+    padding: 10,
+    marginRight: 10,
+    marginTop: 17
+  },
+  empty: {
+    backgroundColor: 'white',
+    flex: 1,
+    borderRadius: 5,
+    padding: 10,
+    marginRight: 10,
+    marginTop: 17
+  },
+});

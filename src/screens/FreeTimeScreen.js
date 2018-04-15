@@ -62,10 +62,10 @@ export default class FreeTimeScreen extends React.Component {
       )
     }
 
-    addDays = (date, days) => {
-      var dat = new Date(date);
-      dat.setDate(dat.getDate() + days);
-      return dat;
-    }
+  addDays = (date, days) => {
+    var dat = new Date(date);
+    dat.setDate(dat.getDate() + days);
+    return dat;
+  }
 
 }

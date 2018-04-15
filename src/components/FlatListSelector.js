@@ -21,13 +21,13 @@ class MyListItem extends React.PureComponent {
     // const textColor = this.props.selected ? "gray" : "green";
     if (this.props.selected === 2) {
       return (
-      <Button onPress={()=>{}} title={'Meal'} backgroundColor="black"/>
+      <Button disabled={true} title={'Meal'} disabledStyle={{backgroundColor:"#17bebb"}}/>
     );} else if (this.props.selected === 1) {
       return (
-        <Button onPress={this._onPress} title={this.props.title} backgroundColor="green"/>
+        <Button onPress={this._onPress} title={this.props.title} backgroundColor="#37b737"/>
     );} else {
       return (
-        <Button onPress={this._onPress} title={this.props.title} backgroundColor="gray"/>
+        <Button onPress={this._onPress} title={this.props.title} backgroundColor="#93929b"/>
     );}
   }
 }

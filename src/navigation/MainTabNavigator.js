@@ -13,6 +13,7 @@ import RequestByFriendScreen from '../screens/RequestByFriendScreen';
 import RequestByTimeScreen from '../screens/RequestByTimeScreen';
 import FinalRequestScreen from '../screens/FinalRequestScreen';
 import FriendChosenScreen from '../screens/FriendChosenScreen';
+import GroupChosenScreen from '../screens/GroupChosenScreen';
 import TimeChosenScreen from '../screens/TimeChosenScreen';
 import EditFriendsScreen from '../screens/EditFriendsScreen';
 import AddGroupScreen from '../screens/AddGroupScreen';
@@ -39,6 +40,12 @@ const RequestsStack = StackNavigator({
   },
   FriendChosen: {
     screen: FriendChosenScreen,
+    navigationOptions: {
+      tabBarVisible: false
+    }
+  },
+  GroupChosen: {
+    screen: GroupChosenScreen,
     navigationOptions: {
       tabBarVisible: false
     }
@@ -87,6 +94,12 @@ const FriendsStack = StackNavigator({
   },
   FriendChosen: {
     screen: FriendChosenScreen,
+    navigationOptions: {
+      tabBarVisible: false
+    }
+  },
+  GroupChosen: {
+    screen: GroupChosenScreen,
     navigationOptions: {
       tabBarVisible: false
     }
