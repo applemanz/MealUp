@@ -215,40 +215,41 @@ export default class GroupChosenScreen extends React.Component {
                 if (item.slice(-2) == "pm" && hour != 12 && time[0] != "11:30") hour += 12
                 // Year is hardcoded as 2018
                 ymd = new Date(2018,month,date,hour,min)
-                this.props.navigation.navigate('FinalRequest', {
-                sent: sent,
-                reschedule: reschedule,
-                // name: name,
-                // id: id,
-                name: groupName,
-                members: members,
-                dateobj: ymd.toString(),
-                time: item,
-                length: 0.5,
-              })}}
-              />}
+                this.props.navigation.navigate('FinalRequest',
+                {
+                  sent: sent,
+                  reschedule: reschedule,
+                  // name: name,
+                  // id: id,
+                  name: groupName,
+                  members: members,
+                  dateobj: ymd.toString(),
+                  time: item,
+                  length: 0.5,
+                })
+              }}
+            />}
               renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
               keyExtractor={(item, index) => index}
             />
             <SectionList
               tabLabel='1 hr'
-              style = {{flex:1}}
               sections={match2}
               renderItem={({item,section}) =>
-
-                    <ListItem
-                    title={item}
-                    onPress={() => {
-                      t = section.title.split(", ");
-                      month = months.indexOf(t[1].slice(0, 3));
-                      date = parseInt(t[1].slice(4));
-                      time = item.split("-")
-                      hour = parseInt(time[0].split(":")[0])
-                      min = parseInt(time[0].split(":")[1])
-                      if (item.slice(-2) == "pm" && hour != 12 && hour != 11) hour += 12
-                      // Year is hardcoded as 2018
-                      ymd = new Date(2018,month,date,hour,min)
-                      this.props.navigation.navigate('FinalRequest', {
+                <ListItem
+                  title={item}
+                  onPress={() => {
+                    t = section.title.split(", ");
+                    month = months.indexOf(t[1].slice(0, 3));
+                    date = parseInt(t[1].slice(4));
+                    time = item.split("-")
+                    hour = parseInt(time[0].split(":")[0])
+                    min = parseInt(time[0].split(":")[1])
+                    if (item.slice(-2) == "pm" && hour != 12 && hour != 11) hour += 12
+                    // Year is hardcoded as 2018
+                    ymd = new Date(2018,month,date,hour,min)
+                    this.props.navigation.navigate('FinalRequest',
+                    {
                       sent: sent,
                       reschedule: reschedule,
                       // name: name,
@@ -258,8 +259,9 @@ export default class GroupChosenScreen extends React.Component {
                       dateobj: ymd.toString(),
                       time: item,
                       length: 1,
-                    })}}
-                  />}
+                    })
+                  }}
+                />}
               renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
               keyExtractor={(item, index) => index}
             />

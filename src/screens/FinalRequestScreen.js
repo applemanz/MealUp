@@ -8,9 +8,9 @@ import { userName, userID } from '../screens/SignInScreen';
 
 const db = firebase.firestore();
 
-eating_clubs = ["Cannon", "Cap", "Charter", "Cloister", "Colonial", "Cottage", "Ivy", "Quad",
+const eating_clubs = ["Cannon", "Cap", "Charter", "Cloister", "Colonial", "Cottage", "Ivy", "Quad",
 "Terrace", "TI", "Tower"]
-all_options = ["Wilcox", "Wu", "Rocky", "Mathey", "Whitman", "Frist", "Forbes", "CJL", "Grad College"]
+const all_options = ["Wilcox", "Wu", "Rocky", "Mathey", "Whitman", "Frist", "Forbes", "CJL", "Grad College"]
 
 export default class FinalRequestScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {

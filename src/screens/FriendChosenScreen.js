@@ -126,62 +126,6 @@ export default class FriendChosenScreen extends React.Component {
     return matches;
   }
 
-  onPress30 = () => {
-    t = section.title.split(", ");
-    month = months.indexOf(t[1].slice(0, 3));
-    date = parseInt(t[1].slice(4));
-    time = item.split("-")
-    hour = parseInt(time[0].split(":")[0])
-    min = parseInt(time[0].split(":")[1])
-    if (item.slice(-2) == "pm" && hour != 12 && time[0] != "11:30") hour += 12
-    // Year is hardcoded as 2018
-    ymd = new Date(2018,month,date,hour,min)
-
-    member = new Object();
-    member[id] = name;
-
-    this.props.navigation.navigate('FinalRequest',
-      {
-        sent: sent,
-        reschedule: reschedule,
-        name: name,
-        // id: id,
-        members: member,
-        dateobj: ymd.toString(),
-        time: item,
-        length: 0.5,
-      }
-    )
-  }
-
-  onPress1hr = () => {
-    t = section.title.split(", ");
-    month = months.indexOf(t[1].slice(0, 3));
-    date = parseInt(t[1].slice(4));
-    time = item.split("-")
-    hour = parseInt(time[0].split(":")[0])
-    min = parseInt(time[0].split(":")[1])
-    if (item.slice(-2) == "pm" && hour != 12 && hour != 11) hour += 12
-    // Year is hardcoded as 2018
-    ymd = new Date(2018,month,date,hour,min)
-
-    member = new Object();
-    member[id] = name;
-
-    this.props.navigation.navigate('FinalRequest',
-      {
-        sent: sent,
-        reschedule: reschedule,
-        name: name,
-        // id: id,
-        members: member,
-        dateobj: ymd.toString(),
-        time: item,
-        length: 1,
-      }
-    )
-  }
-
   render() {
     const { params } = this.props.navigation.state;
     const name = params.name
@@ -189,7 +133,7 @@ export default class FriendChosenScreen extends React.Component {
     const url = params.url
 
     // TODO also check if both matches1 and matches2 are empty
-    if (params.CanViewFriend == false || ()) {
+    if (params.CanViewFriend == false) {
       return (
         <View style={{alignItems:'center'}}>
           <Image
@@ -275,7 +219,33 @@ export default class FriendChosenScreen extends React.Component {
               renderItem={({item,section}) =>
                 <ListItem
                   title={item}
-                  onPress={this.onPress}
+                  onPress={() => {
+                    t = section.title.split(", ");
+                    month = months.indexOf(t[1].slice(0, 3));
+                    date = parseInt(t[1].slice(4));
+                    time = item.split("-")
+                    hour = parseInt(time[0].split(":")[0])
+                    min = parseInt(time[0].split(":")[1])
+                    if (item.slice(-2) == "pm" && hour != 12 && time[0] != "11:30") hour += 12
+                    // Year is hardcoded as 2018
+                    ymd = new Date(2018,month,date,hour,min)
+
+                    member = new Object();
+                    member[id] = name;
+
+                    this.props.navigation.navigate('FinalRequest',
+                      {
+                        sent: sent,
+                        reschedule: reschedule,
+                        name: name,
+                        // id: id,
+                        members: member,
+                        dateobj: ymd.toString(),
+                        time: item,
+                        length: 0.5,
+                      }
+                    )
+                  }}
                 />}
               renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
               keyExtractor={(item, index) => index}
@@ -287,7 +257,33 @@ export default class FriendChosenScreen extends React.Component {
               renderItem={({item,section}) =>
                 <ListItem
                   title={item}
-                  onPress={}
+                  onPress={() => {
+                    t = section.title.split(", ");
+                    month = months.indexOf(t[1].slice(0, 3));
+                    date = parseInt(t[1].slice(4));
+                    time = item.split("-")
+                    hour = parseInt(time[0].split(":")[0])
+                    min = parseInt(time[0].split(":")[1])
+                    if (item.slice(-2) == "pm" && hour != 12 && hour != 11) hour += 12
+                    // Year is hardcoded as 2018
+                    ymd = new Date(2018,month,date,hour,min)
+
+                    member = new Object();
+                    member[id] = name;
+
+                    this.props.navigation.navigate('FinalRequest',
+                      {
+                        sent: sent,
+                        reschedule: reschedule,
+                        name: name,
+                        // id: id,
+                        members: member,
+                        dateobj: ymd.toString(),
+                        time: item,
+                        length: 1,
+                      }
+                    )
+                  }}
                 />}
               renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
               keyExtractor={(item, index) => index}
