@@ -12,10 +12,13 @@ const db = firebase.firestore();
 const numdays = [31,28,31,30,31,30,31,31,30,31,30,31];
 const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const days = ["Sunday", "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
+
 const today = new Date();
 const todayMonth = today.getMonth();
 const todayDate = today.getDate();
 const todayDay = today.getDay();
+const todayHour = today.getHours();
+const todayMin = today.getMinutes();
 
 export default class GroupChosenScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -37,15 +40,16 @@ export default class GroupChosenScreen extends React.Component {
     freeTimeObj = new Object();
     for (let id in members) {
       freeTimeObj[id] = await this.getFreeTimes(id);
-      // console.log("HERE 1")
     }
-    // console.log("HERE 2")
+
     matches1 = this.match30min(freeTimeObj);
     matches2 = this.match1hr(freeTimeObj);
     noMatches1 = this.checkNoMatches(matches1);
     noMatches2 = this.checkNoMatches(matches2);
-
-    freeTimeWithoutOne = [];
+    match1 = []; // formatted matches1
+    match2 = []; // formatted matches2
+    freeTimeWithoutOne = []; // for no matching time
+    
     // If there are no matches...
     if (noMatches1) {
       for (friendID in members) {
@@ -54,48 +58,50 @@ export default class GroupChosenScreen extends React.Component {
           let newMembers = Object.assign({},members);
           delete newMembers[friendID];
 
-          //console.log("members:", members)
-          console.log("newMebers:", newMembers)
-
           newFreeTimeObj = new Object();
           for (let id in newMembers) {
             newFreeTimeObj[id] = await this.getFreeTimes(id);
-            // console.log("I'm here 1; id =", id)
-            // console.log(members[id])
           }
           newMatches1 = this.match30min(newFreeTimeObj);
-          newSortedMatches1 = this.sortMatches(newMatches1);
-          // console.log(newMatches1)
-          // console.log(members[friendID], newSortedMatches1)
           noNewMatches1 = this.checkNoMatches(newMatches1);
-          // console.log(noNewMatches1)
 
-          if (!noNewMatches1) {
-            // console.log("Hey", newMatches1)
-            temp = [];
-            for (let index in newSortedMatches1) {
-              // console.log("thisday", thisday)
-              for (let j = 0; j < 25; j++) {
-                // console.log(index, j, newSortedMatches1)
-                if (newSortedMatches1[index]['matches'][j]) {
-                  // console.log("day", newSortedMatches[index][day])
-                  // console.log("day ", day, "diff ", diff, "date ", date)
-                  temp.push(this.printDate(todayMonth,todayDate,todayDay,parseInt(index)) + ": " + this.printTime(j) + "-" + this.printTime(j+1,true))
+            if (!noNewMatches1) {
+              temp = [];
+              for (let index in newMatches1) {
+                for (let j = 0; j < 25; j++) {
+                  if (newMatches1[index]['matches'][j]) {
+                    temp.push(this.printDate(todayMonth,todayDate,todayDay,parseInt(index)) + " " + this.printTime(j) + "-" + this.printTime(j+1,true))
+                  }
                 }
               }
+              freeTimeWithoutOne.push({title: "rip " + members[friendID], data: temp})
             }
-            console.log(temp)
-            freeTimeWithoutOne.push({title: "rip " + members[friendID], data: temp})
           }
-          // console.log("I'm here 2; friendID =", friendID)
+      }
+    } else {
+      // if there is at least 1 matching time
+      for (let index in matches1) {
+        temp = [];
+        for (let j = 0; j < 25; j++) {
+          if (matches1[index]['matches'][j]) {
+            temp.push(this.printTime(j) + "-" + this.printTime(j+1,true))
+          }
         }
-        // console.log("I'm here 3; friendID =", friendID)
+        if (temp.length > 0) match1.push({title: this.printDate(todayMonth,todayDate,todayDay,parseInt(index)), data: temp})
+      }
+
+      for (let index in matches2) {
+        temp = [];
+        for (let j = 0; j < 25; j++) {
+          if (matches2[index]['matches'][j]) {
+            temp.push(this.printTime(j) + "-" + this.printTime(j+2,true))
+          }
+        }
+        if (temp.length > 0) match2.push({title: this.printDate(todayMonth,todayDate,todayDay,parseInt(index)), data: temp})
+      }
     }
-  }
 
-  this.sortMatches(matches1);
-
-    this.setState({matches1:matches1,matches2:matches2,noMatches1:noMatches1,noMatches2:noMatches2,freeTimeWithoutOne:freeTimeWithoutOne})
+    this.setState({match1:match1,match2:match2,noMatches1:noMatches1,noMatches2:noMatches2,freeTimeWithoutOne:freeTimeWithoutOne})
   }
 
   updateIndex = (index) => {
@@ -137,28 +143,23 @@ export default class GroupChosenScreen extends React.Component {
   }
 
   checkNoMatches = (matches) => {
-    for (day in matches) {
-      for (i = 0; i < matches[day].length; i++) {
-        if (matches[day][i])
+    for (let index in matches) {
+      for (let i = 0; i < matches[index]['matches'].length; i++) {
+        if (matches[index]['matches'][i])
           return false
       }
     }
     return true
   }
-
+  
   match30min = (freeTimeObj) => {
     matches = new Object();
-
-    today = new Date();
-    thisDay = days[today.getDay()];
-    thisHour = today.getHours();
-    thisMin = today.getMinutes();
-    thisIndex = (thisHour - 7) * 2 + Math.floor(thisMin / 30) - 1;
+    thisIndex = (todayHour - 7) * 2 + Math.floor(todayMin / 30) - 1;
 
     for (const day in freeTimeObj[userID]) {
       matches[day] = Array.from(Array(25), () => true)
       for (i=0; i < 25; i++) {
-        if (day === thisDay && i <= thisIndex) {
+        if (day === days[todayDay] && i <= thisIndex) {
           matches[day][i] = false
           continue;
         }
@@ -169,22 +170,17 @@ export default class GroupChosenScreen extends React.Component {
         }
       }
     }
-    return matches;
+    return this.sortMatches(matches);
   }
 
   match1hr = (freeTimeObj) => {
     matches = new Object();
-
-    today = new Date();
-    thisDay = days[today.getDay()];
-    thisHour = today.getHours();
-    thisMin = today.getMinutes();
-    thisIndex = (thisHour - 7) * 2 + Math.floor(thisMin / 30) - 1;
+    thisIndex = (todayHour - 7) * 2 + Math.floor(todayMin / 30) - 1;
 
     for (const day in freeTimeObj[userID]) {
       matches[day] = Array.from(Array(24), () => true)
       for (i=0; i < 25; i++) {
-        if (day === thisDay && i <= thisIndex) {
+        if (day === days[todayDay] && i <= thisIndex) {
           matches[day][i] = false
           continue;
         }
@@ -196,7 +192,7 @@ export default class GroupChosenScreen extends React.Component {
           }
       }
     }
-    return matches;
+    return this.sortMatches(matches);
   }
 
   sortMatches = (matches) => {
@@ -206,7 +202,6 @@ export default class GroupChosenScreen extends React.Component {
       if (diff < 0) diff += 7;
       sortedMatches[diff] = {day:thisday, matches:matches[thisday]}
     }
-    console.log(sortedMatches)
     return sortedMatches
   }
 
@@ -216,13 +211,19 @@ export default class GroupChosenScreen extends React.Component {
     const id = params.id
     const members = params.members
 
-    if (this.state.matches1) {
+    // if no matching time for group
+    if (this.state.match1) {
       console.log("Re-render")
       const reschedule = params ? params.reschedule : undefined;
       const sent = params ? params.sent : undefined;
+            
+      urls = []
+      for (memberID in members) {
+        urls.push(`http://graph.facebook.com/${memberID}/picture?type=large`)
+      }
+      urls.push(`http://graph.facebook.com/${userID}/picture?type=large`)
 
       if (this.state.noMatches1) {
-        // console.log(this.state.freeTimeWithoutOne)
         return(
           <View style={{flex:1}}>
             <View style={{alignItems:'center'}}>
@@ -241,7 +242,7 @@ export default class GroupChosenScreen extends React.Component {
                       source={{uri:urls[2]}}/>
                   </View>
                 </View>
-            <Text style={{fontSize:15}}>{'Looks like yall pretty busy, what about...'}</Text>
+            <Text style={{fontSize:15}}>{'Looks like yall pretty busy, who do you like the least?'}</Text>
             </View>
             <ScrollableTabView
               style={{marginTop: 0, flex:1}}
@@ -259,25 +260,35 @@ export default class GroupChosenScreen extends React.Component {
                   <ListItem
                 title={item}
                 onPress={() => {
-                  // t = section.title.split(", ");
-                  month = 1;
-                  date = 1;
-                  // time = item.split("-")
-                  hour = 1
-                  min = 1
-                  // if (item.slice(-2) == "pm" && hour != 12 && time[0] != "11:30") hour += 12
+                  let t = item.split(", ");
+                  let arr = t[1].split(" ");
+                  let month = months.indexOf(arr[0]);
+                  let date = parseInt(arr[1]);
+                  let time = arr[2].split("-")
+                  let hour = parseInt(time[0].split(":")[0])
+                  let min = parseInt(time[0].split(":")[1])
+                  if (item.slice(-2) == "pm" && hour != 12 && time[0] != "11:30") hour += 12
                   // Year is hardcoded as 2018
-                  ymd = new Date(2018,month,date,hour,min)
+                  let ymd = new Date(2018,month,date,hour,min)
+                  console.log(section.title.slice(4))
+                  let membersCopy = Object.assign({},members)
+                  for (let memberID in membersCopy) {
+                    if (membersCopy[memberID] == section.title.slice(4)) {
+                      delete membersCopy[memberID]
+                      break;
+                    }
+                  }
+                  
                   this.props.navigation.navigate('FinalRequest',
                   {
                     sent: sent,
                     reschedule: reschedule,
                     // name: name,
                     // id: id,
-                    name: groupName,
-                    members: members,
+                    name: groupName + " without " + section.title.slice(4).split(" ")[0],
+                    members: membersCopy,
                     dateobj: ymd.toString(),
-                    time: item,
+                    time: arr[2] + " " + arr[3],
                     length: 0.5,
                     isGroup: true,
                   })
@@ -323,59 +334,8 @@ export default class GroupChosenScreen extends React.Component {
           </View>
         )
       }
-      match1 = [];
-      match2 = [];
-      d = new Date();
-      month = d.getMonth();
-      date = d.getDate();
-      day = d.getDay();
 
-      for (thisday in this.state.matches1) {
-        temp = [];
-        cur = days.indexOf(thisday);
-        for (j = 0; j < 25; j++) {
-          if (this.state.matches1[thisday][j]) {
-            temp.push(this.printTime(j) + "-" + this.printTime(j+1,true))
-          }
-        }
-
-        diff = days.indexOf(thisday) - day;
-        if (diff < 0) diff += 7;
-
-        if (temp.length > 0) match1.push({title: diff, data: temp})
-      }
-
-      for (thisday in this.state.matches2) {
-        temp = [];
-        for (j = 0; j < 25; j++) {
-          if (this.state.matches2[thisday][j]) {
-            temp.push(this.printTime(j) + "-" + this.printTime(j+2,true))
-          }
-        }
-
-        diff = days.indexOf(thisday) - day;
-        if (diff < 0) diff += 7;
-
-        if (temp.length > 0) match2.push({title: diff, data: temp})
-      }
-
-      match1.sort((a,b) => a.title - b.title)
-      match2.sort((a,b) => a.title - b.title)
-
-      for (i of match1) {
-        i.title = this.printDate(month,date,day,i.title)
-      }
-
-      for (i of match2) {
-        i.title = this.printDate(month,date,day,i.title)
-      }
- 
-      urls = []
-      for (memberID in members) {
-        urls.push(`http://graph.facebook.com/${memberID}/picture?type=large`)
-      }
-      urls.push(`http://graph.facebook.com/${userID}/picture?type=large`)
-
+      // if yes matching time for group
       return(
         <View style={{flex:1}}>
           <View style={{alignItems:'center'}}>
@@ -408,17 +368,17 @@ export default class GroupChosenScreen extends React.Component {
           >
             <SectionList
               tabLabel='30 min'
-              sections={match1}
+              sections={this.state.match1}
               renderItem={({item,section}) =>
                 <ListItem
               title={item}
               onPress={() => {
-                t = section.title.split(", ");
-                month = months.indexOf(t[1].slice(0, 3));
-                date = parseInt(t[1].slice(4));
-                time = item.split("-")
-                hour = parseInt(time[0].split(":")[0])
-                min = parseInt(time[0].split(":")[1])
+                let t = section.title.split(", ");
+                let month = months.indexOf(t[1].slice(0, 3));
+                let date = parseInt(t[1].slice(4));
+                let time = item.split("-")
+                let hour = parseInt(time[0].split(":")[0])
+                let min = parseInt(time[0].split(":")[1])
                 if (item.slice(-2) == "pm" && hour != 12 && time[0] != "11:30") hour += 12
                 // Year is hardcoded as 2018
                 ymd = new Date(2018,month,date,hour,min)
@@ -442,17 +402,17 @@ export default class GroupChosenScreen extends React.Component {
             />
             <SectionList
               tabLabel='1 hr'
-              sections={match2}
+              sections={this.state.match2}
               renderItem={({item,section}) =>
                 <ListItem
                   title={item}
                   onPress={() => {
-                    t = section.title.split(", ");
-                    month = months.indexOf(t[1].slice(0, 3));
-                    date = parseInt(t[1].slice(4));
-                    time = item.split("-")
-                    hour = parseInt(time[0].split(":")[0])
-                    min = parseInt(time[0].split(":")[1])
+                    let t = section.title.split(", ");
+                    let month = months.indexOf(t[1].slice(0, 3));
+                    let date = parseInt(t[1].slice(4));
+                    let time = item.split("-")
+                    let hour = parseInt(time[0].split(":")[0])
+                    let min = parseInt(time[0].split(":")[1])
                     if (item.slice(-2) == "pm" && hour != 12 && hour != 11) hour += 12
                     // Year is hardcoded as 2018
                     ymd = new Date(2018,month,date,hour,min)
