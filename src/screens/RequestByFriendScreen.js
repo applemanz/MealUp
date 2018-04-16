@@ -25,7 +25,23 @@ export default class RequestByFriendScreen extends React.Component {
 
     componentDidMount() {
       this.getFriendsAndGroups()
+      this.props.navigation.addListener('willFocus', ()=>{
+        this.onRefresh();
+      });
     }
+
+    onRefresh  = () => {
+      db.collection("users").doc(userID).collection('Groups').get().then((querySnapshot) => {
+          var groups = [];
+          querySnapshot.forEach((doc) => {
+              let data = doc.data()
+              data['id'] = doc.id
+              groups.push(data)
+          });
+          this.setState({groups:groups});
+      });
+    }
+
 
     getFriendsAndGroups() {
       db.collection("users").doc(userID).collection('Friends').get().then((querySnapshot) => {

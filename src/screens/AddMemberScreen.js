@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Text, StyleSheet, Button, TextInput } from 'react-native';
+import { View, Image, Text, StyleSheet, Button, TextInput, Platform } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
 import { Avatar, Card, ListItem, ButtonGroup, CheckBox, Divider } from 'react-native-elements';
 import firebase from "../config/firebase";
@@ -16,19 +16,11 @@ export default class AddMember extends React.Component {
       const params = navigation.state.params || {};
       return {
         title: 'Add New Members',
-        headerLeft: (
-          <HeaderButtons color = '#ffffff'>
-            <HeaderButtons.Item title='Cancel' onPress={params.CancelButtonPressed} />
-          </HeaderButtons>
-        ),
+        headerTitleStyle :{alignSelf:'center'},
       };
     };
 
   state = {friends: [], groupName: "", doneLoading:false};
-
-  componentWillMount() {
-    this.props.navigation.setParams({CancelButtonPressed: this.CancelButtonPressed});
-  }
 
   componentDidMount() {
     var friends = [];
@@ -49,11 +41,6 @@ export default class AddMember extends React.Component {
     });
 
   }
-
-  CancelButtonPressed = () => {
-    this.props.navigation.goBack(null)
-  }
-
 
   render() {
     const { params } = this.props.navigation.state;

@@ -130,9 +130,25 @@ export default class GroupChosenScreen extends React.Component {
 
   render() {
     const { params } = this.props.navigation.state;
-    const groupName = params.groupName
+    var groupName = params.groupName
     const id = params.id
     const members = params.members
+
+
+    if (groupName == "") {
+      var names = [];
+      for (var memberID in members) {
+        if (memberID != userID)
+          names.push(members[memberID].split(" ")[0]);
+      }
+      names.sort()
+      var memberStr = ""
+      for (name of names) {
+        memberStr = memberStr + name + ", "
+      }
+      memberStr = memberStr.slice(0, -2)
+      groupName = memberStr
+    }
 
     if (this.state.matches1) {
       const reschedule = params ? params.reschedule : undefined;
@@ -280,6 +296,7 @@ export default class GroupChosenScreen extends React.Component {
                       dateobj: ymd.toString(),
                       time: item,
                       length: 1,
+                      isGroup: true,
                     })
                   }}
                 />}

@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Button, Text, FlatList, Modal, TouchableHighlight, Image } from 'react-native';
+import { View, Button, Text, SectionList, Modal, TouchableHighlight, Image, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
-import { ListItem, ButtonGroup } from 'react-native-elements';
+import { ListItem, ButtonGroup, Avatar } from 'react-native-elements';
 import HeaderButtons from 'react-navigation-header-buttons'
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Ionicons } from '@expo/vector-icons';
@@ -27,22 +27,38 @@ export default class RequestsScreen extends React.Component {
         title: 'Requests',
         headerRight: (
           <HeaderButtons IconComponent={Ionicons} iconSize={23} color="white">
-            <HeaderButtons.Item title="add" iconName="md-add-circle" onPress={params.showModal} />
+            <HeaderButtons.Item title="add" iconName="md-add-circle" onPress={params.showNewRequestModal} />
           </HeaderButtons>
         ),
       };
     };
-
-  componentWillMount() {
-    this.props.navigation.setParams({ showModal: this.showModal });
+  showNewRequestModal = () => {
+    this.setState({newRequestModalVisible: true})
+  }
+  RequestByFriend = () => {
+    this.setState({newRequestModalVisible: false});
+    this.props.navigation.navigate('RequestByFriend');
+  }
+  RequestByTime = () => {
+    this.setState({newRequestModalVisible: false});
+    this.props.navigation.navigate('RequestByTime');
   }
 
-  state = {modalVisible: false, index: 1, sentRequests: [], receivedRequests: [], respondVisible: false, curUser: {}, undoVisible: false,
-  refreshingR: false, refreshingS: false};
+  state = {
+      newRequestModalVisible: false,
+      index: 1,
+      respondVisible: false,
+      curUser: {},
+      undoVisible: false,
+      refreshingR: false,
+      refreshingS: false,
+      respondGroupReceived:false,
+      respondGroupSent: false,
+      acceptedGroupReceived: false
+    }
 
-
-  showModal = () => {
-    this.setState({modalVisible: true})
+  componentWillMount() {
+    this.props.navigation.setParams({ showNewRequestModal: this.showNewRequestModal });
   }
 
   componentDidMount() {
@@ -108,31 +124,633 @@ export default class RequestsScreen extends React.Component {
       });
         this.setState({receivedRequests: requestR});
     });
-    // TODO get group requests
+    db.collection("users").doc(userID).collection('Received Group Requests').onSnapshot((querySnapshot) => {
+      groupRequestR = [];
+      querySnapshot.forEach((doc) => {
+        if (doc.data().DateTime >= new Date()) {
+          data = doc.data()
+          data['id'] = doc.id
+          console.log('meal declined')
+          console.log(data.declined)
+          if (!data.declined)
+            groupRequestR.push(data)
+        } else {
+          // console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
+          db.collection("users").doc(userID).collection('Received Group Requests').doc(doc.id).delete().then(() => {
+            console.log("Document successfully deleted!");
+          }).catch(function(error) {
+            console.error("Error removing document: ", error);
+          });
+        }
+      })
+      groupRequestR.sort(function(a, b) {
+        a = a.DateTime;
+        b = b.DateTime;
+        return a>b ? 1 : a<b ? -1 : 0;
+      })
+        this.setState({receivedGroupRequests: groupRequestR});
+    })
+    db.collection("users").doc(userID).collection('Sent Group Requests').onSnapshot((querySnapshot) => {
+      sentGroupRequests = [];
+      querySnapshot.forEach((doc) => {
+        if (doc.data().DateTime >= new Date()) {
+          data = doc.data()
+          totalCount = Object.keys(data.members).length
+          acceptedCount = 0
+          for (memberID in data.members) {
+            if (data.members[memberID].accepted == true) {
+              acceptedCount++
+            }
+          }
+          if (acceptedCount == totalCount) {
+            // TODO delete this sent request
+            // TODO delete received request for all other members
+            // TODO add to their meals
+            // notfy meal scheduled
+          }
+          else {
+            data['id'] = doc.id
+            sentGroupRequests.push(data)
+          }
+        } else {
+          // TODO Update FreeTime of all members
+          db.collection("users").doc(userID).collection('Sent Group Requests').doc(doc.id).delete().then(() => {
+            console.log("Document successfully deleted!");
+          }).catch(function(error) {
+            console.error("Error removing document: ", error);
+          });
+        }
+      })
+      sentGroupRequests.sort(function(a, b) {
+        a = a.DateTime;
+        b = b.DateTime;
+        return a>b ? 1 : a<b ? -1 : 0;
+      })
+        this.setState({sentGroupRequests: sentGroupRequests});
+    })
     this.props.navigation.addListener('willFocus', ()=>{
       this.refreshReceived()
       this.refreshSent()
+      // TODO refresh group requests
     });
   }
-
-  RequestByFriend = () => {
-    this.setState({modalVisible: false});
-    this.props.navigation.navigate('RequestByFriend');
+  refreshReceived = () => {
+    this.setState({refreshingR: true});
+    db.collection("users").doc(userID).collection('Received Requests').onSnapshot((querySnapshot) => {
+      requestR = [];
+        querySnapshot.forEach((doc) => {
+          if (doc.data().DateTime >= new Date()) {
+            requestR.push({
+              FriendName: doc.data().FriendName,
+              url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=large`,
+              FriendID: doc.data().FriendID,
+              DateTime: doc.data().DateTime,
+              Location: doc.data().Location,
+              docID: doc.id,
+              Length: doc.data().Length,
+              TimeString: doc.data().TimeString
+            })
+          } else {
+            console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
+            db.collection("users").doc(userID).collection('Received Requests').doc(doc.id).delete().then(() => {
+              console.log("Document successfully deleted!");
+              db.collection("users").doc(doc.data().FriendID).collection('Sent Requests').doc(doc.id).delete()
+            }).catch(function(error) {
+              console.error("Error removing document: ", error);
+            });
+          }
+        });
+        requestR.sort(function(a, b) {
+          a = a.DateTime;
+          b = b.DateTime;
+          return a>b ? 1 : a<b ? -1 : 0;
+        });
+        this.setState({receivedRequests: requestR});
+    });
+    this.setState({refreshingR: false});
+  }
+  refreshSent = () => {
+    this.setState({refreshingS: true});
+    db.collection("users").doc(userID).collection('Sent Requests').onSnapshot((querySnapshot) => {
+      requestS = [];
+        querySnapshot.forEach((doc) => {
+          if (doc.data().DateTime >= new Date()) {
+            requestS.push({
+              FriendName: doc.data().FriendName,
+              url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=large`,
+              FriendID: doc.data().FriendID,
+              DateTime: doc.data().DateTime,
+              Location: doc.data().Location,
+              docID: doc.id,
+              Length: doc.data().Length,
+              TimeString: doc.data().TimeString
+            })
+          } else {
+            console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
+            db.collection("users").doc(userID).collection('Sent Requests').doc(doc.id).delete().then(() => {
+              console.log("Document successfully deleted!");
+              db.collection("users").doc(doc.data().FriendID).collection('Received Requests').doc(doc.id).delete()
+            }).catch(function(error) {
+              console.error("Error removing document: ", error);
+            });
+          }
+        });
+        requestS.sort(function(a, b) {
+          a = a.DateTime;
+          b = b.DateTime;
+          return a>b ? 1 : a<b ? -1 : 0;
+        });
+        this.setState({sentRequests: requestS});
+    });
+    this.setState({refreshingS: false});
   }
 
-  RequestByTime = () => {
-    this.setState({modalVisible: false});
-    this.props.navigation.navigate('RequestByTime');
+  render() {
+    if (this.state.receivedRequests && this.state.sentRequests && this.state.receivedGroupRequests && this.state.sentGroupRequests)
+    return (
+      <View style={{flex:1}}>
+        <ScrollableTabView
+          style={{marginTop: 0}}
+          renderTabBar={() => <DefaultTabBar />}
+          // onChangeTab = {(i, ref) => {this.setState({onFriends: !this.state.onFriends})}}
+          tabBarBackgroundColor = {'#f4511e'}
+          tabBarActiveTextColor = {'white'}
+          tabBarInactiveTextColor = {'black'}
+          tabBarUnderlineStyle = {{backgroundColor:'white'}}
+        >
+          <SectionList
+            tabLabel='Received'
+            onRefresh={this.refreshReceived}
+            refreshing={this.state.refreshingR}
+            renderItem={this.renderReceivedRequest}
+            sections={[
+              { title: 'Groups', data: this.state.receivedGroupRequests, renderItem: this.renderReceivedGroupRequest },
+              { title: 'Friends', data: this.state.receivedRequests },
+            ]}
+            keyExtractor={(item, index) => item + index}
+            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+          />
+          <SectionList
+            tabLabel='Sent'
+            renderItem={this.renderSentRequest}
+            onRefresh={this.refreshSent}
+            refreshing={this.state.refreshingS}
+            sections={[
+              { title: 'Groups', data: this.state.sentGroupRequests, renderItem: this.renderSentGroupRequest },
+              { title: 'Friends', data: this.state.sentRequests },
+            ]}
+            keyExtractor={(item, index) => item + index}
+            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+          />
+        </ScrollableTabView>
+          {this.requestModal()}
+          {this.respondModal()}
+          {this.undoModal()}
+          {this.receivedGroupRequestModal()}
+          {this.sentGroupRequestModal()}
+          {this.acceptedGroupRequestModal()}
+
+      </View>
+    )
+    else return (
+      <View>
+          <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    )
   }
 
+  requestModal() {
+    return <View>
+    <Modal onRequestClose={() => this.setState({newRequestModalVisible: false})} transparent={true} visible={this.state.newRequestModalVisible}>
+      <View style={{
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000080'}}>
+        <View style={{
+          width: 300,
+          height: 300,
+          backgroundColor: '#fff', padding: 20}}>
+          <View style={{padding: 15}}>
+            <Button onPress={this.RequestByFriend} title="Request by Friend"/>
+          </View>
+          <View style={{padding: 15}}>
+            <Button onPress = {this.RequestByTime} title="Request by Time"/>
+          </View>
+          <View style={{padding: 25, alignItems: 'center'}}>
+            <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
+              onPress={() => this.setState({newRequestModalVisible: false})}>
+              <Text style={{fontSize: 15, textAlign: 'right'}}>Cancel</Text>
+            </TouchableHighlight>
+          </View>
+        </View>
+      </View>
+    </Modal>
+    </View>
+  }
+  undoModal() {
+    return <View>
+    <Modal onRequestClose={() => this.setState({newRequestModalVisible: false})} transparent={true} visible={this.state.undoVisible}>
+      <View style={{
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000080'}}>
+      <View style={{
+        width: 300,
+        height: 460,
+        backgroundColor: '#fff', padding: 20}}>
+        <View style={{alignItems: 'center'}}>
+        <View style={{padding: 10}}>
+        <Image
+          style={{width: 100, height: 100, borderRadius: 50}}
+          source={{uri: `http://graph.facebook.com/${this.state.curUser.FriendID}/picture?type=large`}}
+        />
+        </View>
+        <View style={{padding: 10}}>
+        <Text>{this.state.curUser.FriendName}</Text>
+        </View>
+        <View style={{padding: 10}}>
+        <Text>{this.state.curUser.displayDate} {this.state.curUser.TimeString} at {this.state.curUser.Location}</Text>
+        </View>
+        </View>
+        <View style={{padding: 10}}>
+          <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
+            onPress={this.cancelRequest}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Cancel Request</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={{padding: 10}}>
+          <TouchableHighlight style={{padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
+            onPress={this.rescheduleSentRequest}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Reschedule Meal</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={{padding: 10}}>
+          <TouchableHighlight style={{padding: 10, backgroundColor: "#5bc0de", borderRadius: 5}}
+            onPress={this.changeSentLocation}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Change Location</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={{padding: 15, alignItems: 'center'}}>
+          <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
+            onPress={() => this.setState({undoVisible: false})}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Cancel</Text>
+          </TouchableHighlight>
+        </View>
+        </View>
+        </View>
+    </Modal>
+    </View>
+  }
+  respondModal() {
+    return (
+    <Modal onRequestClose={() => this.setState({newRequestModalVisible: false})} transparent={true} visible={this.state.respondVisible}>
+      <View style={{
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000080'}}>
+      <View style={{
+        width: 300,
+        height: 520,
+        backgroundColor: '#fff', padding: 20}}>
+        <View style={{alignItems: 'center'}}>
+        <View style={{padding: 10}}>
+        <Image
+          style={{width: 100, height: 100, borderRadius: 50}}
+          source={{uri: `http://graph.facebook.com/${this.state.curUser.FriendID}/picture?type=large`}}
+        />
+        </View>
+        <View style={{padding: 10}}>
+        <Text>{this.state.curUser.FriendName}</Text>
+        </View>
+        <View style={{padding: 10}}>
+        <Text>{this.state.curUser.displayDate} {this.state.curUser.TimeString} at {this.state.curUser.Location}</Text>
+        </View>
+        </View>
+        <View style={{padding: 10}}>
+          <TouchableHighlight style={{padding: 10, backgroundColor: "#5cb85c", borderRadius: 5}}
+            onPress={this.acceptRequest}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Accept</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={{padding: 10}}>
+          <TouchableHighlight style={{padding: 10, backgroundColor: "#5bc0de", borderRadius: 5}}
+            onPress={this.changeLocation}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Change Location</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={{padding: 10}}>
+          <TouchableHighlight style={{padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
+            onPress={this.rescheduleRequest}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Reschedule</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={{padding: 10}}>
+          <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
+            onPress={this.declineRequest}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Decline</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={{padding: 15, alignItems: 'center'}}>
+          <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
+            onPress={() => this.setState({respondVisible: false})}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Cancel</Text>
+          </TouchableHighlight>
+        </View>
+        </View>
+        </View>
+    </Modal>
+    )
+  }
+  receivedGroupRequestModal() {
+    return (
+    <Modal
+      onRequestClose={() => this.setState({respondGroupReceived: false})}
+      transparent={true}
+      visible={this.state.respondGroupReceived}>
+      <View style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000080'
+      }}>
+        <View style={{
+          width: 300,
+          height: 500,
+          backgroundColor: '#fff',
+          padding: 30
+        }}>
+        <View style={{alignItems:'center'}}>
+          <Text>{'Respond to group meal request with'}</Text>
+          <Text style={{fontWeight:'bold', fontSize:20, padding:5}}>{this.state.curUser.groupName}</Text>
+          <Text style={{textAlign: 'center'}}>
+            {this.state.displayDate + " " + this.state.curUser.TimeString + " at " + this.state.curUser.Location}
+          </Text>
+        </View>
+        <View style={{alignItems:'center'}}>
+          <Text style={{padding:5}}>Accepted</Text>
+          <View style={{flexDirection: 'row',}}>
+            <ScrollView
+              centerContent
+              horizontal
+              showsHorizontalScrollIndicator = {false}
+              >
+            {this.renderAvatars('accepted')}
+            </ScrollView>
+          </View>
+          <Text style={{padding:5}}>Pending</Text>
+          <View style={{flexDirection: 'row',}}>
+            <ScrollView
+              centerContent ={true}
+              horizontal
+              showsHorizontalScrollIndicator = {false}
+              >
+            {this.renderAvatars('pending')}
+            </ScrollView>
+          </View>
+          <Text style={{padding:5}}>Declined</Text>
+          <View style={{flexDirection: 'row',}}>
+            <ScrollView
+              centerContent
+              horizontal
+              showsHorizontalScrollIndicator = {false}
+              >
+            {this.renderAvatars('declined')}
+            </ScrollView>
+          </View>
+        </View>
+        <TouchableHighlight
+          style={{marginTop:10,padding: 10, backgroundColor: "#5cb85c", borderRadius: 5}}
+          onPress={this.acceptGroupRequest}>
+          <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Accept</Text>
+        </TouchableHighlight>
+        <TouchableHighlight
+          style={{marginTop:10,padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
+          onPress={this.declineGroupRequest}>
+          <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Decline</Text>
+        </TouchableHighlight>
+        <TouchableHighlight
+          style={{marginTop:30,padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
+          onPress={() => this.setState({respondGroupReceived: false})}>
+          <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Cancel</Text>
+        </TouchableHighlight>
+        </View>
+      </View>
+    </Modal>
+      )
+  }
+  acceptedGroupRequestModal() {
+    return (
+    <Modal
+      onRequestClose={() => this.setState({acceptedGroupReceived: false})}
+      transparent={true}
+      visible={this.state.acceptedGroupReceived}>
+      <View style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000080'
+      }}>
+        <View style={{
+          width: 300,
+          height: 400,
+          backgroundColor: '#fff',
+          padding: 30
+        }}>
+        <View style={{alignItems:'center'}}>
+          <Text>{'Group meal with'}</Text>
+          <Text style={{fontWeight:'bold', fontSize:20, padding:5}}>{this.state.curUser.groupName}</Text>
+          <Text style={{textAlign: 'center'}}>
+            {this.state.displayDate + " " + this.state.curUser.TimeString + " at " + this.state.curUser.Location}
+          </Text>
+        </View>
+        <View style={{alignItems:'center'}}>
+          <Text style={{padding:5}}>Accepted</Text>
+          <View style={{flexDirection: 'row',}}>
+            <ScrollView
+              centerContent
+              horizontal
+              showsHorizontalScrollIndicator = {false}
+              >
+            {this.renderAvatars('accepted')}
+            </ScrollView>
+          </View>
+          <Text style={{padding:5}}>Pending</Text>
+          <View style={{flexDirection: 'row',}}>
+            <ScrollView
+              centerContent ={true}
+              horizontal
+              showsHorizontalScrollIndicator = {false}
+              >
+            {this.renderAvatars('pending')}
+            </ScrollView>
+          </View>
+          <Text style={{padding:5}}>Declined</Text>
+          <View style={{flexDirection: 'row',}}>
+            <ScrollView
+              centerContent
+              horizontal
+              showsHorizontalScrollIndicator = {false}
+              >
+            {this.renderAvatars('declined')}
+            </ScrollView>
+          </View>
+        </View>
+        <TouchableHighlight
+          style={{marginTop:30,padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
+          onPress={() => this.setState({acceptedGroupReceived: false})}>
+          <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Close</Text>
+        </TouchableHighlight>
+        </View>
+      </View>
+    </Modal>
+    )
+  }
+  sentGroupRequestModal() {
+    return (
+    <Modal
+      onRequestClose={() => this.setState({respondGroupSent: false})}
+      transparent={true}
+      visible={this.state.respondGroupSent}>
+      <View style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000080'
+      }}>
+        <View style={{
+          width: 300,
+          height: 530,
+          backgroundColor: '#fff',
+          padding: 30
+        }}>
+          <View style={{alignItems:'center'}}>
+            <Text>{'Group Meal with'}</Text>
+            <Text style={{fontWeight:'bold', fontSize:20, padding:5}}>{this.state.curUser.groupName}</Text>
+            <Text style={{textAlign: 'center'}}>
+              {this.state.displayDate + " " + this.state.curUser.TimeString + " at " + this.state.curUser.Location}
+            </Text>
+          </View>
+          <View style={{alignItems:'center'}}>
+            <Text style={{padding:5}}>Accepted</Text>
+            <View style={{flexDirection: 'row',}}>
+              <ScrollView
+                centerContent
+                horizontal
+                showsHorizontalScrollIndicator = {false}
+                >
+              {this.renderAvatars('accepted')}
+              </ScrollView>
+            </View>
+            <Text style={{padding:5}}>Pending</Text>
+            <View style={{flexDirection: 'row',}}>
+              <ScrollView
+                centerContent ={true}
+                horizontal
+                showsHorizontalScrollIndicator = {false}
+                >
+              {this.renderAvatars('pending')}
+              </ScrollView>
+            </View>
+            <Text style={{padding:5}}>Declined</Text>
+            <View style={{flexDirection: 'row',}}>
+              <ScrollView
+                centerContent
+                horizontal
+                showsHorizontalScrollIndicator = {false}
+                >
+              {this.renderAvatars('declined')}
+              </ScrollView>
+            </View>
+          </View>
+          <TouchableHighlight
+            style={{marginTop:10, padding: 10, backgroundColor: "#5cb85c", borderRadius: 5}}
+            onPress={this.finalize}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>
+              Finalize
+            </Text>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={{marginTop:10, padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
+            onPress={this.rescheduleGroup}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>
+              Choose a Different Time
+            </Text>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={{marginTop:10, padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
+            onPress={this.cancelGroup}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>
+              Cancel Request
+            </Text>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={{marginTop:30, padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
+            onPress={() => this.setState({respondGroupSent: false})}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>
+              Cancel
+            </Text>
+          </TouchableHighlight>
+        </View>
+      </View>
+    </Modal>
+    )
+  }
+  renderAvatars = (s) => {
+    selectedURLs = []
+    if (s == 'accepted') {
+      for (memberID in this.state.curUser.members) {
+        if (this.state.curUser.members[memberID].accepted == true) {
+          selectedURLs.push(`http://graph.facebook.com/${memberID}/picture?type=small`)
+        }
+      }
+    }
+    else if (s == 'pending') {
+      for (memberID in this.state.curUser.members) {
+        if (this.state.curUser.members[memberID].accepted == false && !this.state.curUser.members[memberID].declined) {
+          selectedURLs.push(`http://graph.facebook.com/${memberID}/picture?type=small`)
+        }
+      }
+    }
+    else if (s == 'declined'){
+      for (memberID in this.state.curUser.members) {
+        if (this.state.curUser.members[memberID].declined == true) {
+          selectedURLs.push(`http://graph.facebook.com/${memberID}/picture?type=small`)
+        }
+      }
+    }
+
+    return (
+      selectedURLs.map((url)=> {
+        return <Avatar
+            small
+            rounded
+            key = {url}
+            source={{uri: url}}
+            containerStyle = {{margin:5}}
+            // activeOpacity={0.7}
+          />
+      })
+    )
+  }
+
+  // FRIEND functions
   renderSentRequest = ({item, index}) => {
     return <ListItem
     key={index}
-    roundAvatar
     title={item.FriendName}
     subtitle={item.DateTime.toDateString().substring(0,10) + " " + item.TimeString + " at " + item.Location}
     subtitleNumberOfLines={2}
-    avatar={{uri:item.url}}
+    leftIcon = {
+      <Image
+        style={{width: 50, height: 50, borderRadius:25, marginRight:10}}
+        source={{uri:item.url}} />
+      }
     onPress={() => this._onPressSent(item)}
     />;
   }
@@ -140,20 +758,17 @@ export default class RequestsScreen extends React.Component {
   renderReceivedRequest = ({item, index}) => {
     return <ListItem
     key={index}
-    roundAvatar
     title={item.FriendName}
     subtitle={item.DateTime.toDateString().substring(0,10) + " " + item.TimeString + " at " + item.Location}
     subtitleNumberOfLines={2}
-    avatar={{uri:item.url}}
+    leftIcon = {
+      <Image
+        style={{width: 50, height: 50, borderRadius:25, marginRight:10}}
+        source={{uri:item.url}} />
+    }
     onPress={() => this._onPressReceived(item)}
     />;
   }
-
-// TODO render group requests
-
-  _keyExtractor = (item, index) => item.docID;
-
-// TODO on press group requests
 
   _onPressSent = (item) => {
     this.setState({
@@ -393,262 +1008,256 @@ export default class RequestsScreen extends React.Component {
     });
   }
 
-  refreshReceived = () => {
-    this.setState({refreshingR: true});
-    db.collection("users").doc(userID).collection('Received Requests').onSnapshot((querySnapshot) => {
-      requestR = [];
-        querySnapshot.forEach((doc) => {
-          if (doc.data().DateTime >= new Date()) {
-            requestR.push({
-              FriendName: doc.data().FriendName,
-              url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=large`,
-              FriendID: doc.data().FriendID,
-              DateTime: doc.data().DateTime,
-              Location: doc.data().Location,
-              docID: doc.id,
-              Length: doc.data().Length,
-              TimeString: doc.data().TimeString
-            })
-          } else {
-            console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
-            db.collection("users").doc(userID).collection('Received Requests').doc(doc.id).delete().then(() => {
-              console.log("Document successfully deleted!");
-              db.collection("users").doc(doc.data().FriendID).collection('Sent Requests').doc(doc.id).delete()
-            }).catch(function(error) {
-              console.error("Error removing document: ", error);
-            });
-          }
-        });
-        requestR.sort(function(a, b) {
-          a = a.DateTime;
-          b = b.DateTime;
-          return a>b ? 1 : a<b ? -1 : 0;
-        });
-        this.setState({receivedRequests: requestR});
+  // GROUP functions
+  renderReceivedGroupRequest = ({item, index}) => {
+    urls = []
+    totalCount = Object.keys(item.members).length
+    acceptedCount = 0
+    for (memberID in item.members) {
+      if (item.members[memberID].accepted == true) {
+        acceptedCount++
+      }
+      urls.push(`http://graph.facebook.com/${memberID}/picture?type=normal`)
+    }
+    urls.push(`http://graph.facebook.com/${userID}/picture?type=normal`)
+    if (item.members[userID].accepted) {
+      onPress = () => this.onPressGroupAccepted(item)
+      title = `${item.groupName} - You accepted - ${acceptedCount}/${totalCount}`
+      subtitle = `${item.DateTime.toDateString().substring(0,10)} ${item.TimeString} at ${item.Location}`
+    }
+    else {
+      onPress = () => this._onPressGroupReceived(item)
+      title = `${item.groupName} - ${acceptedCount} out of ${totalCount} accepted`
+      subtitle = `${item.DateTime.toDateString().substring(0,10)} ${item.TimeString} at ${item.Location}`
+    }
+    return <ListItem
+    key={index}
+    title={title}
+    subtitle={subtitle}
+    subtitleNumberOfLines={5}
+    leftIcon = {
+      <View style={{flexDirection:'row', overflow: 'hidden', paddingRight:10, borderRadius:25}} >
+          <View style={{overflow: 'hidden', borderTopLeftRadius: 25, borderBottomLeftRadius: 25}}>
+            <Image
+              style={{width: 25, height: 50,}}
+              source={{uri:urls[0]}} />
+          </View>
+          <View style ={{overflow: 'hidden', borderTopRightRadius: 25, borderBottomRightRadius: 25}}>
+            <Image
+              style={{width: 25, height: 25, }}
+              source={{uri:urls[1]}} />
+            <Image
+              style={{width: 25, height: 25, }}
+              source={{uri:urls[2]}}/>
+          </View>
+        </View>
+      }
+    onPress={onPress}
+    />;
+  }
+
+  renderSentGroupRequest = ({item, index}) => {
+    urls = []
+    totalCount = Object.keys(item.members).length
+    acceptedCount = 0
+    for (memberID in item.members) {
+      if (item.members[memberID].accepted == true) {
+        acceptedCount++
+      }
+      urls.push(`http://graph.facebook.com/${memberID}/picture?type=normal`)
+    }
+    urls.push(`http://graph.facebook.com/${userID}/picture?type=normal`)
+    return <ListItem
+    key={index}
+    title={`${item.groupName} - ${acceptedCount} out of ${totalCount} accepted`}
+    subtitle={`${item.DateTime.toDateString().substring(0,10)} ${item.TimeString} at ${item.Location}`}
+    subtitleNumberOfLines={5}
+    leftIcon = {<View style={{flexDirection:'row', overflow: 'hidden', paddingRight:10, borderRadius:25}} >
+          <View style={{overflow: 'hidden', borderTopLeftRadius: 25, borderBottomLeftRadius: 25}}>
+            <Image
+              style={{width: 25, height: 50,}}
+              source={{uri:urls[0]}} />
+          </View>
+          <View style ={{overflow: 'hidden', borderTopRightRadius: 25, borderBottomRightRadius: 25}}>
+            <Image
+              style={{width: 25, height: 25, }}
+              source={{uri:urls[1]}} />
+            <Image
+              style={{width: 25, height: 25, }}
+              source={{uri:urls[2]}}/>
+          </View>
+        </View>}
+    onPress={() => this._onPressGroupSent(item)}
+    />;
+  }
+
+  _onPressGroupSent = (item) => {
+    displayDate = item.DateTime.toDateString().substring(0,10)
+    this.setState({
+      respondGroupSent: true,
+      curUser: item,
+      displayDate: displayDate
+    })
+  }
+
+  _onPressGroupReceived = (item) => {
+    displayDate = item.DateTime.toDateString().substring(0,10)
+    this.setState({
+      respondGroupReceived: true,
+      curUser: item,
+      displayDate: displayDate
     });
-    this.setState({refreshingR: false});
   }
 
-  refreshSent = () => {
-    this.setState({refreshingS: true});
-    db.collection("users").doc(userID).collection('Sent Requests').onSnapshot((querySnapshot) => {
-      requestS = [];
-        querySnapshot.forEach((doc) => {
-          if (doc.data().DateTime >= new Date()) {
-            requestS.push({
-              FriendName: doc.data().FriendName,
-              url:`http://graph.facebook.com/${doc.data().FriendID}/picture?type=large`,
-              FriendID: doc.data().FriendID,
-              DateTime: doc.data().DateTime,
-              Location: doc.data().Location,
-              docID: doc.id,
-              Length: doc.data().Length,
-              TimeString: doc.data().TimeString
-            })
-          } else {
-            console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
-            db.collection("users").doc(userID).collection('Sent Requests').doc(doc.id).delete().then(() => {
-              console.log("Document successfully deleted!");
-              db.collection("users").doc(doc.data().FriendID).collection('Received Requests').doc(doc.id).delete()
-            }).catch(function(error) {
-              console.error("Error removing document: ", error);
-            });
-          }
-        });
-        requestS.sort(function(a, b) {
-          a = a.DateTime;
-          b = b.DateTime;
-          return a>b ? 1 : a<b ? -1 : 0;
-        });
-        this.setState({sentRequests: requestS});
+  onPressGroupAccepted = (item) => {
+    displayDate = item.DateTime.toDateString().substring(0,10)
+    this.setState({
+      acceptedGroupReceived: true,
+      curUser: item,
+      displayDate: displayDate
     });
-    this.setState({refreshingS: false});
   }
 
-// convert to SectionLists
-  render() {
-    return (
-      <View style={{flex:1}}>
-        <ScrollableTabView
-          style={{marginTop: 0}}
-          renderTabBar={() => <DefaultTabBar />}
-          // onChangeTab = {(i, ref) => {this.setState({onFriends: !this.state.onFriends})}}
-          tabBarBackgroundColor = {'#f4511e'}
-          tabBarActiveTextColor = {'white'}
-          tabBarInactiveTextColor = {'black'}
-          tabBarUnderlineStyle = {{backgroundColor:'white'}}
-        >
-          <FlatList
-            refreshing={this.state.refreshingR}
-            onRefresh={this.refreshReceived}
-            tabLabel='Received'
-            keyExtractor={this._keyExtractor}
-            data={this.state.receivedRequests}
-            renderItem={this.renderReceivedRequest}
-          />
-          <FlatList
-            refreshing={this.state.refreshingS}
-            onRefresh={this.refreshSent}
-            tabLabel='Sent'
-            keyExtractor={this._keyExtractor}
-            data={this.state.sentRequests}
-            renderItem={this.renderSentRequest}
-          />
-        </ScrollableTabView>
-          {this.requestModal()}
-          {this.respondModal()}
-          {this.undoModal()}
-      </View>
-    );
-  }
-  requestModal() {
-    return <View>
-    <Modal onRequestClose={() => this.setState({modalVisible: false})} transparent={true} visible={this.state.modalVisible}>
-      <View style={{
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#00000080'}}>
-        <View style={{
-          width: 300,
-          height: 300,
-          backgroundColor: '#fff', padding: 20}}>
-          <View style={{padding: 15}}>
-            <Button onPress={this.RequestByFriend} title="Request by Friend"/>
-          </View>
-          <View style={{padding: 15}}>
-            <Button onPress = {this.RequestByTime} title="Request by Time"/>
-          </View>
-          <View style={{padding: 25, alignItems: 'center'}}>
-            <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
-              onPress={() => this.setState({modalVisible: false})}>
-              <Text style={{fontSize: 15, textAlign: 'right'}}>Cancel</Text>
-            </TouchableHighlight>
-          </View>
-        </View>
-      </View>
-    </Modal>
-  </View>;
+  acceptGroupRequest = () => {
+    console.log(this.state.curUser)
+    console.log(this.state.id)
+    db.collection('users').doc(this.state.curUser.initiator).collection('Sent Group Requests').doc(this.state.curUser.id).get().then((doc) => {
+      data = doc.data()
+      data.members[userID].accepted = true
+
+      db.collection('users').doc(this.state.curUser.initiator).collection('Sent Group Requests').doc(this.state.curUser.id).set(data).then(()=> {
+        data['pending'] = true
+        for (memberID in this.state.curUser.members) {
+          if (memberID != this.state.curUser.initiator)
+            db.collection('users').doc(memberID).collection('Received Group Requests').doc(this.state.curUser.id).set(data)
+        }
+
+        day = weekdays[data['DateTime'].getDay()].day
+        amPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
+        hours = (data['DateTime'].getHours() % 12 || 12) + ":" + ("0" + data['DateTime'].getMinutes()).slice(-2) + " " + amPM
+        index = data_flip[hours]
+
+        // update freetimes
+        freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(day);
+        freetimeRef.get().then((doc) => {
+          freetimeData = doc.data();
+          freetimeData['Freetime'][index] = 2
+          if (data['Length'] === 1) {
+            freetimeData['Freetime'][index+1] = 2
+          }
+          // console.log("my data", freetimeData)
+        freetimeRef.set(freetimeData).then(() => {
+          console.log("My Document updated");
+          })
+          .catch(function(error) {
+            console.error("Error updating", error);
+          });
+        })
+      })
+    })
+    this.setState({respondGroupReceived: false})
   }
 
-  undoModal() {
-    return <View>
-    <Modal onRequestClose={() => this.setState({modalVisible: false})} transparent={true} visible={this.state.undoVisible}>
-      <View style={{
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#00000080'}}>
-      <View style={{
-        width: 300,
-        height: 460,
-        backgroundColor: '#fff', padding: 20}}>
-        <View style={{alignItems: 'center'}}>
-        <View style={{padding: 10}}>
-        <Image
-          style={{width: 100, height: 100, borderRadius: 50}}
-          source={{uri: `http://graph.facebook.com/${this.state.curUser.FriendID}/picture?type=large`}}
-        />
-        </View>
-        <View style={{padding: 10}}>
-        <Text>{this.state.curUser.FriendName}</Text>
-        </View>
-        <View style={{padding: 10}}>
-        <Text>{this.state.curUser.displayDate} {this.state.curUser.TimeString} at {this.state.curUser.Location}</Text>
-        </View>
-        </View>
-        <View style={{padding: 10}}>
-          <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
-            onPress={this.cancelRequest}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Cancel Request</Text>
-          </TouchableHighlight>
-        </View>
-        <View style={{padding: 10}}>
-          <TouchableHighlight style={{padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
-            onPress={this.rescheduleSentRequest}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Reschedule Meal</Text>
-          </TouchableHighlight>
-        </View>
-        <View style={{padding: 10}}>
-          <TouchableHighlight style={{padding: 10, backgroundColor: "#5bc0de", borderRadius: 5}}
-            onPress={this.changeSentLocation}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Change Location</Text>
-          </TouchableHighlight>
-        </View>
-        <View style={{padding: 15, alignItems: 'center'}}>
-          <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
-            onPress={() => this.setState({undoVisible: false})}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Cancel</Text>
-          </TouchableHighlight>
-        </View>
-        </View>
-        </View>
-    </Modal>
-  </View>;
+  declineGroupRequest = () => {
+    db.collection('users').doc(userID).collection('Received Group Requests').doc(this.state.curUser.id).update({
+      declined: true
+    }).then(()=>{
+      db.collection('users').doc(this.state.curUser.initiator).collection('Sent Group Requests').doc(this.state.curUser.id).get().then((doc) => {
+        data = doc.data()
+        data.members[userID].declined = true
+        db.collection('users').doc(this.state.curUser.initiator).collection('Sent Group Requests').doc(this.state.curUser.id).set(data).then(()=>{
+          for (memberID in this.state.curUser.members) {
+            if (memberID != this.state.curUser.initiator && memberID != userID)
+              db.collection('users').doc(memberID).collection('Received Group Requests').doc(this.state.curUser.id).set(data)
+          }
+        })
+      })
+    })
+    this.setState({respondGroupReceived: false})
   }
 
-  respondModal() {
-    return <View>
-    <Modal onRequestClose={() => this.setState({modalVisible: false})} transparent={true} visible={this.state.respondVisible}>
-      <View style={{
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#00000080'}}>
-      <View style={{
-        width: 300,
-        height: 520,
-        backgroundColor: '#fff', padding: 20}}>
-        <View style={{alignItems: 'center'}}>
-        <View style={{padding: 10}}>
-        <Image
-          style={{width: 100, height: 100, borderRadius: 50}}
-          source={{uri: `http://graph.facebook.com/${this.state.curUser.FriendID}/picture?type=large`}}
-        />
-        </View>
-        <View style={{padding: 10}}>
-        <Text>{this.state.curUser.FriendName}</Text>
-        </View>
-        <View style={{padding: 10}}>
-        <Text>{this.state.curUser.displayDate} {this.state.curUser.TimeString} at {this.state.curUser.Location}</Text>
-        </View>
-        </View>
-        <View style={{padding: 10}}>
-          <TouchableHighlight style={{padding: 10, backgroundColor: "#5cb85c", borderRadius: 5}}
-            onPress={this.acceptRequest}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Accept</Text>
-          </TouchableHighlight>
-        </View>
-        <View style={{padding: 10}}>
-          <TouchableHighlight style={{padding: 10, backgroundColor: "#5bc0de", borderRadius: 5}}
-            onPress={this.changeLocation}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Change Location</Text>
-          </TouchableHighlight>
-        </View>
-        <View style={{padding: 10}}>
-          <TouchableHighlight style={{padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
-            onPress={this.rescheduleRequest}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Reschedule</Text>
-          </TouchableHighlight>
-        </View>
-        <View style={{padding: 10}}>
-          <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
-            onPress={this.declineRequest}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Decline</Text>
-          </TouchableHighlight>
-        </View>
-        <View style={{padding: 15, alignItems: 'center'}}>
-          <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
-            onPress={() => this.setState({respondVisible: false})}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Cancel</Text>
-          </TouchableHighlight>
-        </View>
-        </View>
-        </View>
-    </Modal>
-  </View>;
+  finalize = () => {
+    this.setState({respondGroupSent: false})
+    for (memberID in this.state.curUser.members) {
+      if (memberID == userID)
+        db.collection("users").doc(userID).collection('Sent Group Requests').doc(this.state.curUser.id).delete()
+      else
+        db.collection("users").doc(memberID).collection('Received Group Requests').doc(this.state.curUser.id).delete()
+    }
+
+    for (memberID in this.state.curUser.members) {
+      if (this.state.curUser.members[memberID].accepted == true) {
+        data = Object.assign({}, this.state.curUser)
+        data.isGroup = true
+        db.collection("users").doc(memberID).collection('Meals').add(data)
+      }
+    }
+    // TODO Notify members that meal was scheduled
+  }
+
+  // TODO check this flow
+  rescheduleGroup = () => {
+    this.setState({respondGroupSent: false})
+    this.props.navigation.navigate('GroupChosen', {
+      sent: true,
+      reschedule: this.state.curUser.id,
+      groupName: this.state.curUser.groupName,
+      members: this.state.curUser.members,
+      id: this.state.curUser.id
+    });
+  }
+
+  cancelGroup = () => {
+    this.setState({respondGroupSent: false})
+    day = weekdays[this.state.curUser.DateTime.getDay()].day
+    amPM = this.state.curUser.DateTime.getHours() >= 12 ? "PM" : "AM"
+    hours = (this.state.curUser.DateTime.getHours() % 12 || 12) + ":" + ("0" + this.state.curUser.DateTime.getMinutes()).slice(-2) + " " + amPM
+    index = data_flip[hours]
+
+    db.collection("users").doc(userID).collection('Sent Group Requests').doc(this.state.curUser.id).delete().then(() => {
+      console.log("Document successfully deleted!")
+      for (memberID in this.state.curUser.members) {
+        freetimeRef = db.collection("users").doc(memberID).collection('Freetime').doc(day);
+        freetimeRef.get().then((doc) => {
+          freetimeData = doc.data();
+          freetimeData['Freetime'][index] = 1
+          if (data['Length'] === 1) {
+            freetimeData['Freetime'][index+1] = 1
+          }
+        freetimeRef.set(freetimeData).then(() => {
+          console.log("My Document updated");
+          })
+          .catch(function(error) {
+            console.error("Error updating", error);
+          });
+        })
+
+        if (memberID != userID)
+          db.collection("users").doc(memberID).collection('Received Group Requests').doc(this.state.curUser.id).delete()
+      }
+    }).catch(function(error) {
+      console.error("Error removing document: ", error);
+    })
+  }
+
 }
-}
+const styles = StyleSheet.create({
+  container: {
+   flex: 1,
+   paddingTop: 22
+  },
+  sectionHeader: {
+    paddingTop: 2,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 2,
+    fontSize: 14,
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(247,247,247,1.0)',
+  },
+  item: {
+    padding: 10,
+    fontSize: 18,
+    height: 44,
+  },
+})

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Text, StyleSheet, Button } from 'react-native';
+import { View, Image, Text, StyleSheet, Button, ActivityIndicator } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
 import { Avatar, Card, ListItem, ButtonGroup, Icon } from 'react-native-elements';
 import firebase from "../config/firebase";
@@ -17,7 +17,7 @@ export default class FriendsScreen extends React.Component {
     title: 'Friends'
   };
 
-  state = {friends: [], groups: []};
+  state = {}
 
   componentDidMount() {
     this.getFriendsAndGroups()
@@ -106,6 +106,7 @@ export default class FriendsScreen extends React.Component {
   }
 
   render() {
+    if (this.state.friends && this.state.groups) {
     var obj = [...this.state.friends];
     obj.sort(this.compareFriends);
     var obj2 = [...this.state.groups];
@@ -139,5 +140,11 @@ export default class FriendsScreen extends React.Component {
         </ScrollableTabView>
       </View>
     );
+  }
+  else return (
+    <View>
+        <ActivityIndicator size="large" color="#0000ff" />
+    </View>
+  )
   }
 }

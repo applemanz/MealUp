@@ -11,6 +11,14 @@ const db = firebase.firestore();
 const eating_clubs = ["Cannon", "Cap", "Charter", "Cloister", "Colonial", "Cottage", "Ivy", "Quad",
 "Terrace", "TI", "Tower"]
 const all_options = ["Wilcox", "Wu", "Rocky", "Mathey", "Whitman", "Frist", "Forbes", "CJL", "Grad College"]
+const data_flip = {'7:30 AM': 0, '8:00 AM': 1, '8:30 AM': 2, '9:00 AM': 3, '9:30 AM': 4, '10:00 AM': 5, '10:30 AM': 6,
+'11:00 AM': 7, '11:30 AM': 8, '12:00 PM': 9, '12:30 PM': 10, '1:00 PM': 11, '1:30 PM': 12, '2:00 PM': 13, '2:30 PM': 14,
+'3:00 PM': 15, '3:30 PM': 16, '4:00 PM': 17, '4:30 PM': 18, '5:00 PM': 19, '5:30 PM': 20, '6:00 PM': 21, '6:30 PM': 22,
+'7:00 PM': 23, '7:30 PM': 24}
+const weekdays = [
+{key:0, day:'Sunday'}, {key:1, day:'Monday'}, {key:2, day:'Tuesday'}, {key:3, day:'Wednesday'}, {key:4, day:'Thursday'},
+{key:5, day:'Friday'}, {key:6, day:'Saturday'}
+]
 
 export default class FinalRequestScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -163,12 +171,22 @@ export default class FinalRequestScreen extends React.Component {
   		)
     }
 	}
+
+  // TODO rescheduling group requests
   submitGroupRequest = () => {
     prevData = this.props.navigation.state.params
     reschedule = prevData['reschedule'];
     sent = prevData['sent'];
     data = new Object()
-    data['members'] = prevData['members']
+    members = prevData['members']
+    for (memberID in members) {
+      if (memberID != userID)
+        members[memberID] = {name: members[memberID], accepted: false, declined: false}
+      else
+        members[memberID] = {name: members[memberID], accepted: true, declined: false}
+    }
+    data['members'] = members
+    data['initiator'] = userID
     data['groupName'] = prevData['name']
     data['Location'] = this.state.location
     data['DateTime'] = new Date(prevData['dateobj'])
@@ -176,15 +194,43 @@ export default class FinalRequestScreen extends React.Component {
     data['TimeString'] = prevData['time']
     if (data['Location'] != "" && data['Location'] != "Custom Location") {
       db.collection("users").doc(userID).collection('Sent Group Requests').add(data)
-          .then(function(docRef) {
+          .then((docRef) => {
               console.log("Document written with ID: ", docRef.id);
-              for (let thisid in prevData['members'])
+              for (let thisid in prevData['members']) {
+                if (thisid != userID)
                 db.collection("users").doc(thisid).collection('Received Group Requests').doc(docRef.id).set(data)
+              }
+              day = weekdays[data['DateTime'].getDay()].day
+              amPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
+              hours = (data['DateTime'].getHours() % 12 || 12) + ":" + ("0" + data['DateTime'].getMinutes()).slice(-2) + " " + amPM
+              index = data_flip[hours]
+
+              // update freetimes
+              freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(day);
+              freetimeRef.get().then((doc) => {
+                freetimeData = doc.data();
+                freetimeData['Freetime'][index] = 2
+                if (data['Length'] === 1) {
+                  freetimeData['Freetime'][index+1] = 2
+                }
+                // console.log("my data", freetimeData)
+              freetimeRef.set(freetimeData).then(() => {
+                console.log("My Document updated");
+                })
+                .catch(function(error) {
+                  console.error("Error updating", error);
+                });
+              })
           })
           .catch(function(error) {
               console.error("Error adding document: ", error);
           });
     }
+
+
+
+
+
     this.props.navigation.popToTop()
 
   }

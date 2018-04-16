@@ -21,9 +21,12 @@ class MyListItem extends React.PureComponent {
     if (this.props.editOn) {
       return (
         <ListItem
-          roundAvatar
           title={this.props.name}
-          avatar={{ uri: this.props.url}}
+          leftIcon = {
+            <Image
+              style={{width: 50, height: 50, borderRadius:25, marginRight:10}}
+              source={{uri:this.props.url}} />
+            }
           rightIcon = {
             <Icon
               name={this.props.CanViewMe ? 'md-eye' : 'md-eye-off'}
@@ -39,9 +42,12 @@ class MyListItem extends React.PureComponent {
     else if (this.props.addGroup) {
       return (
         <ListItem
-          roundAvatar
           title={this.props.name}
-          avatar={{ uri: this.props.url}}
+          leftIcon = {
+            <Image
+              style={{width: 50, height: 50, borderRadius:25, marginRight:10}}
+              source={{uri:this.props.url}} />
+            }
           onPress = {this.onSelect}
           rightIcon = {
             <Icon
@@ -61,9 +67,12 @@ class MyListItem extends React.PureComponent {
       if (!(this.props.id in this.props.currentMembers)) {
         return (
           <ListItem
-            roundAvatar
             title={this.props.name}
-            avatar={{ uri: this.props.url}}
+            leftIcon = {
+              <Image
+                style={{width: 50, height: 50, borderRadius:25, marginRight:10}}
+                source={{uri:this.props.url}} />
+              }
             onPress = {this.onSelect}
             rightIcon = {
               <Icon
@@ -84,12 +93,14 @@ class MyListItem extends React.PureComponent {
     else {
       return (
         <ListItem
-          roundAvatar
+           // style={{borderBottomWidth: 0}}
           title={this.props.name}
-          avatar={{ uri: this.props.url}}
+          leftIcon = {
+            <Image
+              style={{width: 50, height: 50, borderRadius:25, marginRight:10}}
+              source={{uri:this.props.url}} />
+            }
           onPress = {this._onPress}
-          // switchButton
-          // badge={{ value: 3, textStyle: { color: 'white' }, containerStyle: { marginTop: 0, marginRight: 10 } }}
           rightIcon = {{name: 'chevron-right'}}
         />
       );
