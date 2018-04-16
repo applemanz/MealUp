@@ -132,7 +132,6 @@ export default class FriendChosenScreen extends React.Component {
     const id = params.id
     const url = params.url
 
-    // TODO also check if both matches1 and matches2 are empty
     if (params.CanViewFriend == false) {
       return (
         <View style={{alignItems:'center'}}>
@@ -145,9 +144,10 @@ export default class FriendChosenScreen extends React.Component {
     }
 
     if (this.state.matches1) {
+
       const reschedule = params ? params.reschedule : undefined;
       const sent = params ? params.sent : undefined;
-
+      
       match1 = [];
       match2 = [];
       d = new Date();
@@ -155,6 +155,7 @@ export default class FriendChosenScreen extends React.Component {
       date = d.getDate();
       day = d.getDay();
 
+      // format and sort the matching times 
       for (thisday in this.state.matches1) {
         temp = [];
         cur = days.indexOf(thisday);
@@ -193,6 +194,18 @@ export default class FriendChosenScreen extends React.Component {
 
       for (i of match2) {
         i.title = this.printDate(month,date,day,i.title)
+      }
+
+      // if no matching time, returns message "not available"
+      if (match1.length === 0) {
+        return (
+          <View style={{alignItems:'center'}}>
+            <Image
+                style={{width: 80, height: 80, borderRadius: 40}}
+                source={{uri: url}}/>
+            <Text>{name.split(" ")[0]} is not available for a meal this week</Text>
+          </View>
+        )
       }
 
       return(
