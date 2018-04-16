@@ -64,23 +64,23 @@ export default class GroupChosenScreen extends React.Component {
             // console.log(members[id])
           }
           newMatches1 = this.match30min(newFreeTimeObj);
+          newSortedMatches1 = this.sortMatches(newMatches1);
           // console.log(newMatches1)
-          console.log(members[friendID], newMatches1)
+          // console.log(members[friendID], newSortedMatches1)
           noNewMatches1 = this.checkNoMatches(newMatches1);
-          console.log(noNewMatches1)
+          // console.log(noNewMatches1)
 
           if (!noNewMatches1) {
             // console.log("Hey", newMatches1)
             temp = [];
-            for (thisday in newMatches1) {
+            for (let index in newSortedMatches1) {
               // console.log("thisday", thisday)
-              for (j = 0; j < 25; j++) {
-                if (newMatches1[thisday][j]) {
-                  console.log("day", thisday)
-                  diff = days.indexOf(thisday) - todayDay;
-                  if (diff < 0) diff += 7;
+              for (let j = 0; j < 25; j++) {
+                // console.log(index, j, newSortedMatches1)
+                if (newSortedMatches1[index]['matches'][j]) {
+                  // console.log("day", newSortedMatches[index][day])
                   // console.log("day ", day, "diff ", diff, "date ", date)
-                  temp.push(this.printDate(todayMonth,todayDate,todayDay,diff) + ": " + this.printTime(j) + "-" + this.printTime(j+1,true))
+                  temp.push(this.printDate(todayMonth,todayDate,todayDay,parseInt(index)) + ": " + this.printTime(j) + "-" + this.printTime(j+1,true))
                 }
               }
             }
@@ -92,6 +92,8 @@ export default class GroupChosenScreen extends React.Component {
         // console.log("I'm here 3; friendID =", friendID)
     }
   }
+
+  this.sortMatches(matches1);
 
     this.setState({matches1:matches1,matches2:matches2,noMatches1:noMatches1,noMatches2:noMatches2,freeTimeWithoutOne:freeTimeWithoutOne})
   }
@@ -110,7 +112,7 @@ export default class GroupChosenScreen extends React.Component {
       month++;
     }
     month = month % 12;
-    return days[day] + ", " + months[month] + " " + date;
+    return days[day].substr(0,3) + ", " + months[month] + " " + date;
   }
 
   printTime = (num, ampm = false) => {
@@ -120,16 +122,6 @@ export default class GroupChosenScreen extends React.Component {
     if (hour > 12) hour -= 12
     if (!ampm) return hour + ":" + min
     else return hour + ":" + min + " " + time
-  }
-
-  checkNoMatches = (matches) => {
-    for (day in matches) {
-      for (i = 0; i < matches[day].length; i++) {
-        if (matches[day][i])
-          return false
-      }
-    }
-    return true
   }
 
   getFreeTimes = (id) => {
@@ -142,6 +134,16 @@ export default class GroupChosenScreen extends React.Component {
         resolve(freetimes);
       });
     })
+  }
+
+  checkNoMatches = (matches) => {
+    for (day in matches) {
+      for (i = 0; i < matches[day].length; i++) {
+        if (matches[day][i])
+          return false
+      }
+    }
+    return true
   }
 
   match30min = (freeTimeObj) => {
@@ -197,6 +199,17 @@ export default class GroupChosenScreen extends React.Component {
     return matches;
   }
 
+  sortMatches = (matches) => {
+    let sortedMatches = [];
+    for (let thisday in matches) {
+      let diff = days.indexOf(thisday) - todayDay
+      if (diff < 0) diff += 7;
+      sortedMatches[diff] = {day:thisday, matches:matches[thisday]}
+    }
+    console.log(sortedMatches)
+    return sortedMatches
+  }
+
   render() {
     const { params } = this.props.navigation.state;
     const groupName = params.groupName
@@ -209,7 +222,7 @@ export default class GroupChosenScreen extends React.Component {
       const sent = params ? params.sent : undefined;
 
       if (this.state.noMatches1) {
-        console.log(this.state.freeTimeWithoutOne)
+        // console.log(this.state.freeTimeWithoutOne)
         return(
           <View style={{flex:1}}>
             <View style={{alignItems:'center'}}>
