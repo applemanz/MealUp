@@ -19,9 +19,7 @@ class MyListItem extends React.PureComponent {
 
   render() {
     if (this.props.disable) {
-      return (
-        <Button disabled={true} title={''} disabledStyle={{backgroundColor:"black"}}/>
-      )
+      return null
     }
     if (this.props.selected === 2) {
       return (

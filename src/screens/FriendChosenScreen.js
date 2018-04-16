@@ -147,7 +147,7 @@ export default class FriendChosenScreen extends React.Component {
 
       const reschedule = params ? params.reschedule : undefined;
       const sent = params ? params.sent : undefined;
-      
+
       match1 = [];
       match2 = [];
       d = new Date();
@@ -155,7 +155,7 @@ export default class FriendChosenScreen extends React.Component {
       date = d.getDate();
       day = d.getDay();
 
-      // format and sort the matching times 
+      // format and sort the matching times
       for (thisday in this.state.matches1) {
         temp = [];
         cur = days.indexOf(thisday);
@@ -257,6 +257,7 @@ export default class FriendChosenScreen extends React.Component {
                         dateobj: ymd.toString(),
                         time: item,
                         length: 0.5,
+                        isGroup: false,
                       }
                     )
                   }}
@@ -295,6 +296,7 @@ export default class FriendChosenScreen extends React.Component {
                         dateobj: ymd.toString(),
                         time: item,
                         length: 1,
+                        isGroup: false,
                       }
                     )
                   }}

@@ -70,8 +70,9 @@ export default class FreeTimeScreen extends React.Component {
 
       return (
         dates.map((d, i)=> {
-          if (dayOver) curr = false
-          else if (i == 0) curr =  true
+          if (dayOver == true) curr = false
+          else if (i == 0) curr = true
+          else curr = false
           return (
           <View key={i} style={{alignItems:'center'}}>
             <Text style={{fontWeight:'bold'}}>{d.substring(0,10)}</Text>

@@ -172,7 +172,7 @@ export default class FinalRequestScreen extends React.Component {
     }
 	}
 
-  // TODO rescheduling group requests
+  // reschedule group request
   submitGroupRequest = () => {
     prevData = this.props.navigation.state.params
     reschedule = prevData['reschedule'];
@@ -257,7 +257,7 @@ export default class FinalRequestScreen extends React.Component {
           })
           .catch(function(error) {
               console.error("Error adding document: ", error);
-          });
+          })
       if (reschedule !== undefined) {
         console.log("RESCHEDULE: " + reschedule);
         if (sent == 2) {
@@ -267,7 +267,7 @@ export default class FinalRequestScreen extends React.Component {
               db.collection("users").doc(thisid).collection('Meals').doc(reschedule).delete()
           }).catch(function(error) {
             console.error("Error removing document: ", error);
-          });
+          })
         }
         else if (sent == true) {
           db.collection("users").doc(userID).collection('Sent Requests').doc(reschedule).delete().then(() => {
@@ -277,7 +277,8 @@ export default class FinalRequestScreen extends React.Component {
           }).catch(function(error) {
             console.error("Error removing document: ", error);
           });
-        } else {
+        }
+        else {
           db.collection("users").doc(userID).collection('Received Requests').doc(reschedule).delete().then(() => {
             console.log("Document successfully deleted!");
             db.collection("users").doc(Object.keys(prevData['members'])[0]).collection('Sent Requests').doc(reschedule).delete()
