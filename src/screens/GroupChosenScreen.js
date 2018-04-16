@@ -1,5 +1,3 @@
-// Note: this page is in need of reformatting because right now the code is very ugly.
-
 import React from 'react';
 import { View, Image, Text, TouchableHighlight, SectionList, StyleSheet, ActivityIndicator } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
@@ -48,7 +46,8 @@ export default class GroupChosenScreen extends React.Component {
     noMatches2 = this.checkNoMatches(matches2);
     match1 = []; // formatted matches1
     match2 = []; // formatted matches2
-    freeTimeWithoutOne = []; // for no matching time
+    matchFewer1 = []; // for no matching time 30 min
+    matchFewer2 = []; // for no matching time 1 hr
     
     // If there are no matches...
     if (noMatches1) {
@@ -63,7 +62,9 @@ export default class GroupChosenScreen extends React.Component {
             newFreeTimeObj[id] = await this.getFreeTimes(id);
           }
           newMatches1 = this.match30min(newFreeTimeObj);
+          newMatches2 = this.match1hr(newFreeTimeObj);
           noNewMatches1 = this.checkNoMatches(newMatches1);
+          noNewMatches2 = this.checkNoMatches(newMatches2);
 
             if (!noNewMatches1) {
               temp = [];
@@ -74,7 +75,19 @@ export default class GroupChosenScreen extends React.Component {
                   }
                 }
               }
-              freeTimeWithoutOne.push({title: "rip " + members[friendID], data: temp})
+              matchFewer1.push({title: "rip " + members[friendID], data: temp})
+            }
+
+            if (!noNewMatches2) {
+              temp = [];
+              for (let index in newMatches2) {
+                for (let j = 0; j < 25; j++) {
+                  if (newMatches2[index]['matches'][j]) {
+                    temp.push(this.printDate(todayMonth,todayDate,todayDay,parseInt(index)) + " " + this.printTime(j) + "-" + this.printTime(j+2,true))
+                  }
+                }
+              }
+              matchFewer2.push({title: "rip " + members[friendID], data: temp})
             }
           }
       }
@@ -101,7 +114,7 @@ export default class GroupChosenScreen extends React.Component {
       }
     }
 
-    this.setState({match1:match1,match2:match2,noMatches1:noMatches1,noMatches2:noMatches2,freeTimeWithoutOne:freeTimeWithoutOne})
+    this.setState({match1:match1,match2:match2,noMatches1:noMatches1,noMatches2:noMatches2,matchFewer1:matchFewer1,matchFewer2:matchFewer2})
   }
 
   updateIndex = (index) => {
@@ -255,7 +268,7 @@ export default class GroupChosenScreen extends React.Component {
             >
               <SectionList
                 tabLabel='30 min'
-                sections={this.state.freeTimeWithoutOne}
+                sections={this.state.matchFewer1}
                 renderItem={({item,section}) =>
                   <ListItem
                 title={item}
@@ -298,32 +311,43 @@ export default class GroupChosenScreen extends React.Component {
                 keyExtractor={(item, index) => index}
               />
               <SectionList
-                tabLabel='1 hr (but right now its 30 min lol)'
-                sections={this.state.freeTimeWithoutOne}
+                tabLabel='1 hr'
+                sections={this.state.matchFewer2}
                 renderItem={({item,section}) =>
                   <ListItem
                     title={item}
                     onPress={() => {
-                      // t = section.title.split(", ");
-                      month = 1;
-                      date = 1;
-                      // time = item.split("-")
-                      hour = 1
-                      min = 1
-                      // if (item.slice(-2) == "pm" && hour != 12 && time[0] != "11:30") hour += 12
+                      let t = item.split(", ");
+                      let arr = t[1].split(" ");
+                      let month = months.indexOf(arr[0]);
+                      let date = parseInt(arr[1]);
+                      let time = arr[2].split("-")
+                      let hour = parseInt(time[0].split(":")[0])
+                      let min = parseInt(time[0].split(":")[1])
+                      if (item.slice(-2) == "pm" && hour != 12 && hour != 11) hour += 12
                       // Year is hardcoded as 2018
-                      ymd = new Date(2018,month,date,hour,min)
+                      let ymd = new Date(2018,month,date,hour,min)
+                      let membersCopy = Object.assign({},members)
+                      for (let memberID in membersCopy) {
+                        if (membersCopy[memberID] == section.title.slice(4)) {
+                          delete membersCopy[memberID]
+                          console.log("found")
+                          break;
+                        }
+                      }
+
                       this.props.navigation.navigate('FinalRequest',
                       {
                         sent: sent,
                         reschedule: reschedule,
                         // name: name,
                         // id: id,
-                        name: groupName,
-                        members: members,
+                        name: groupName + " without " + section.title.slice(4).split(" ")[0],
+                        members: membersCopy,
                         dateobj: ymd.toString(),
-                        time: item,
+                        time: arr[2] + " " + arr[3],
                         length: 1,
+                        isGroup: true,
                       })
                     }}
                   />}
@@ -427,6 +451,7 @@ export default class GroupChosenScreen extends React.Component {
                       dateobj: ymd.toString(),
                       time: item,
                       length: 1,
+                      isGroup: true,
                     })
                   }}
                 />}
