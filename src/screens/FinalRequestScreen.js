@@ -30,6 +30,7 @@ export default class FinalRequestScreen extends React.Component {
 
 	state = {location: "Wilcox"}
 
+
   renderOptions() {
     if (this.state.location == "Eating Clubs") {
       return (<View>
@@ -242,7 +243,11 @@ export default class FinalRequestScreen extends React.Component {
     data = new Object()
     data['FriendName'] = prevData['name']
     data['FriendID'] = Object.keys(prevData['members'])[0]
-    data['Location'] = this.state.location
+    if (this.state.location == "Eating Clubs") {
+      data['Location'] = "Cannon"
+    } else {
+      data['Location'] = this.state.location
+    }
     data['DateTime'] = new Date(prevData['dateobj'])
     data['Length'] = prevData['length']
     data['TimeString'] = prevData['time']
@@ -257,16 +262,76 @@ export default class FinalRequestScreen extends React.Component {
           })
           .catch(function(error) {
               console.error("Error adding document: ", error);
+<<<<<<< HEAD
           })
+=======
+          });
+
+>>>>>>> a1b89f24b8de9a0a9fcfcbc89870cfd0f65437d3
       if (reschedule !== undefined) {
         console.log("RESCHEDULE: " + reschedule);
-        if (sent == 2) {
-          db.collection("users").doc(userID).collection('Meals').doc(reschedule).delete().then(() => {
-            console.log("Document successfully deleted!");
-            for (let thisid in prevData['members'])
-              db.collection("users").doc(thisid).collection('Meals').doc(reschedule).delete()
+        if (sent == 2) { // meal being rescheduled
+          prevMealRef = db.collection("users").doc(userID).collection('Meals').doc(reschedule)
+          prevMealRef.get().then(function(doc) {
+            prevMealRefData = doc.data();
+            console.log(prevMealRefData);
+            if (prevMealRefData != null && prevMealRefData['DateTime'] != null) {
+              weekday = weekdays[prevMealRefData['DateTime'].getDay()].day
+              console.log(weekday)
+              amPM = prevMealRefData['DateTime'].getHours() >= 12 ? "PM" : "AM"
+              hours = (prevMealRefData['DateTime'].getHours() % 12 || 12) + ":" + ("0" + prevMealRefData['DateTime'].getMinutes()).slice(-2) + " " + amPM
+              index = data_flip[hours]
+              console.log(hours)
+
+              // update freetimes
+              freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(weekday);
+              freetimeRef.get().then(function(doc) {
+                freetimeData = doc.data();
+                freetimeData['Freetime'][index] = 1
+                console.log(prevMealRefData['Length'])
+                if (prevMealRefData['Length'] === 1) {
+                  freetimeData['Freetime'][index+1] = 1
+                }
+              // console.log("my data", freetimeData)
+              freetimeRef.update(freetimeData).then(() => {
+                console.log("My Document updated");
+                })
+                .catch(function(error) {
+                  console.error("Error updating", error);
+                });
+              })
+
+              for (let thisid in prevData['members']) {
+                freetimeRef_other = db.collection("users").doc(thisid).collection('Freetime').doc(weekday);
+                freetimeRef_other.get().then(function(doc) {
+                  freetimeData_other = doc.data();
+                  freetimeData_other['Freetime'][index] = 1
+                  if (prevMealRefData['Length'] === 1) {
+                    freetimeData_other['Freetime'][index+1] = 1
+                  }
+                // console.log(freetimeData_other)
+                freetimeRef_other.update(freetimeData_other).then(() => {
+                  console.log("Document updated");
+                  })
+                  .catch(function(error) {
+                    console.error("Error updating", error);
+                  });
+                })
+              }
+              db.collection("users").doc(userID).collection('Meals').doc(reschedule).delete().then(() => {
+                console.log("Document successfully deleted!");
+                for (let memberid in prevData['members'])
+                  db.collection("users").doc(memberid).collection('Meals').doc(reschedule).delete()
+              }).catch(function(error) {
+                console.error("Error removing document: ", error);
+              });
+            }
           }).catch(function(error) {
+<<<<<<< HEAD
             console.error("Error removing document: ", error);
+=======
+          console.error("Error updating freetime: ", error);
+>>>>>>> a1b89f24b8de9a0a9fcfcbc89870cfd0f65437d3
           })
         }
         else if (sent == true) {
