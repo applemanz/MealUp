@@ -240,7 +240,7 @@ export default class GroupChosenScreen extends React.Component {
       groupName = memberStr
     }
 
-    if (this.state.matches1) {
+    if (this.state.match1) {
       const reschedule = params ? params.reschedule : undefined;
       const sent = params ? params.sent : undefined;
 

@@ -149,15 +149,14 @@ export default class FlatListSelector extends React.PureComponent {
     //console.log(this.state.friends)
     return (
       <View style={{flex:1,}}>
-        <View style={{flex:1}} >
-          <Button
-            color = {'black'}
-            onPress={this.onBreakfastPress}
-            transparent
-            containerViewStyle = {{ flex:1, marginTop:5, marginBottom:0, paddingBottom:0}}
-            textStyle={{fontWeight:'normal', fontSize:18, textAlign:'center', paddingBottom:0, marginBottom:0}}
-            rightIcon={{name: this.state.breakfast ? 'md-arrow-dropdown-circle' : 'md-arrow-dropleft-circle', color:'black', type: 'ionicon'}}
-            title='Breakfast' />
+
+        <Button
+          color = {'black'}
+          onPress={this.onBreakfastPress}
+          transparent
+          textStyle={{fontWeight:'normal', fontSize:18, textAlign:'center', paddingBottom:0, marginBottom:0}}
+          rightIcon={{name: this.state.breakfast ? 'md-arrow-dropdown-circle' : 'md-arrow-dropleft-circle', color:'black', type: 'ionicon'}}
+          title='Breakfast' />
         {(this.state.breakfast) &&
           <View style={{}}>
             <FlatList
@@ -168,17 +167,16 @@ export default class FlatListSelector extends React.PureComponent {
             />
           </View>
         }
-      </View>
-        <View style={{flex:1}} >
-          <Button
+
+        <Button
             color = {'black'}
             onPress={()=>this.setState({lunch: !this.state.lunch})}
             transparent
-            containerViewStyle = {{ marginTop:5, marginBottom:0, paddingBottom:0}}
             textStyle={{fontWeight:'normal', fontSize:18, textAlign:'center', paddingBottom:0, marginBottom:0}}
             rightIcon={{name: this.state.lunch ? 'md-arrow-dropdown-circle' : 'md-arrow-dropleft-circle', color:'black', type: 'ionicon'}}
             title='Lunch' />
-          {(this.state.lunch) &&
+        {(this.state.lunch) &&
+          <View style={{}}>
           <FlatList
             data={this.props.data.slice(8, 13)}
             scrollEnabled = {false}
@@ -186,21 +184,16 @@ export default class FlatListSelector extends React.PureComponent {
             // keyExtractor={this._keyExtractor}
             renderItem={this._renderItem}
           />
+          </View>
         }
-        </View>
-        <View style={{flex:1}} >
 
         <Button
           color = {'black'}
           onPress={this.onLateMealPress}
           transparent
-          containerViewStyle = {{}}
           textStyle={{fontWeight:'normal', fontSize:18}}
           rightIcon={{name: this.state.latemeal ? 'md-arrow-dropdown-circle' : 'md-arrow-dropleft-circle', color:'black', type: 'ionicon'}}
           title='Late Meal' />
-        {/* <TouchableOpacity onPress={this.onLateMealPress} style={{marginTop:15}}>
-           <Text style={{textAlign:'center', fontSize:18, color:'#6c5ce7', fontWeight:'bold'}}> Late Meal </Text>
-        </TouchableOpacity> */}
         {(this.state.latemeal) &&
           <View style={{}}>
             <FlatList
@@ -212,30 +205,27 @@ export default class FlatListSelector extends React.PureComponent {
             />
           </View>
         }
-      </View>
 
-        {/* <View style = {{ marginTop:10}} > */}
         <Button
           color = {'black'}
           onPress={()=>this.setState({dinner: !this.state.dinner})}
           transparent
-          containerViewStyle = {{ marginTop:5, marginBottom:0, paddingBottom:0}}
           textStyle={{fontWeight:'normal', fontSize:18, textAlign:'center', paddingBottom:0, marginBottom:0}}
           rightIcon={{name: this.state.dinner ? 'md-arrow-dropdown-circle' : 'md-arrow-dropleft-circle', color:'black', type: 'ionicon'}}
           title='Dinner' />
-          {/* <Text style={{textAlign:'center', fontSize:18, fontWeight:'normal', color:'black',}}>Dinner</Text> */}
-          {(this.state.dinner) &&
-            <View style={{flex:1}}>
-          <FlatList
-            data={this.props.data.slice(19, 25)}
-            extraData={this.state}
-            scrollEnabled = {false}
-            // keyExtractor={this._keyExtractor}
-            renderItem={this._renderItem}
-          />
-        </View>}
-        {/* </View> */}
-        {/* </ScrollView> */}
+
+        {(this.state.dinner) &&
+          <View style={{}}>
+            <FlatList
+              data={this.props.data.slice(19, 25)}
+              extraData={this.state}
+              scrollEnabled = {false}
+              // keyExtractor={this._keyExtractor}
+              renderItem={this._renderItem}
+            />
+          </View>
+        }
+
       </View>
     );
   }
