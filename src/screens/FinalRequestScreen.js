@@ -262,12 +262,9 @@ export default class FinalRequestScreen extends React.Component {
           })
           .catch(function(error) {
               console.error("Error adding document: ", error);
-<<<<<<< HEAD
-          })
-=======
+
           });
 
->>>>>>> a1b89f24b8de9a0a9fcfcbc89870cfd0f65437d3
       if (reschedule !== undefined) {
         console.log("RESCHEDULE: " + reschedule);
         if (sent == 2) { // meal being rescheduled
@@ -275,7 +272,7 @@ export default class FinalRequestScreen extends React.Component {
           prevMealRef.get().then(function(doc) {
             prevMealRefData = doc.data();
             console.log(prevMealRefData);
-            if (prevMealRefData != null && prevMealRefData['DateTime'] != null) {
+            if (prevMealRefData && prevMealRefData['DateTime']) {
               weekday = weekdays[prevMealRefData['DateTime'].getDay()].day
               console.log(weekday)
               amPM = prevMealRefData['DateTime'].getHours() >= 12 ? "PM" : "AM"
@@ -327,11 +324,7 @@ export default class FinalRequestScreen extends React.Component {
               });
             }
           }).catch(function(error) {
-<<<<<<< HEAD
-            console.error("Error removing document: ", error);
-=======
-          console.error("Error updating freetime: ", error);
->>>>>>> a1b89f24b8de9a0a9fcfcbc89870cfd0f65437d3
+            console.error("Error updating freetime: ", error);
           })
         }
         else if (sent == true) {
