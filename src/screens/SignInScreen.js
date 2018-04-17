@@ -127,7 +127,7 @@ export default class SignInScreen extends React.Component {
 
                       // set freeFriends
                       for (dofW of daysOfWeek) {
-                        db.collection('users').doc(userID).collection('NewFreeFriends').doc(dofW).set({
+                        db.collection('users').doc(userID).collection('FreeFriends').doc(dofW).set({
                           Freefriends: freeFriends[dofW]
                         })
                       }

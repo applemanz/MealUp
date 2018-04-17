@@ -45,10 +45,13 @@ export default class FreeTimeScreen extends React.Component {
   }
 
   render() {
+    console.log('rerendering')
     return (
-      <View style={{flex: 1, justifyContent: 'center'}}>
-        <ScrollView horizontal={true} >
+      <View style={{justifyContent: 'center'}}>
+        <ScrollView>
+        <ScrollView horizontal={true} alwaysBounceHorizontal={false} bounces={false}>
           {this.renderDaysofWeek(this.state.today)}
+        </ScrollView>
         </ScrollView>
       </View>
     );
@@ -75,7 +78,9 @@ export default class FreeTimeScreen extends React.Component {
           else curr = false
           return (
           <View key={i} style={{alignItems:'center'}}>
-            <Text style={{fontWeight:'bold'}}>{d.substring(0,10)}</Text>
+            <Text style={{fontWeight:'bold', fontSize:20, textAlign:'center', textDecorationLine:'underline'}}>
+            {`${d.substring(0,4)} 4/18`}
+          </Text>
             <FlatListSelector
               navigation={this.props.navigation}
               data={data}
