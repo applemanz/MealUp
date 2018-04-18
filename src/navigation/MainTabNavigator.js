@@ -81,6 +81,7 @@ const RequestsStack = StackNavigator({
       headerTintColor: '#fff',
       headerTitleStyle: {
         fontWeight: 'bold',
+        fontSize: 25
       },
     },
 });
@@ -141,6 +142,7 @@ const FriendsStack = StackNavigator({
       headerTintColor: '#fff',
       headerTitleStyle: {
         fontWeight: 'bold',
+        fontSize: 25
       },
     },
 });
@@ -150,7 +152,7 @@ const FreeTimeStack = StackNavigator({
     screen: FreeTimeScreen,
     navigationOptions: {
       headerStyle: {
-        backgroundColor: '#0984e3',
+        backgroundColor: '#f4511e',
       },
       headerTintColor: '#fff',
       headerTitleStyle: {
@@ -164,15 +166,6 @@ const FreeTimeStack = StackNavigator({
 const MealsStack = StackNavigator({
   Meals: {
     screen: HomeScreen,
-    navigationOptions: {
-      headerStyle: {
-        backgroundColor: '#f4511e',
-      },
-      headerTintColor: '#fff',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
-    },
   },
   RequestByFriend: {
     screen: RequestByFriendScreen,
@@ -217,6 +210,7 @@ const MealsStack = StackNavigator({
       headerTintColor: '#fff',
       headerTitleStyle: {
         fontWeight: 'bold',
+        fontSize: 25
       },
     },
 });

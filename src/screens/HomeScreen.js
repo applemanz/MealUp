@@ -43,12 +43,10 @@ export default class HomeScreen extends Component {
   }
 
   componentDidMount() {
-
     this.props.navigation.addListener('willFocus', ()=>{
       this.onRefresh();
     });
-    // console.log(userID)
-    db.collection("users").doc(userID).collection('Meals').onSnapshot((querySnapshot) => {
+    db.collection("users").doc(userID).collection('Meals').get().then((querySnapshot) => {
       meals = [];
       querySnapshot.forEach((doc) => {
         today = new Date()
@@ -59,6 +57,7 @@ export default class HomeScreen extends Component {
               meal.docid = doc.id
               this.addToCalendar(meal)
             }
+
           meals.push(doc.data());
           meals[meals.length-1]['docid'] = doc.id;
           //console.log("SETTING DOCID TO " + meals[meals.length-1] + " " + doc.id);
@@ -198,12 +197,17 @@ export default class HomeScreen extends Component {
 
   onRefresh = () => {
     this.setState({refreshing: true});
-    db.collection("users").doc(userID).collection('Meals').onSnapshot((querySnapshot) => {
+    db.collection("users").doc(userID).collection('Meals').get().then((querySnapshot) => {
       meals = [];
       querySnapshot.forEach((doc) => {
         today = new Date()
         today.setHours(0, 0, 0, 0)
         if (doc.data().DateTime >= today) {
+          if (!doc.data().inCalendar) {
+            meal = doc.data()
+            meal.docid = doc.id
+            this.addToCalendar(meal)
+          }
           meals.push(doc.data());
           meals[meals.length-1]['docid'] = doc.id;
         } else {
@@ -266,8 +270,8 @@ export default class HomeScreen extends Component {
         <Divider style={{ backgroundColor: '#cbd2d9' }}/>
       <Agenda items={this.state.items}
         style={{flex:1}}
-        // refreshing={this.state.refreshing}
-        // onRefresh={this.onRefresh}
+        refreshing={this.state.refreshing}
+        onRefresh={this.onRefresh}
         // loadItemsForMonth={this.loadMeals.bind(this)}
         selected={minDate}
         // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
@@ -310,7 +314,7 @@ export default class HomeScreen extends Component {
     )
   }
 
-  async calendarModal() {
+  calendarModal() {
     return (
       <Modal
         onRequestClose={() => this.setState({selectCalendarModal: false})}
@@ -325,7 +329,7 @@ export default class HomeScreen extends Component {
           // alignItems: 'center',
         }}>
         <NavigationBar
-          title={{title:'Calendars', style:{fontWeight:'bold'}, tintColor:'white'}}
+          title={{title:'Calendars', style:{fontWeight:'bold', }, tintColor:'white'}}
           rightButton={{title:'Done', handler:()=>{
             this.exportMeals()
             this.setState({selectCalendarModal: false})
@@ -336,6 +340,7 @@ export default class HomeScreen extends Component {
           }, tintColor:'white'}
           }
           tintColor={'#f4511e'}
+          containerStyle={Platform.OS === 'ios' ? {} : {height:60, justifyContent:'center'} }
         />
         <SectionList
           stickySectionHeadersEnabled = {false}
@@ -353,7 +358,7 @@ export default class HomeScreen extends Component {
               hideChevron
               switchButton
               switchOnTintColor = {item.color}
-              switchTintColor = {item.color}
+              switchTintColor = {Platform.OS === 'ios' ? item.color : 'gray'}
               switched = {this.state.selectedCalendar.id === item.id}
               // underlayColor = {item.color}
             />
@@ -385,7 +390,7 @@ export default class HomeScreen extends Component {
     })
   }
 
-  addToCalendar = (meal) => {
+  addToCalendar = async (meal) => {
     if (this.state.selectedCalendar.id) {
     if (!meal.isGroup) {
       start = moment(meal.DateTime)
@@ -393,12 +398,17 @@ export default class HomeScreen extends Component {
         start.add(30, 'm')
       else start.add(1, 'h')
       console.log(start.format())
-    let details = {
+    let details = Platform.OS === 'ios' ? {
         startDate: meal.DateTime.toISOString(),
         endDate: start.toISOString(),
-        allDay: false,
         title: `Meal with ${meal.FriendName.split(" ")[0]}`,
         location: meal.Location,
+      } : {
+        startDate: meal.DateTime.toISOString(),
+        endDate: start.toISOString(),
+        title: `Meal with ${meal.FriendName.split(" ")[0]}`,
+        location: meal.Location,
+        timeZone: "America/New_York",
       }
     console.log(details)
     console.log(this.state.selectedCalendar.id)
@@ -425,11 +435,11 @@ export default class HomeScreen extends Component {
     console.log(sources)
     calendars = []
     sections = []
-    for (source of sources) {
+    for (let source of sources) {
       sections.push({title:source.name, data:[]})
     }
     console.log(sections)
-    for (cal of cals) {
+    for (let cal of cals) {
       console.log(cal.source.name)
       index = sections.findIndex(source => source.title===cal.source.name)
       sections[index].data.push(cal)
@@ -448,7 +458,30 @@ export default class HomeScreen extends Component {
     this.setState({calendars:sections})
     }
     else {
+      sections = []
+      sources = new Set()
+      for (let cal of cals) {
+        sources.add(cal.source.name)
+      }
+      for (let source of sources) {
+        sections.push({title:source, data:[]})
+      }
+      for (let cal of cals) {
+        index = sections.findIndex(source => source.title===cal.source.name)
+        sections[index].data.push(cal)
+      }
+      console.log(sections)
+      sections.sort(function(a, b) {
+        if (a.title < b.title) {
+          return -1;
+        }
+        if (a.title > b.title) {
+          return 1;
+        }
+        return 0;
+      })
 
+      this.setState({calendars:sections})
     }
     this.setState({selectCalendarModal:true})
   }
