@@ -135,7 +135,14 @@ export default class FinalRequestScreen extends React.Component {
                       source={{uri:urls[2]}}/>
                   </View>
                 </View>
+                { name.includes("without") ? (
+                  <View>
+                    <Text style={{fontSize:20, fontWeight:'bold', textAlign: 'center'}}>{name.split("without ")[0] + "without"}</Text>
+                    <Text style={{fontSize:20, fontWeight:'bold', textAlign: 'center'}}>{name.split("without ")[1]}</Text>
+                  </View>
+                ) : (
             <Text style={{fontSize:20, fontWeight:'bold'}}>{name}</Text>
+                )}
             <Text style={{fontSize:15}}>{dateobj.substring(0,10)}</Text>
             <Text style={{fontSize:15}}>{time}</Text>
           </View>
@@ -262,13 +269,7 @@ export default class FinalRequestScreen extends React.Component {
           })
           .catch(function(error) {
               console.error("Error adding document: ", error);
-<<<<<<< HEAD
           })
-=======
-
-          });
-
->>>>>>> 714d42a56ccabb66ab8c3f8504f1ee8a806fc933
       if (reschedule !== undefined) {
         console.log("RESCHEDULE: " + reschedule);
         if (sent == 2) { // meal being rescheduled
@@ -328,11 +329,7 @@ export default class FinalRequestScreen extends React.Component {
               });
             }
           }).catch(function(error) {
-<<<<<<< HEAD
           console.error("Error updating freetime: ", error);
-=======
-            console.error("Error updating freetime: ", error);
->>>>>>> 714d42a56ccabb66ab8c3f8504f1ee8a806fc933
           })
         }
         else if (sent == true) {

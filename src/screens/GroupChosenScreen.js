@@ -75,7 +75,7 @@ export default class GroupChosenScreen extends React.Component {
                   }
                 }
               }
-              matchFewer1.push({title: "rip " + members[friendID], data: temp})
+              matchFewer1.push({title: "Meal without " + members[friendID], data: temp})
             }
 
             if (!noNewMatches2) {
@@ -87,7 +87,7 @@ export default class GroupChosenScreen extends React.Component {
                   }
                 }
               }
-              matchFewer2.push({title: "rip " + members[friendID], data: temp})
+              matchFewer2.push({title: "Meal without " + members[friendID], data: temp})
             }
           }
       }
@@ -269,7 +269,8 @@ export default class GroupChosenScreen extends React.Component {
                       source={{uri:urls[2]}}/>
                   </View>
                 </View>
-            <Text style={{fontSize:15}}>{'Looks like yall pretty busy, who do you like the least?'}</Text>
+            <Text style={{fontSize:15}}>{'There is no matching time for your group.'}</Text>
+            <Text style={{fontSize:15}}>{'Here are the potential times when one person is gone:'}</Text>
             </View>
             <ScrollableTabView
               style={{marginTop: 0, flex:1}}
@@ -297,10 +298,10 @@ export default class GroupChosenScreen extends React.Component {
                   if (item.slice(-2) == "pm" && hour != 12 && time[0] != "11:30") hour += 12
                   // Year is hardcoded as 2018
                   let ymd = new Date(2018,month,date,hour,min)
-                  console.log(section.title.slice(4))
+                  console.log(section.title.slice(13))
                   let membersCopy = Object.assign({},members)
                   for (let memberID in membersCopy) {
-                    if (membersCopy[memberID] == section.title.slice(4)) {
+                    if (membersCopy[memberID] == section.title.slice(13)) {
                       delete membersCopy[memberID]
                       break;
                     }
@@ -312,7 +313,7 @@ export default class GroupChosenScreen extends React.Component {
                     reschedule: reschedule,
                     // name: name,
                     // id: id,
-                    name: groupName + " without " + section.title.slice(4).split(" ")[0],
+                    name: groupName + " without " + section.title.slice(13),
                     members: membersCopy,
                     dateobj: ymd.toString(),
                     time: arr[2] + " " + arr[3],
@@ -343,7 +344,7 @@ export default class GroupChosenScreen extends React.Component {
                       let ymd = new Date(2018,month,date,hour,min)
                       let membersCopy = Object.assign({},members)
                       for (let memberID in membersCopy) {
-                        if (membersCopy[memberID] == section.title.slice(4)) {
+                        if (membersCopy[memberID] == section.title.slice(13)) {
                           delete membersCopy[memberID]
                           console.log("found")
                           break;
@@ -356,7 +357,7 @@ export default class GroupChosenScreen extends React.Component {
                         reschedule: reschedule,
                         // name: name,
                         // id: id,
-                        name: groupName + " without " + section.title.slice(4).split(" ")[0],
+                        name: groupName + " without " + section.title.slice(13),
                         members: membersCopy,
                         dateobj: ymd.toString(),
                         time: arr[2] + " " + arr[3],

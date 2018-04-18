@@ -74,7 +74,8 @@ export default class RequestsScreen extends React.Component {
             Location: doc.data().Location,
             docID: doc.id,
             Length: doc.data().Length,
-            TimeString: doc.data().TimeString
+            TimeString: doc.data().TimeString,
+            conflict: doc.data().conflict
           })
         } else {
           console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
@@ -105,7 +106,8 @@ export default class RequestsScreen extends React.Component {
             Location: doc.data().Location,
             docID: doc.id,
             Length: doc.data().Length,
-            TimeString: doc.data().TimeString
+            TimeString: doc.data().TimeString,
+            conflict: doc.data().conflict
           })
         } else {
           // console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
@@ -248,7 +250,8 @@ export default class RequestsScreen extends React.Component {
               Location: doc.data().Location,
               docID: doc.id,
               Length: doc.data().Length,
-              TimeString: doc.data().TimeString
+              TimeString: doc.data().TimeString,
+              conflict: doc.data().conflict
             })
           } else {
             console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
@@ -283,7 +286,8 @@ export default class RequestsScreen extends React.Component {
               Location: doc.data().Location,
               docID: doc.id,
               Length: doc.data().Length,
-              TimeString: doc.data().TimeString
+              TimeString: doc.data().TimeString,
+              conflict: doc.data().conflict
             })
           } else {
             console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
@@ -786,6 +790,7 @@ export default class RequestsScreen extends React.Component {
     title={item.FriendName}
     subtitle={item.DateTime.toDateString().substring(0,10) + " " + item.TimeString + " at " + item.Location}
     subtitleNumberOfLines={2}
+    containerStyle={{backgroundColor: item.conflict ? "red": "white"}}
     leftIcon = {
       <Image
         style={{width: 50, height: 50, borderRadius:25, marginRight:10}}
@@ -801,6 +806,7 @@ export default class RequestsScreen extends React.Component {
     title={item.FriendName}
     subtitle={item.DateTime.toDateString().substring(0,10) + " " + item.TimeString + " at " + item.Location}
     subtitleNumberOfLines={2}
+    containerStyle={{backgroundColor: item.conflict ? "red": "white"}}
     leftIcon = {
       <Image
         style={{width: 50, height: 50, borderRadius:25, marginRight:10}}
