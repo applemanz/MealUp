@@ -193,7 +193,7 @@ export default class FinalRequestScreen extends React.Component {
     }
 	}
 
-  // TODO rescheduling group requests
+  // reschedule group request
   submitGroupRequest = () => {
     prevData = this.props.navigation.state.params
     reschedule = prevData['reschedule'];
@@ -309,8 +309,13 @@ export default class FinalRequestScreen extends React.Component {
           })
           .catch(function(error) {
               console.error("Error adding document: ", error);
+<<<<<<< HEAD
+          })
+=======
+
           });
 
+>>>>>>> 714d42a56ccabb66ab8c3f8504f1ee8a806fc933
       if (reschedule !== undefined) {
         console.log("RESCHEDULE: " + reschedule);
         if (sent == 2) { // meal being rescheduled
@@ -318,7 +323,7 @@ export default class FinalRequestScreen extends React.Component {
           prevMealRef.get().then(function(doc) {
             prevMealRefData = doc.data();
             console.log(prevMealRefData);
-            if (prevMealRefData != null && prevMealRefData['DateTime'] != null) {
+            if (prevMealRefData && prevMealRefData['DateTime']) {
               weekday = weekdays[prevMealRefData['DateTime'].getDay()].day
               console.log(weekday)
               amPM = prevMealRefData['DateTime'].getHours() >= 12 ? "PM" : "AM"
@@ -370,7 +375,11 @@ export default class FinalRequestScreen extends React.Component {
               });
             }
           }).catch(function(error) {
+<<<<<<< HEAD
           console.error("Error updating freetime: ", error);
+=======
+            console.error("Error updating freetime: ", error);
+>>>>>>> 714d42a56ccabb66ab8c3f8504f1ee8a806fc933
           })
         }
         else if (sent == true) {
@@ -381,7 +390,8 @@ export default class FinalRequestScreen extends React.Component {
           }).catch(function(error) {
             console.error("Error removing document: ", error);
           });
-        } else {
+        }
+        else {
           db.collection("users").doc(userID).collection('Received Requests').doc(reschedule).delete().then(() => {
             console.log("Document successfully deleted!");
             db.collection("users").doc(Object.keys(prevData['members'])[0]).collection('Sent Requests').doc(reschedule).delete()

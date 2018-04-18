@@ -5,7 +5,8 @@ import {
   Text,
   View,
   FlatList,
-  TouchableOpacity
+  TouchableOpacity,
+  ScrollView
 } from 'react-native';
 import { Button } from 'react-native-elements';
 import firebase from "../config/firebase";
@@ -19,22 +20,32 @@ class MyListItem extends React.PureComponent {
 
   render() {
     if (this.props.disable) {
-      return (
-        <Button disabled={true} title={''} disabledStyle={{backgroundColor:"black"}}/>
-      )
+      return null
     }
     if (this.props.selected === 2) {
       return (
-        <Button disabled={true} title={'Meal'} disabledStyle={{backgroundColor:"#17bebb"}}/>
+        <Button
+          disabled={true}
+          title={`${this.props.title}`}
+          color = {'black'}
+          disabledStyle={{backgroundColor:"#ff7675"}}/>
       )
     }
     if (this.props.selected === 1) {
       return (
-        <Button onPress={this._onPress} title={this.props.title} backgroundColor="#37b737"/>
+        <Button
+          onPress={this._onPress}
+          title={this.props.title}
+          backgroundColor="#55efc4"
+          color = {'black'}/>
       )
     }
     return (
-      <Button onPress={this._onPress} title={this.props.title} backgroundColor="#93929b"/>
+      <Button
+        onPress={this._onPress}
+        title={this.props.title}
+        backgroundColor="#dfe6e9"
+        color = {'black'}/>
     )
 
   }
@@ -46,7 +57,7 @@ export default class FlatListSelector extends React.PureComponent {
   constructor(props) {
     super(props);
 
-    this.state = {selected: [], friends: {}}
+    this.state = {selected: [], friends: {}, breakfast: false, latemeal:false, lunch: true, dinner: true}
   }
 
   componentDidMount() {
@@ -125,36 +136,97 @@ export default class FlatListSelector extends React.PureComponent {
     />
   );
 
+  onBreakfastPress = () => {
+  this.setState({breakfast: !this.state.breakfast})
+}
+  onLateMealPress = () => {
+    this.setState({latemeal: !this.state.latemeal})
+  }
+
   render() {
     //console.log(this.state.selected);
     // console.log(this.state.freeFriends);
     //console.log(this.state.friends)
     return (
-      <FlatList
-        data={this.props.data}
-        extraData={this.state}
-        // keyExtractor={this._keyExtractor}
-        renderItem={this._renderItem}
-      />
+      <View style={{flex:1,}}>
+
+        <Button
+          color = {'black'}
+          onPress={this.onBreakfastPress}
+          transparent
+          textStyle={{fontWeight:'normal', fontSize:18, textAlign:'center', paddingBottom:0, marginBottom:0}}
+          rightIcon={{name: this.state.breakfast ? 'md-arrow-dropdown-circle' : 'md-arrow-dropleft-circle', color:'black', type: 'ionicon'}}
+          title='Breakfast' />
+        {(this.state.breakfast) &&
+          <View style={{}}>
+            <FlatList
+              scrollEnabled = {false}
+              data={this.props.data.slice(0,8)}
+              extraData={this.state}
+              renderItem={this._renderItem}
+            />
+          </View>
+        }
+
+        <Button
+            color = {'black'}
+            onPress={()=>this.setState({lunch: !this.state.lunch})}
+            transparent
+            textStyle={{fontWeight:'normal', fontSize:18, textAlign:'center', paddingBottom:0, marginBottom:0}}
+            rightIcon={{name: this.state.lunch ? 'md-arrow-dropdown-circle' : 'md-arrow-dropleft-circle', color:'black', type: 'ionicon'}}
+            title='Lunch' />
+        {(this.state.lunch) &&
+          <View style={{}}>
+          <FlatList
+            data={this.props.data.slice(8, 13)}
+            scrollEnabled = {false}
+            extraData={this.state}
+            // keyExtractor={this._keyExtractor}
+            renderItem={this._renderItem}
+          />
+          </View>
+        }
+
+        <Button
+          color = {'black'}
+          onPress={this.onLateMealPress}
+          transparent
+          textStyle={{fontWeight:'normal', fontSize:18}}
+          rightIcon={{name: this.state.latemeal ? 'md-arrow-dropdown-circle' : 'md-arrow-dropleft-circle', color:'black', type: 'ionicon'}}
+          title='Late Meal' />
+        {(this.state.latemeal) &&
+          <View style={{}}>
+            <FlatList
+              scrollEnabled = {false}
+              data={this.props.data.slice(13,19)}
+              extraData={this.state}
+              // keyExtractor={this._keyExtractor}
+              renderItem={this._renderItem}
+            />
+          </View>
+        }
+
+        <Button
+          color = {'black'}
+          onPress={()=>this.setState({dinner: !this.state.dinner})}
+          transparent
+          textStyle={{fontWeight:'normal', fontSize:18, textAlign:'center', paddingBottom:0, marginBottom:0}}
+          rightIcon={{name: this.state.dinner ? 'md-arrow-dropdown-circle' : 'md-arrow-dropleft-circle', color:'black', type: 'ionicon'}}
+          title='Dinner' />
+
+        {(this.state.dinner) &&
+          <View style={{}}>
+            <FlatList
+              data={this.props.data.slice(19, 25)}
+              extraData={this.state}
+              scrollEnabled = {false}
+              // keyExtractor={this._keyExtractor}
+              renderItem={this._renderItem}
+            />
+          </View>
+        }
+
+      </View>
     );
   }
 }
-// if (this.state.selected[index] == true)
-//   return <Button backgroundColor='green' onPress={this._onPressItem.bind(this, item.key)} title={item.time}/>
-// else
-//   return <Button onPress={this._onPressItem.bind(this, item.key)} title={item.time}/>
-
-      // for each friend updates newfreefriends
-      // for (let friendID of Object.keys(this.state.friends)) {
-      //   //console.log(friendID)
-      //   let fdRef = db.collection("users").doc(friendID).collection('NewFreeFriends').doc(this.props.dayOfWeek)
-      //   console.log(this.state.freeFriends[friendID])
-      //   let newRef = "Freefriends" + "." + id + "." + userID
-      //   let foo = new Object();
-      //   console.log(newRef);
-      //
-      //   // if (!fdRef.exists)
-      //   //   fdRef.set({Freefriends:{}})
-      //   foo[newRef] = this.state.selected[id] === 1 ? true : false;
-      //   fdRef.update(foo);
-      // }

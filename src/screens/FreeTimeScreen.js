@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList,StyleSheet, ScrollView} from 'react-native';
-import { Button } from 'react-native-elements';
+import { Button, Divider } from 'react-native-elements';
 import NavigationBar from 'navigationbar-react-native';
 import FlatListSelector from '../components/FlatListSelector';
 
@@ -45,13 +45,55 @@ export default class FreeTimeScreen extends React.Component {
   }
 
   render() {
+    console.log('rerendering')
     return (
-      <View style={{flex: 1, justifyContent: 'center'}}>
-        <ScrollView horizontal={true} >
-          {this.renderDaysofWeek(this.state.today)}
+      <View >
+
+        <ScrollView horizontal={true} bounces={false}>
+          <View>
+            <View style={{flexDirection:'row', justifyContent:'space-around'}}>
+              {this.renderHeader(this.state.today)}
+            </View>
+            <Divider style={{ backgroundColor: 'black' }} />
+            <ScrollView>
+              <View style={{flexDirection:'row'}}>
+              {this.renderDaysofWeek(this.state.today)}
+              </View>
+            </ScrollView>
+          </View>
         </ScrollView>
+
       </View>
     );
+  }
+
+  renderHeader = (today) => {
+    daysOfWeek = []
+    dates = []
+    if (this.getTimeIndex() >= 24) {
+      today = this.addDays(today,1)
+      var dayOver = true
+    }
+    for (i = 0; i < 7; i++) {
+      day = this.addDays(today, i)
+      console.log(day)
+      daysOfWeek.push(days[day.getDay()])
+      dates.push(day.toDateString())
+    }
+
+    return (
+      dates.map((d, i)=> {
+        if (dayOver == true) curr = false
+        else if (i == 0) curr = true
+        else curr = false
+        return (
+        <View key={i} >
+          <Text style={{fontWeight:'bold', fontSize:20, textAlign:'center',}}>
+          {`${d.substring(0,4)}\n${d.substring(4,10)}`}
+        </Text>
+        </View>)
+      })
+    )
   }
 
   renderDaysofWeek = (today) => {
@@ -70,11 +112,14 @@ export default class FreeTimeScreen extends React.Component {
 
       return (
         dates.map((d, i)=> {
-          if (dayOver) curr = false
-          else if (i == 0) curr =  true
+          if (dayOver == true) curr = false
+          else if (i == 0) curr = true
+          else curr = false
           return (
-          <View key={i} style={{alignItems:'center'}}>
-            <Text style={{fontWeight:'bold'}}>{d.substring(0,10)}</Text>
+          <View key={i} >
+            {/* <Text style={{fontWeight:'bold', fontSize:20, textAlign:'center', textDecorationLine:'underline'}}>
+            {`${d.substring(0,4)} 4/18`}
+          </Text> */}
             <FlatListSelector
               navigation={this.props.navigation}
               data={data}

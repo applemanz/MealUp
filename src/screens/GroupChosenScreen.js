@@ -48,7 +48,7 @@ export default class GroupChosenScreen extends React.Component {
     match2 = []; // formatted matches2
     matchFewer1 = []; // for no matching time 30 min
     matchFewer2 = []; // for no matching time 1 hr
-    
+
     // If there are no matches...
     if (noMatches1) {
       for (friendID in members) {
@@ -164,7 +164,7 @@ export default class GroupChosenScreen extends React.Component {
     }
     return true
   }
-  
+
   match30min = (freeTimeObj) => {
     matches = new Object();
     thisIndex = (todayHour - 7) * 2 + Math.floor(todayMin / 30) - 1;
@@ -224,7 +224,6 @@ export default class GroupChosenScreen extends React.Component {
     const id = params.id
     const members = params.members
 
-<<<<<<< HEAD
 
     if (groupName == "") {
       var names = [];
@@ -241,15 +240,10 @@ export default class GroupChosenScreen extends React.Component {
       groupName = memberStr
     }
 
-    if (this.state.matches1) {
-=======
-    // if no matching time for group
     if (this.state.match1) {
-      console.log("Re-render")
->>>>>>> 5eee8ff7a9838d3f94238609f46824ce3ac2360e
       const reschedule = params ? params.reschedule : undefined;
       const sent = params ? params.sent : undefined;
-            
+
       urls = []
       for (memberID in members) {
         urls.push(`http://graph.facebook.com/${memberID}/picture?type=large`)
@@ -311,7 +305,7 @@ export default class GroupChosenScreen extends React.Component {
                       break;
                     }
                   }
-                  
+
                   this.props.navigation.navigate('FinalRequest',
                   {
                     sent: sent,

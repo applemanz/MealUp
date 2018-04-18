@@ -50,7 +50,7 @@ exports.updateFreeFriends = functions.firestore
         })
         promises = []
         for (friendID of friends) {
-          let friendRef = admin.firestore().collection('users').doc(friendID).collection('NewFreeFriends').doc(dayOfWeek)
+          let friendRef = admin.firestore().collection('users').doc(friendID).collection('FreeFriends').doc(dayOfWeek)
           let newRef = "Freefriends" + "." + index + "." + userID
           let foo = new Object()
           foo[newRef] = updateAsFree

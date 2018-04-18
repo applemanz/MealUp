@@ -150,11 +150,12 @@ const FreeTimeStack = StackNavigator({
     screen: FreeTimeScreen,
     navigationOptions: {
       headerStyle: {
-        backgroundColor: '#f4511e',
+        backgroundColor: '#0984e3',
       },
       headerTintColor: '#fff',
       headerTitleStyle: {
         fontWeight: 'bold',
+        fontSize: 25
       },
     },
   }
@@ -239,9 +240,9 @@ export default TabNavigator(
   {
     initialRouteName: 'Meals',
     tabBarOptions: {
-      activeTintColor: '#f4511e',
+      activeTintColor: '#0984e3',
       labelStyle: {
-        fontSize: 14,
+        fontSize: 12,
       },
       style: {
         // backgroundColor: 'blue',
@@ -271,7 +272,7 @@ export default TabNavigator(
             name={iconName}
             size={28}
             style={{ marginBottom: -3 }}
-            color={focused ? '#f4511e' : Colors.tabIconDefault}
+            color={focused ? '#0984e3' : Colors.tabIconDefault}
           />
         );
       },

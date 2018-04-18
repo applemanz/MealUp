@@ -153,8 +153,9 @@ export default class RequestsScreen extends React.Component {
     db.collection("users").doc(userID).collection('Sent Group Requests').onSnapshot((querySnapshot) => {
       sentGroupRequests = [];
       querySnapshot.forEach((doc) => {
+        var data = doc.data()
+        // not expired request
         if (doc.data().DateTime >= new Date()) {
-          data = doc.data()
           totalCount = Object.keys(data.members).length
           acceptedCount = 0
           for (memberID in data.members) {
@@ -162,25 +163,69 @@ export default class RequestsScreen extends React.Component {
               acceptedCount++
             }
           }
+          // auotmatically schedule meal
           if (acceptedCount == totalCount) {
-            // TODO delete this sent request
-            // TODO delete received request for all other members
-            // TODO add to their meals
-            // notfy meal scheduled
+            db.collection("users").doc(userID).collection('Sent Group Requests').doc(doc.id).delete().then(() =>{
+              for (memberID in data.members) {
+                if (memberID != userID)
+                  db.collection("users").doc(memberID).collection('Received Group Requests').doc(doc.id).delete()
+              }
+            })
+            .catch(function(error) {
+              console.error("Error removing document: ", error);
+            })
+
+            data.isGroup = true
+            db.collection("users").doc(userID).collection('Meals').add(data).then((docRef) => {
+              for (memberID in data.members) {
+                if (memberID != userID) {
+                  db.collection("users").doc(memberID).collection('Meals').doc(docRef.id).set(data)
+                }
+              }
+            })
+            .catch(function(error) {
+                console.error("Error adding document: ", error);
+            })
           }
           else {
             data['id'] = doc.id
             sentGroupRequests.push(data)
           }
-        } else {
-          // TODO Update FreeTime of all members
+        }
+        // expired request
+        else {
+          day = weekdays[data['DateTime'].getDay()].day
+          amPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
+          hours = (data['DateTime'].getHours() % 12 || 12) + ":" + ("0" + data['DateTime'].getMinutes()).slice(-2) + " " + amPM
+          index = data_flip[hours]
           db.collection("users").doc(userID).collection('Sent Group Requests').doc(doc.id).delete().then(() => {
             console.log("Document successfully deleted!");
+            for (memberID in data.members) {
+              if (data.members[memberID].accepted == true) {
+                freetimeRef = db.collection("users").doc(memberID).collection('Freetime').doc(day);
+                freetimeRef.get().then((doc) => {
+                  freetimeData = doc.data();
+                  freetimeData['Freetime'][index] = 1
+                  if (data['Length'] === 1) {
+                    freetimeData['Freetime'][index+1] = 1
+                  }
+                freetimeRef.set(freetimeData).then(() => {
+                  console.log("My Document updated");
+                  })
+                  .catch(function(error) {
+                    console.error("Error updating", error);
+                  })
+                })
+              }
+              if (memberID != userID)
+                db.collection("users").doc(memberID).collection('Received Group Requests').doc(doc.id).delete()
+            }
           }).catch(function(error) {
             console.error("Error removing document: ", error);
-          });
+          })
         }
       })
+
       sentGroupRequests.sort(function(a, b) {
         a = a.DateTime;
         b = b.DateTime;
@@ -188,11 +233,6 @@ export default class RequestsScreen extends React.Component {
       })
         this.setState({sentGroupRequests: sentGroupRequests});
     })
-    this.props.navigation.addListener('willFocus', ()=>{
-      this.refreshReceived()
-      this.refreshSent()
-      // TODO refresh group requests
-    });
   }
   refreshReceived = () => {
     this.setState({refreshingR: true});
@@ -848,45 +888,45 @@ export default class RequestsScreen extends React.Component {
       });
     })
 
-
-    // update freefriends for acceptor
-    friendsRef = db.collection("users").doc(userID).collection('Friends');
-    friendsRef.get().then((querySnapshot) => {
-      friends = [];
-      querySnapshot.forEach((doc) => {
-        friends.push(doc.id)
-      })
-
-      // console.log("friends", friends)
-
-      for (let friend of friends) {
-        thisday = weekdays[data['DateTime'].getDay()].day;
-        let freefriendsRef = db.collection("users").doc(friend).collection('NewFreeFriends').doc(thisday);
-        newRef = "Freefriends" + "." + index + "." + userID
-        foo = new Object();
-        foo[newRef] = false;
-        freefriendsRef.update(foo);
-      }
-    })
-
-    // update freefriends for other person if not already updated
-    friendsRef2 = db.collection("users").doc(data['FriendID']).collection('Friends');
-    friendsRef2.get().then((querySnapshot) => {
-      friends2 = [];
-      querySnapshot.forEach((doc) => {
-        friends2.push(doc.id)
-      })
-      // console.log("friends2", friends2)
-
-      for (let friend of friends2) {
-        thisday = weekdays[data['DateTime'].getDay()].day;
-        let freefriendsRef = db.collection("users").doc(friend).collection('NewFreeFriends').doc(thisday);
-        newRef = "Freefriends" + "." + index + "." + data['FriendID']
-        foo = new Object();
-        foo[newRef] = false;
-        freefriendsRef.update(foo);
-      }
-    })
+    //
+    // // update freefriends for acceptor
+    // friendsRef = db.collection("users").doc(userID).collection('Friends');
+    // friendsRef.get().then((querySnapshot) => {
+    //   friends = [];
+    //   querySnapshot.forEach((doc) => {
+    //     friends.push(doc.id)
+    //   })
+    //
+    //   console.log("friends", friends)
+    //
+    //   for (let friend of friends) {
+    //     thisday = weekdays[data['DateTime'].getDay()].day;
+    //     let freefriendsRef = db.collection("users").doc(friend).collection('NewFreeFriends').doc(thisday);
+    //     newRef = "Freefriends" + "." + index + "." + userID
+    //     foo = new Object();
+    //     foo[newRef] = false;
+    //     freefriendsRef.update(foo);
+    //   }
+    // })
+    //
+    // // update freefriends for other person if not already updated
+    // friendsRef2 = db.collection("users").doc(data['FriendID']).collection('Friends');
+    // friendsRef2.get().then((querySnapshot) => {
+    //   friends2 = [];
+    //   querySnapshot.forEach((doc) => {
+    //     friends2.push(doc.id)
+    //   })
+    //   console.log("friends2", friends2)
+    //
+    //   for (let friend of friends2) {
+    //     thisday = weekdays[data['DateTime'].getDay()].day;
+    //     let freefriendsRef = db.collection("users").doc(friend).collection('NewFreeFriends').doc(thisday);
+    //     newRef = "Freefriends" + "." + index + "." + data['FriendID']
+    //     foo = new Object();
+    //     foo[newRef] = false;
+    //     freefriendsRef.update(foo);
+    //   }
+    // })
 
     // increment number of meals between two users
     friendRef = db.collection("users").doc(userID).collection('Friends').doc(data['FriendID'])
@@ -1174,6 +1214,7 @@ export default class RequestsScreen extends React.Component {
             console.error("Error updating", error);
           });
         })
+
       })
     })
     this.setState({respondGroupReceived: false})
@@ -1205,14 +1246,21 @@ export default class RequestsScreen extends React.Component {
       else
         db.collection("users").doc(memberID).collection('Received Group Requests').doc(this.state.curUser.id).delete()
     }
+    data = Object.assign({}, this.state.curUser)
+    data.isGroup = true
 
-    for (memberID in this.state.curUser.members) {
-      if (this.state.curUser.members[memberID].accepted == true) {
-        data = Object.assign({}, this.state.curUser)
-        data.isGroup = true
-        db.collection("users").doc(memberID).collection('Meals').add(data)
+    db.collection("users").doc(userID).collection('Meals').add(data).then((docRef) => {
+      console.log("Document written with ID: ", docRef.id)
+      for (memberID in this.state.curUser.members) {
+        if (this.state.curUser.members[memberID].accepted == true && memberID != userID) {
+          db.collection("users").doc(memberID).collection('Meals').doc(docRef.id).set(data)
+        }
       }
-    }
+    })
+    .catch(function(error) {
+        console.error("Error adding document: ", error);
+    })
+
     // TODO Notify members that meal was scheduled
   }
 

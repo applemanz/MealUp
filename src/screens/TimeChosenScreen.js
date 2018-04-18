@@ -24,7 +24,7 @@ export default class TimeChosenScreen extends React.Component {
 
   getFreeFriends = (day,index,length) => {
     free = new Object()
-    db.collection("users").doc(userID).collection('NewFreeFriends').doc(day).get().then(doc => {
+    db.collection("users").doc(userID).collection('FreeFriends').doc(day).get().then(doc => {
       if (!doc.exists) {
         this.setState({free:free})
         return
