@@ -82,6 +82,7 @@ export default class SignInScreen extends React.Component {
   onSignInWithFacebook = async () => {
       const options = {permissions: ['public_profile', 'email', 'user_friends'],}
       const {type, token} = await Facebook.logInWithReadPermissionsAsync("159765391398008", options);
+      firstTime = false
       if (type === 'success') {
         try {
           userToken = token;
@@ -138,6 +139,8 @@ export default class SignInScreen extends React.Component {
               if (doc.exists) {
                   // console.log("Document data:", doc.data());
               } else {
+                  firstTime = true
+
                   // console.log("No such document!");
                   for (dofW of daysOfWeek) {
                     db.collection('users').doc(userID).collection('Freetime').doc(dofW).set({
@@ -188,9 +191,16 @@ export default class SignInScreen extends React.Component {
           registerForPushNotificationsAsync();
           this._notificationSubscription = Notifications.addListener(this._handleNotification);
 
-          this.props.navigation.navigate('Main');
+          firstTime = true;
+          if (firstTime == true) {
+            console.log("true")
+            this.props.navigation.navigate('FirstTime');
+          } else {
+            console.log("false")
+            this.props.navigation.navigate('Main');
+          }
 
-          } catch (error) {
+        } catch (error) {
             console.error(error);
           }
 
@@ -229,7 +239,15 @@ export default class SignInScreen extends React.Component {
             <Button title='Andrew' onPress={()=>{
               userID = '10210889686788547'
               userName = 'Andrew Zeng'
-              this.props.navigation.navigate('Main')
+              // this.props.navigation.navigate('Main')
+              firstTime = true;
+              if (firstTime == true) {
+                console.log("true")
+                this.props.navigation.navigate('FirstTime');
+              } else {
+                console.log("false")
+                this.props.navigation.navigate('Main');
+              }
             }}/>
             <Button title='Divi' onPress={()=>{
               userID = '1685311528229627'
