@@ -39,6 +39,7 @@ export default class HomeScreen extends Component {
       calendars: [],
       selectedCalendar: {}
     }
+    this.cancelRequest = this.cancelRequest.bind(this)
   }
 
   componentDidMount() {
@@ -46,11 +47,18 @@ export default class HomeScreen extends Component {
     this.props.navigation.addListener('willFocus', ()=>{
       this.onRefresh();
     });
-    console.log(userID)
+    // console.log(userID)
     db.collection("users").doc(userID).collection('Meals').onSnapshot((querySnapshot) => {
       meals = [];
       querySnapshot.forEach((doc) => {
-        if (doc.data().DateTime >= new Date()) {
+        today = new Date()
+        today.setHours(0, 0, 0, 0)
+        if (doc.data().DateTime >= today) {
+            if (!doc.data().inCalendar) {
+              meal = doc.data()
+              meal.docid = doc.id
+              this.addToCalendar(meal)
+            }
           meals.push(doc.data());
           meals[meals.length-1]['docid'] = doc.id;
           //console.log("SETTING DOCID TO " + meals[meals.length-1] + " " + doc.id);
@@ -68,17 +76,17 @@ export default class HomeScreen extends Component {
               }
             }
           freetimeRef.set(freetimeData).then(() => {
-            console.log("My Document updated");
+            // console.log("My Document updated");
             })
             .catch(function(error) {
-              console.error("Error updating", error);
+              // console.error("Error updating", error);
             });
           })
           db.collection("users").doc(userID).collection('Meals').doc(doc.id).delete().then(() => {
             //console.log("Document successfully deleted!");
             db.collection("users").doc(doc.data().FriendID).collection('Meals').doc(doc.id).delete()
           }).catch(function(error) {
-            console.error("Error removing document: ", error);
+            // console.error("Error removing document: ", error);
           });
         }
       });
@@ -167,7 +175,7 @@ export default class HomeScreen extends Component {
       mealItems.push(mealEntry)
       items[dateID] = mealItems
     }
-    console.log('in update meals')
+    // console.log('in update meals')
     //console.log(items)
     updatedItems = this.createEmptyData()
 
@@ -193,12 +201,9 @@ export default class HomeScreen extends Component {
     db.collection("users").doc(userID).collection('Meals').onSnapshot((querySnapshot) => {
       meals = [];
       querySnapshot.forEach((doc) => {
-        if (doc.data().DateTime >= new Date()) {
-          if (!doc.data().inCalendar) {
-            meal = doc.data()
-            meal.docid = doc.id
-            this.addToCalendar(meal)
-          }
+        today = new Date()
+        today.setHours(0, 0, 0, 0)
+        if (doc.data().DateTime >= today) {
           meals.push(doc.data());
           meals[meals.length-1]['docid'] = doc.id;
         } else {
@@ -214,17 +219,17 @@ export default class HomeScreen extends Component {
               }
             }
           freetimeRef.set(freetimeData).then(() => {
-            console.log("My Document updated");
+            // console.log("My Document updated");
             })
             .catch(function(error) {
-              console.error("Error updating", error);
+              // console.error("Error updating", error);
             });
           })
           db.collection("users").doc(userID).collection('Meals').doc(doc.id).delete().then(() => {
             //console.log("Document successfully deleted!");
             db.collection("users").doc(doc.data().FriendID).collection('Meals').doc(doc.id).delete()
           }).catch(function(error) {
-            console.error("Error removing document: ", error);
+            // console.error("Error removing document: ", error);
           });
         }
       });
@@ -249,7 +254,7 @@ export default class HomeScreen extends Component {
     minDate = Platform.OS === 'ios' ? this.convertDate(today.toLocaleDateString('en-US')) : this.convertDateAndroid(today.toLocaleDateString('en-US'))
     maxDate = this.addDays(today, 7)
     // console.log("Maxdate", maxDate)
-    console.log('in render')
+    // console.log('in render')
     //console.log(this.state.items)
     return (
       <View style={{flex: 1}}>
@@ -668,7 +673,7 @@ export default class HomeScreen extends Component {
   }
 
   rescheduleMeal = () => {
-    console.log("reschedule " + this.state.curMeal);
+    // console.log("reschedule " + this.state.curMeal);
     this.setState({mealModal: false})
     this.props.navigation.navigate('FriendChosen', {
       sent: 2,
@@ -681,58 +686,83 @@ export default class HomeScreen extends Component {
 
   cancelRequest = () => {
     // TODO: free up the freetimes
+    console.log(this.state.curMeal)
+    curMeal = this.state.curMeal
     curMealRef = db.collection("users").doc(userID).collection('Meals').doc(this.state.curMeal)
     curMealRef.get().then(function(doc) {
-      data = doc.data();
-      if (data != null && date['DateTime'] != null) {
-        weekday = weekdays[data['DateTime'].getDay()].day
-        amPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
-        hours = (data['DateTime'].getHours() % 12 || 12) + ":" + ("0" + data['DateTime'].getMinutes()).slice(-2) + " " + amPM
-        index = data_flip[hours]
+      if (!doc.exists) {
+        console.log("No such document!");
+      } else {
+        curMealRefData = doc.data();
+        if (curMealRefData && curMealRefData['DateTime']) {
+          weekday = weekdays[curMealRefData['DateTime'].getDay()].day
+          amPM = curMealRefData['DateTime'].getHours() >= 12 ? "PM" : "AM"
+          hours = (curMealRefData['DateTime'].getHours() % 12 || 12) + ":" + ("0" + curMealRefData['DateTime'].getMinutes()).slice(-2) + " " + amPM
+          index = data_flip[hours]
 
-        // update freetimes
-        freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(weekday);
-        freetimeRef.get().then(function(doc) {
-          freetimeData = doc.data();
-          freetimeData['Freetime'][index] = 1
-            if (data['Length'] === 1) {
-              freetimeData['Freetime'][index+1] = 1
-            }
-        // console.log("my data", freetimeData)
-        freetimeRef.update(freetimeData).then(() => {
-          console.log("My Document updated");
+          // update freetimes
+          freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(weekday);
+          freetimeRef.get().then(function(doc) {
+            freetimeData = doc.data();
+            freetimeData['Freetime'][index] = 1
+              if (curMealRefData['Length'] === 1) {
+                freetimeData['Freetime'][index+1] = 1
+              }
+          // console.log("my data", freetimeData)
+          freetimeRef.update(freetimeData).then(() => {
+            console.log("My Document updated");
+            })
+            .catch(function(error) {
+              console.error("Error updating", error);
+            });
           })
-          .catch(function(error) {
-            console.error("Error updating", error);
-          });
-        })
 
-        freetimeRef_other = db.collection("users").doc(data['FriendID']).collection('Freetime').doc(weekday);
-        freetimeRef_other.get().then(function(doc) {
-          freetimeData_other = doc.data();
-          freetimeData_other['Freetime'][index] = 1
-            if (data['Length'] === 1) {
-              freetimeData_other['Freetime'][index+1] = 1
+          if (curMealRefData["isGroup"] === true) {
+            for (let thisid in curMealRefData["members"]) {
+              freetimeRef_other = db.collection("users").doc(thisid).collection('Freetime').doc(weekday);
+              freetimeRef_other.get().then(function(doc) {
+              freetimeData_other = doc.data();
+              freetimeData_other['Freetime'][index] = 1
+                if (curMealRefData['Length'] === 1) {
+                  freetimeData_other['Freetime'][index+1] = 1
+                }
+               // console.log(freetimeData_other)
+               freetimeRef_other.update(freetimeData_other).then(() => {
+              console.log("Document updated");
+              })
+              .catch(function(error) {
+                console.error("Error updating", error);
+              });
+            })
             }
-        // console.log(freetimeData_other)
-        freetimeRef_other.update(freetimeData_other).then(() => {
-          console.log("Document updated");
-          })
-          .catch(function(error) {
-            console.error("Error updating", error);
-          });
-        })
+          } else {
+            freetimeRef_other = db.collection("users").doc(curMealRefData["FriendID"]).collection('Freetime').doc(weekday);
+            freetimeRef_other.get().then(function(doc) {
+              freetimeData_other = doc.data();
+              freetimeData_other['Freetime'][index] = 1
+                if (curMealRefData['Length'] === 1) {
+                  freetimeData_other['Freetime'][index+1] = 1
+                }
+            // console.log(freetimeData_other)
+            freetimeRef_other.update(freetimeData_other).then(() => {
+              console.log("Document updated");
+              })
+              .catch(function(error) {
+                console.error("Error updating", error);
+              });
+            })
+          }
+        }
+      console.log("canceling " + curMeal)
+      db.collection("users").doc(userID).collection('Meals').doc(curMeal).delete().then(() => {
+        console.log("Document successfully deleted!");
+        db.collection("users").doc(curMealRefData["FriendID"]).collection('Meals').doc(curMeal).delete()
+      }).catch(function(error) {
+        console.error("Error removing document: ", error);
+      });
       }
     }).catch(function(error) {
-      console.error("Error updating freetime: ", error);
-    });
-
-    console.log("canceling " + this.state.curMeal)
-    db.collection("users").doc(userID).collection('Meals').doc(this.state.curMeal).delete().then(() => {
-      console.log("Document successfully deleted!");
-      db.collection("users").doc(this.state.mealItem.FriendID).collection('Meals').doc(this.state.curMeal).delete()
-    }).catch(function(error) {
-      console.error("Error removing document: ", error);
+       console.error("Error updating freetime: ", error);
     });
     this.setState({mealModal: false})
   }
