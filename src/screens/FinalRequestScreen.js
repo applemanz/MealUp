@@ -347,21 +347,17 @@ export default class FinalRequestScreen extends React.Component {
           prevMealRef = db.collection("users").doc(userID).collection('Meals').doc(reschedule)
           prevMealRef.get().then(function(doc) {
             prevMealRefData = doc.data();
-            console.log(prevMealRefData);
             if (prevMealRefData && prevMealRefData['DateTime']) {
               weekday = weekdays[prevMealRefData['DateTime'].getDay()].day
-              console.log(weekday)
               amPM = prevMealRefData['DateTime'].getHours() >= 12 ? "PM" : "AM"
               hours = (prevMealRefData['DateTime'].getHours() % 12 || 12) + ":" + ("0" + prevMealRefData['DateTime'].getMinutes()).slice(-2) + " " + amPM
               index = data_flip[hours]
-              console.log(hours)
 
               // update freetimes
               freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(weekday);
               freetimeRef.get().then(function(doc) {
                 freetimeData = doc.data();
                 freetimeData['Freetime'][index] = 1
-                console.log(prevMealRefData['Length'])
                 if (prevMealRefData['Length'] === 1) {
                   freetimeData['Freetime'][index+1] = 1
                 }
@@ -400,11 +396,7 @@ export default class FinalRequestScreen extends React.Component {
               });
             }
           }).catch(function(error) {
-<<<<<<< HEAD
-          console.error("Error updating freetime: ", error);
-=======
             console.error("Error updating freetime: ", error);
->>>>>>> 1d760a8d42c0213d0b13e779f47af4a3a769efc8
           })
         }
         else if (sent == true) {
