@@ -6,7 +6,8 @@ import {
   StyleSheet,
   View,
   Text,
-  Image
+  Image,
+  Alert
 } from 'react-native';
 import { Facebook } from 'expo';
 import {Button, SocialIcon, Divider} from 'react-native-elements';
@@ -21,16 +22,58 @@ var userID;
 var userName;
 var userToken;
 
+import { Permissions, Notifications } from 'expo';
+
+async function registerForPushNotificationsAsync() {
+  const { status: existingStatus } = await Permissions.getAsync(
+    Permissions.NOTIFICATIONS
+  );
+  let finalStatus = existingStatus;
+
+  // only ask if permissions have not already been determined, because
+  // iOS won't necessarily prompt the user a second time.
+  if (existingStatus !== 'granted') {
+    // Android remote notification permissions are granted during the app
+    // install, so this will only ask on iOS
+    const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+    finalStatus = status;
+  }
+
+  // Stop here if the user did not grant permissions
+  if (finalStatus !== 'granted') {
+    return;
+  }
+
+  // Get the token that uniquely identifies this device
+  let expoToken = await Notifications.getExpoPushTokenAsync();
+  console.log(expoToken);
+
+  db.collection('users').doc(userID).set({
+    Token: expoToken,
+  }, { merge: true })
+  .then(function() {
+  console.log("Document successfully updated!");
+  })
+  .catch(function(error) {
+  // The document probably doesn't exist.
+  console.error("Error updating document: ", error);
+  });
+}
+
 
 export default class SignInScreen extends React.Component {
   static navigationOptions = {
   header: null,
   };
 
+  // state = {
+  //   notification: {},
+  // };
+
   componentWillMount() {
     const value = AsyncStorage.getItem('loggedIn');
       if (value === 'true') {
-        console.log(value);
+        // console.log(value);
         this.props.navigation.navigate('Main');
       }
   }
@@ -46,12 +89,12 @@ export default class SignInScreen extends React.Component {
           const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,friends`);
           const userData = await response.json();
           const friendsList = userData.friends.data;
-          console.log("friendsList")
-          console.log(friendsList);
+          // console.log("friendsList")
+          // console.log(friendsList);
           userName = userData.name;
           userID = userData.id;
-          console.log(userName);
-          console.log(userID);
+          // console.log(userName);
+          // console.log(userID);
 
           AsyncStorage.setItem('loggedIn', 'true');
 
@@ -73,17 +116,17 @@ export default class SignInScreen extends React.Component {
             db.collection('users').doc(userID).collection('Friends').doc(thisfriend.id).get().then(function(doc) {
               if (!doc.exists) {
                 console.log("Friend doesn't exist", thisfriend.name)
-                console.log(docRef.id)
+                // console.log(docRef.id)
                 db.collection('users').doc(userID).collection('Friends').doc(thisfriend.id).set({
                   Name: thisfriend.name,
                   CanViewMe: true,
                   CanViewFriend: true,
                   numOfMeals: 0
                 })
-                console.log("Finish setting", thisfriend.name)
+                // console.log("Finish setting", thisfriend.name)
               }
               else {
-                console.log("Friend exists", doc.data());
+                // console.log("Friend exists", doc.data());
               }
             })
           }
@@ -93,16 +136,16 @@ export default class SignInScreen extends React.Component {
 
           docRef.get().then(function(doc) {
               if (doc.exists) {
-                  console.log("Document data:", doc.data());
+                  // console.log("Document data:", doc.data());
               } else {
-                  console.log("No such document!");
+                  // console.log("No such document!");
                   for (dofW of daysOfWeek) {
                     db.collection('users').doc(userID).collection('Freetime').doc(dofW).set({
                       Freetime: Array.from(Array(25), () => 0),
                     })
                   }
 
-                  console.log("I'm here 0")
+                  // console.log("I'm here 0")
                   // create new freeFriends object
                   freeFriends = new Object()
                   for (dofW of daysOfWeek) {
@@ -111,12 +154,12 @@ export default class SignInScreen extends React.Component {
                       freeFriends[dofW][i] = {}
                     }
                   }
-                  console.log("I'm here 1")
+                  // console.log("I'm here 1")
                   // initialize freeFriends object
                   for (friend of friendsList) {
                     let thisfriend = friend;
                     db.collection('users').doc(thisfriend.id).collection('Freetime').get().then((querySnapshot) => {
-                      console.log("I'm in then 1")
+                      // console.log("I'm in then 1")
                       querySnapshot.forEach(function(doc) {
                         for (i = 0; i < 25; i++) {
                           if (doc.data().Freetime[i] === 1) {
@@ -131,8 +174,8 @@ export default class SignInScreen extends React.Component {
                           Freefriends: freeFriends[dofW]
                         })
                       }
-                      console.log("I'm here 2")
-                      console.log("Freefriends", freeFriends)
+                      // console.log("I'm here 2")
+                      // console.log("Freefriends", freeFriends)
                     })
                   }
 
@@ -142,6 +185,8 @@ export default class SignInScreen extends React.Component {
               console.log("Error getting document:", error);
           });
 
+          registerForPushNotificationsAsync();
+          this._notificationSubscription = Notifications.addListener(this._handleNotification);
 
           this.props.navigation.navigate('Main');
 
@@ -159,8 +204,12 @@ export default class SignInScreen extends React.Component {
   //         .then((user) => getUser(user, callback))
   //         .catch((error) => callback(false, null, error));
   // }
-
-
+  _handleNotification = (notification) => {
+    console.log("origin " + notification.origin);
+    console.log("data " + notification.data);
+    Alert.alert(notification.data.message);
+    //this.setState({notification: notification});
+  };
 
 
   // Render any loading content that you like here
