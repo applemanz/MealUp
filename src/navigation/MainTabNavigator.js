@@ -18,6 +18,7 @@ import TimeChosenScreen from '../screens/TimeChosenScreen';
 import EditFriendsScreen from '../screens/EditFriendsScreen';
 import AddGroupScreen from '../screens/AddGroupScreen';
 import AddMemberScreen from '../screens/AddMemberScreen';
+import FirstTimeScreen from '../screens/FirstTimeScreen';
 
 const RequestsStack = StackNavigator({
   Requests: {
@@ -168,11 +169,19 @@ const MealsStack = StackNavigator({
       headerStyle: {
         backgroundColor: '#f4511e',
       },
+      headerLeft: null,
       headerTintColor: '#fff',
       headerTitleStyle: {
         fontWeight: 'bold',
       },
     },
+  },
+  FirstTime: {
+    screen: FirstTimeScreen,
+    navigationOptions: {
+      header: null,
+      tabBarVisible: false
+    }
   },
   RequestByFriend: {
     screen: RequestByFriendScreen,
