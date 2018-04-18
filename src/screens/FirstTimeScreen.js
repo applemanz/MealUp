@@ -63,7 +63,7 @@ export default class FirstTimeScreen extends React.Component {
             onSkip = {() => {this.props.navigation.navigate('Meals')}}
           />
       )} else {
-        console.error("error");
+        console.error("error loading", error);
       }
     }
   }
