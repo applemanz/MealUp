@@ -208,7 +208,6 @@ export default class SignInScreen extends React.Component {
     console.log("origin " + notification.origin);
     console.log("data " + notification.data);
     Alert.alert(notification.data.message);
-    //this.setState({notification: notification});
   };
 
 
