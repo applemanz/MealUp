@@ -961,7 +961,28 @@ export default class RequestsScreen extends React.Component {
             console.log("Document written with ID: ", docRef.id);
             data['FriendName'] = userName
             data['FriendID'] = userID
+            console.log("put document in meals!!!")
             db.collection("users").doc(this.state.curUser.FriendID).collection('Meals').doc(docRef.id).set(data)
+            expotoken = "";
+                db.collection("users").doc(this.state.curUser.FriendID).get().then(function(doc) {
+                  expotoken = doc.data().Token;
+                  console.log("got token " + expotoken);
+
+                if (expotoken !== undefined) {
+                return fetch('https://exp.host/--/api/v2/push/send', {
+                  body: JSON.stringify({
+                    to: expotoken,
+                    //title: "title",
+                    body: `${userName} accepted your meal request!`,
+                    data: { message: `${userName} accepted your meal request!` },
+                  }),
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  method: 'POST',
+                });
+                }
+              })
         })
         .catch(function(error) {
             console.error("Error adding document: ", error);
