@@ -1189,8 +1189,29 @@ export default class RequestsScreen extends React.Component {
       db.collection('users').doc(this.state.curUser.initiator).collection('Sent Group Requests').doc(this.state.curUser.id).set(data).then(()=> {
         data['pending'] = true
         for (memberID in this.state.curUser.members) {
-          if (memberID != this.state.curUser.initiator)
+          if (memberID != this.state.curUser.initiator) {
             db.collection('users').doc(memberID).collection('Received Group Requests').doc(this.state.curUser.id).set(data)
+            expotoken = "";
+                db.collection("users").doc(memberID).get().then(function(doc) {
+                  expotoken = doc.data().Token;
+                  console.log("got token " + expotoken);
+
+                if (expotoken !== undefined) {
+                return fetch('https://exp.host/--/api/v2/push/send', {
+                  body: JSON.stringify({
+                    to: expotoken,
+                    //title: "title",
+                    body: `${userName} accepted your group meal request!`,
+                    data: { message: `${userName} accepted your group meal request!` },
+                  }),
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  method: 'POST',
+                });
+                }
+              })
+          }
         }
 
         day = weekdays[data['DateTime'].getDay()].day

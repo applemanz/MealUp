@@ -218,8 +218,32 @@ export default class FinalRequestScreen extends React.Component {
           .then((docRef) => {
               console.log("Document written with ID: ", docRef.id);
               for (let thisid in prevData['members']) {
-                if (thisid != userID)
+                if (thisid != userID) {
                 db.collection("users").doc(thisid).collection('Received Group Requests').doc(docRef.id).set(data)
+                expotoken = "";
+                db.collection("users").doc(thisid).get().then(function(doc) {
+                  expotoken = doc.data().Token;
+                  console.log("got token " + expotoken);
+
+                if (expotoken !== undefined) {
+                return fetch('https://exp.host/--/api/v2/push/send', {
+                  body: JSON.stringify({
+                    to: expotoken,
+                    //title: "title",
+                    body: `New group meal request from ${userName}!`,
+                    data: { message: `New group meal request from ${userName}!` },
+                  }),
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  method: 'POST',
+                });
+                }
+
+                }).catch(function(error) {
+                  console.log("Error getting document:", error);
+                });
+              }
               }
               day = weekdays[data['DateTime'].getDay()].day
               amPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
