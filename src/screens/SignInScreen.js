@@ -240,6 +240,7 @@ export default class SignInScreen extends React.Component {
               userID = '10210889686788547'
               userName = 'Andrew Zeng'
               // this.props.navigation.navigate('Main')
+              firstTime = true
               if (firstTime == true) {
                 console.log("true")
                 this.props.navigation.navigate('FirstTime');
