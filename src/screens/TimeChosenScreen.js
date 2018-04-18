@@ -76,6 +76,8 @@ export default class TimeChosenScreen extends React.Component {
           <ListItem
             // title={item['name']}
             title = {this.state.free[item]}
+            roundAvatar
+            avatar={{uri:`http://graph.facebook.com/${item}/picture?type=normal`}}
             onPress={() => this.props.navigation.navigate('FinalRequest', {
               // name: item['name'],
               // id: item['id'],

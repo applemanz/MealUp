@@ -194,7 +194,41 @@ export default class FinalRequestScreen extends React.Component {
     data['Length'] = prevData['length']
     data['TimeString'] = prevData['time']
     if (data['Location'] != "" && data['Location'] != "Custom Location") {
-      db.collection("users").doc(userID).collection('Sent Group Requests').add(data)
+      if (reschedule) {
+        db.collection("users").doc(userID).collection('Sent Group Requests').doc(reschedule).set(data)
+            .then((docRef) => {
+                for (let thisid in prevData['members']) {
+                  if (thisid != userID)
+                  db.collection("users").doc(thisid).collection('Received Group Requests').doc(docRef.id).set(data)
+                }
+                day = weekdays[data['DateTime'].getDay()].day
+                amPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
+                hours = (data['DateTime'].getHours() % 12 || 12) + ":" + ("0" + data['DateTime'].getMinutes()).slice(-2) + " " + amPM
+                index = data_flip[hours]
+
+                // update freetimes
+                freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(day);
+                freetimeRef.get().then((doc) => {
+                  freetimeData = doc.data();
+                  freetimeData['Freetime'][index] = 2
+                  if (data['Length'] === 1) {
+                    freetimeData['Freetime'][index+1] = 2
+                  }
+                  // console.log("my data", freetimeData)
+                freetimeRef.set(freetimeData).then(() => {
+                  console.log("My Document updated");
+                  })
+                  .catch(function(error) {
+                    console.error("Error updating", error);
+                  });
+                })
+            })
+            .catch(function(error) {
+                console.error("Error adding document: ", error);
+            });
+      }
+      else {
+        db.collection("users").doc(userID).collection('Sent Group Requests').add(data)
           .then((docRef) => {
               console.log("Document written with ID: ", docRef.id);
               for (let thisid in prevData['members']) {
@@ -226,11 +260,8 @@ export default class FinalRequestScreen extends React.Component {
           .catch(function(error) {
               console.error("Error adding document: ", error);
           });
+      }
     }
-
-
-
-
 
     this.props.navigation.popToTop()
 
@@ -262,13 +293,7 @@ export default class FinalRequestScreen extends React.Component {
           })
           .catch(function(error) {
               console.error("Error adding document: ", error);
-<<<<<<< HEAD
           })
-=======
-
-          });
-
->>>>>>> 714d42a56ccabb66ab8c3f8504f1ee8a806fc933
       if (reschedule !== undefined) {
         console.log("RESCHEDULE: " + reschedule);
         if (sent == 2) { // meal being rescheduled
@@ -328,11 +353,7 @@ export default class FinalRequestScreen extends React.Component {
               });
             }
           }).catch(function(error) {
-<<<<<<< HEAD
-          console.error("Error updating freetime: ", error);
-=======
             console.error("Error updating freetime: ", error);
->>>>>>> 714d42a56ccabb66ab8c3f8504f1ee8a806fc933
           })
         }
         else if (sent == true) {

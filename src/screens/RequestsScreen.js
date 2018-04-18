@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Button, Text, SectionList, Modal, TouchableHighlight, Image, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
-import { ListItem, ButtonGroup, Avatar } from 'react-native-elements';
+import { ListItem, Avatar } from 'react-native-elements';
 import HeaderButtons from 'react-navigation-header-buttons'
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Ionicons } from '@expo/vector-icons';
@@ -1243,7 +1243,6 @@ export default class RequestsScreen extends React.Component {
     // TODO Notify members that meal was scheduled
   }
 
-  // TODO check this flow
   rescheduleGroup = () => {
     this.setState({respondGroupSent: false})
     this.props.navigation.navigate('GroupChosen', {
