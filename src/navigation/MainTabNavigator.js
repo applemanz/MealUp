@@ -167,6 +167,9 @@ const FreeTimeStack = StackNavigator({
 const MealsStack = StackNavigator({
   Meals: {
     screen: HomeScreen,
+    navigationOptions: {
+      headerLeft: null
+    }
   },
   FirstTime: {
     screen: FirstTimeScreen,

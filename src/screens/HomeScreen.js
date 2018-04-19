@@ -787,6 +787,7 @@ export default class HomeScreen extends Component {
           }
         }
       console.log("canceling " + curMeal)
+      this.setState({mealModal: false})
       db.collection("users").doc(userID).collection('Meals').doc(curMeal).delete().then(() => {
         console.log("Document successfully deleted!");
         db.collection("users").doc(curMealRefData["FriendID"]).collection('Meals').doc(curMeal).delete()
@@ -797,7 +798,6 @@ export default class HomeScreen extends Component {
     }).catch(function(error) {
        console.error("Error updating freetime: ", error);
     });
-    this.setState({mealModal: false})
   }
 
 }

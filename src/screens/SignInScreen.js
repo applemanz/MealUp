@@ -191,7 +191,6 @@ export default class SignInScreen extends React.Component {
           registerForPushNotificationsAsync();
           this._notificationSubscription = Notifications.addListener(this._handleNotification);
 
-          firstTime = true;
           if (firstTime == true) {
             console.log("true")
             this.props.navigation.navigate('FirstTime');
@@ -240,6 +239,7 @@ export default class SignInScreen extends React.Component {
               userID = '10210889686788547'
               userName = 'Andrew Zeng'
               // this.props.navigation.navigate('Main')
+              firstTime = true
               if (firstTime == true) {
                 console.log("true")
                 this.props.navigation.navigate('FirstTime');
@@ -248,9 +248,9 @@ export default class SignInScreen extends React.Component {
                 this.props.navigation.navigate('Main');
               }
             }}/>
-            <Button title='Divi' onPress={()=>{
-              userID = '1685311528229627'
-              userName = 'Divyanshu Pachisia'
+            <Button title='TestUser' onPress={()=>{
+              userID = '129522174550269'
+              userName = 'Meal Up'
               this.props.navigation.navigate('Main')
             }}/>
             <Button title='Thomas' onPress={()=>{
