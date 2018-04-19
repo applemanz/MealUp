@@ -310,57 +310,187 @@ export default class RequestsScreen extends React.Component {
   }
 
   render() {
-    if (this.state.receivedRequests && this.state.sentRequests && this.state.receivedGroupRequests && this.state.sentGroupRequests)
-    return (
-      <View style={{flex:1}}>
-        <ScrollableTabView
-          style={{marginTop: 0}}
-          renderTabBar={() => <DefaultTabBar />}
-          // onChangeTab = {(i, ref) => {this.setState({onFriends: !this.state.onFriends})}}
-          tabBarBackgroundColor = {'#f4511e'}
-          tabBarActiveTextColor = {'white'}
-          tabBarInactiveTextColor = {'black'}
-          tabBarUnderlineStyle = {{backgroundColor:'white'}}
-        >
-          <SectionList
-            tabLabel='Received'
-            onRefresh={this.refreshReceived}
-            refreshing={this.state.refreshingR}
-            renderItem={this.renderReceivedRequest}
-            sections={[
-              { title: 'Groups', data: this.state.receivedGroupRequests, renderItem: this.renderReceivedGroupRequest },
-              { title: 'Friends', data: this.state.receivedRequests },
-            ]}
-            keyExtractor={(item, index) => item + index}
-            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-          />
-          <SectionList
-            tabLabel='Sent'
-            renderItem={this.renderSentRequest}
-            onRefresh={this.refreshSent}
-            refreshing={this.state.refreshingS}
-            sections={[
-              { title: 'Groups', data: this.state.sentGroupRequests, renderItem: this.renderSentGroupRequest },
-              { title: 'Friends', data: this.state.sentRequests },
-            ]}
-            keyExtractor={(item, index) => item + index}
-            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-          />
-        </ScrollableTabView>
-          {this.requestModal()}
-          {this.respondModal()}
-          {this.undoModal()}
-          {this.receivedGroupRequestModal()}
-          {this.sentGroupRequestModal()}
-          {this.acceptedGroupRequestModal()}
-
-      </View>
-    )
-    else return (
+    if (this.state.receivedRequests && this.state.sentRequests && this.state.receivedGroupRequests && this.state.sentGroupRequests) {
+      receivedLen = this.state.receivedRequests.length
+      sentLen = this.state.sentRequests.length
+      receivedGroupLen = this.state.receivedGroupRequests.length
+      sentGroupLen = this.state.sentGroupRequests.length
+    if (receivedLen === 0 && receivedGroupLen === 0 && sentLen === 0 && sentGroupLen === 0) {
+        console.log("no requests sent or received");
+        return (
+          <View style={{flex:1}}>
+            <ScrollableTabView
+              style={{marginTop: 0}}
+              renderTabBar={() => <DefaultTabBar />}
+              // onChangeTab = {(i, ref) => {this.setState({onFriends: !this.state.onFriends})}}
+              tabBarBackgroundColor = {'#f4511e'}
+              tabBarActiveTextColor = {'white'}
+              tabBarInactiveTextColor = {'black'}
+              tabBarUnderlineStyle = {{backgroundColor:'white'}}
+            >
+              <SectionList
+                tabLabel='Received'
+                onRefresh={this.refreshReceived}
+                refreshing={this.state.refreshingR}
+                renderItem={this.renderReceivedRequest}
+                ListFooterComponent={<Text style={{textAlign: 'center', padding: 30}}>You have not received requests from friends for this week.</Text>}
+                sections={[]}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+              />
+              <SectionList
+                tabLabel='Sent'
+                renderItem={this.renderSentRequest}
+                onRefresh={this.refreshSent}
+                refreshing={this.state.refreshingS}
+                ListFooterComponent={<Text style={{textAlign: 'center', padding: 30}}>You have not sent any requests to your friends for this week.</Text>}
+                sections={[]}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+              />
+            </ScrollableTabView>
+            <View style={{flex:1, alignItems:'center'}}>
+             <Text>You currently have no requests available for this week.</Text>
+            </View>
+          </View>
+          )
+      } else if (receivedLen === 0 && receivedGroupLen === 0) {
+        console.log("no requests received");
+        return (
+           <View style={{flex:1}}>
+            <ScrollableTabView
+              style={{marginTop: 0}}
+              renderTabBar={() => <DefaultTabBar />}
+              // onChangeTab = {(i, ref) => {this.setState({onFriends: !this.state.onFriends})}}
+              tabBarBackgroundColor = {'#f4511e'}
+              tabBarActiveTextColor = {'white'}
+              tabBarInactiveTextColor = {'black'}
+              tabBarUnderlineStyle = {{backgroundColor:'white'}}
+            >
+              <SectionList
+                tabLabel='Received'
+                onRefresh={this.refreshReceived}
+                refreshing={this.state.refreshingR}
+                renderItem={this.renderReceivedRequest}
+                ListFooterComponent={<Text style={{textAlign: 'center', padding: 30}}>You have not received requests from friends for this week.</Text>}
+                sections={[]}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+              />
+              <SectionList
+                tabLabel='Sent'
+                renderItem={this.renderSentRequest}
+                onRefresh={this.refreshSent}
+                refreshing={this.state.refreshingS}
+                sections={[
+                  { title: 'Groups', data: this.state.sentGroupRequests, renderItem: this.renderSentGroupRequest },
+                  { title: 'Friends', data: this.state.sentRequests },
+                ]}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+              />
+            </ScrollableTabView>
+            <View style={{flex:1, alignItems:'center'}}>
+             <Text>You have not received requests from friends for this week.</Text>
+            </View>
+            {this.requestModal()}
+            {this.undoModal()}
+            {this.sentGroupRequestModal()}
+            {this.acceptedGroupRequestModal()}
+          </View>
+          )
+      } else if (sentLen === 0 && sentGroupLen === 0) {
+        console.log("no requests sent");
+        return (
+          <View style={{flex:1}}>
+            <ScrollableTabView
+              style={{marginTop: 0}}
+              renderTabBar={() => <DefaultTabBar />}
+              // onChangeTab = {(i, ref) => {this.setState({onFriends: !this.state.onFriends})}}
+              tabBarBackgroundColor = {'#f4511e'}
+              tabBarActiveTextColor = {'white'}
+              tabBarInactiveTextColor = {'black'}
+              tabBarUnderlineStyle = {{backgroundColor:'white'}}
+            >
+              <SectionList
+                tabLabel='Received'
+                onRefresh={this.refreshReceived}
+                refreshing={this.state.refreshingR}
+                renderItem={this.renderReceivedRequest}
+                sections={[
+                  { title: 'Groups', data: this.state.receivedGroupRequests, renderItem: this.renderReceivedGroupRequest },
+                  { title: 'Friends', data: this.state.receivedRequests },
+                ]}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+              />
+              <SectionList
+                tabLabel='Sent'
+                ListFooterComponent={<Text style={{textAlign: 'center', padding: 30}}>You have not sent any requests to your friends for this week.</Text>}
+                onRefresh={this.refreshSent}
+                refreshing={this.state.refreshingS}
+                sections={[]}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+              />
+            </ScrollableTabView>
+            {this.requestModal()}
+            {this.respondModal()}
+            {this.receivedGroupRequestModal()}
+            {this.acceptedGroupRequestModal()}
+          </View>
+          )
+      } else {
+        return (
+          <View style={{flex:1}}>
+            <ScrollableTabView
+              style={{marginTop: 0}}
+              renderTabBar={() => <DefaultTabBar />}
+              // onChangeTab = {(i, ref) => {this.setState({onFriends: !this.state.onFriends})}}
+              tabBarBackgroundColor = {'#f4511e'}
+              tabBarActiveTextColor = {'white'}
+              tabBarInactiveTextColor = {'black'}
+              tabBarUnderlineStyle = {{backgroundColor:'white'}}
+            >
+              <SectionList
+                tabLabel='Received'
+                onRefresh={this.refreshReceived}
+                refreshing={this.state.refreshingR}
+                renderItem={this.renderReceivedRequest}
+                sections={[
+                  { title: 'Groups', data: this.state.receivedGroupRequests, renderItem: this.renderReceivedGroupRequest },
+                  { title: 'Friends', data: this.state.receivedRequests },
+                ]}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+              />
+              <SectionList
+                tabLabel='Sent'
+                renderItem={this.renderSentRequest}
+                onRefresh={this.refreshSent}
+                refreshing={this.state.refreshingS}
+                sections={[
+                  { title: 'Groups', data: this.state.sentGroupRequests, renderItem: this.renderSentGroupRequest },
+                  { title: 'Friends', data: this.state.sentRequests },
+                ]}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+              />
+            </ScrollableTabView>
+              {this.requestModal()}
+              {this.respondModal()}
+              {this.undoModal()}
+              {this.receivedGroupRequestModal()}
+              {this.sentGroupRequestModal()}
+              {this.acceptedGroupRequestModal()}
+          </View>
+        )}
+    } else {
+      return (
       <View>
           <ActivityIndicator size="large" color="#0000ff" />
       </View>
-    )
+    )}
   }
 
   requestModal() {
