@@ -242,7 +242,7 @@ export default TabNavigator(
   {
     initialRouteName: 'Meals',
     tabBarOptions: {
-      activeTintColor: '#0984e3',
+      activeTintColor: '#f4511e',
       labelStyle: {
         fontSize: 12,
       },
@@ -274,7 +274,7 @@ export default TabNavigator(
             name={iconName}
             size={28}
             style={{ marginBottom: -3 }}
-            color={focused ? '#0984e3' : Colors.tabIconDefault}
+            color={focused ? '#f4511e' : Colors.tabIconDefault}
           />
         );
       },
