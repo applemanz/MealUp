@@ -1006,7 +1006,7 @@ export default class RequestsScreen extends React.Component {
   declineRequest = () => {
     db.collection("users").doc(userID).collection('Received Requests').doc(this.state.curUser.docID).delete().then(() => {
       console.log("Document successfully deleted!");
-      db.collection("users").doc(this.state.curUser.id).collection('Sent Requests').doc(this.state.curUser.docID).delete()
+      db.collection("users").doc(this.state.curUser.FriendID).collection('Sent Requests').doc(this.state.curUser.docID).delete()
     }).catch(function(error) {
       console.error("Error removing document: ", error);
     });
