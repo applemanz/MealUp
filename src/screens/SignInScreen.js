@@ -101,6 +101,15 @@ export default class SignInScreen extends React.Component {
 
           // const credential = provider.credential(token);
           // auth.signInWithCredential(credential);
+          db.collection('users').doc(userID).get().then(function(doc) {
+            if (!doc.exists) {
+              firstTime = true
+              console.log("First time visit");
+            }
+          }).catch(function(error) {
+            console.log("error detecting if doc exists", error);
+          });
+
           db.collection('users').doc(userID).set({
             Name: userName,
           }, { merge: true })

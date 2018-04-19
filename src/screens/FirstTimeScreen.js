@@ -28,13 +28,19 @@ export default class FirstTimeScreen extends React.Component {
               {
                 backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/robot-prod.png')} />,
-                title: 'Onboarding',
-                subtitle: 'React Native Onboarding Page',
+                title: 'Welcome to MealUp!',
+                subtitle: 'Meet up & eat up with friends easily. Swipe to learn more.',
               },
               {
-                backgroundColor: '#fe6e58',
+                backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/robot-dev.png')} />,
-                title: 'This is a title.',
+                title: 'Weekly Planning',
+                subtitle: 'This is a subtitle.',
+              },
+              {
+                backgroundColor: '#fff',
+                image: <Image source={require('../../assets/images/robot-dev.png')} />,
+                title: 'Send & Receive Requests',
                 subtitle: 'This is a subtitle.',
               },
             ]}
@@ -49,13 +55,19 @@ export default class FirstTimeScreen extends React.Component {
               {
                 backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/robot-prod.png')} />,
-                title: 'Onboarding',
-                subtitle: 'React Native Onboarding Page',
+                title: 'Welcome to MealUp!',
+                subtitle: 'Meet up & eat up with friends easily. Swipe to learn more.',
               },
               {
-                backgroundColor: '#fe6e58',
+                backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/robot-dev.png')} />,
-                title: 'This is a title.',
+                title: 'Weekly Planning',
+                subtitle: 'This is a subtitle.',
+              },
+              {
+                backgroundColor: '#fff',
+                image: <Image source={require('../../assets/images/robot-dev.png')} />,
+                title: 'Send & Receive Requests',
                 subtitle: 'This is a subtitle.',
               },
             ]}
