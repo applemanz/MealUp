@@ -11,8 +11,12 @@
     "@expo/react-native-action-sheet": "^1.0.2",
     "@expo/samples": "2.1.1",
     "axios": "^0.18.0",
+<<<<<<< HEAD
     "exp": "^53.0.0",
     "expo": "^26.0.0",
+=======
+    "expo": "^25.0.0",
+>>>>>>> 289cba8460f5a5c8afcd0c14774cec51ac2efa86
     "expo-server-sdk": "^2.3.3",
     "firebase": "^4.11.0",
     "firebase-admin": "^5.11.0",

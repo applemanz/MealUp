@@ -310,57 +310,192 @@ export default class RequestsScreen extends React.Component {
   }
 
   render() {
-    if (this.state.receivedRequests && this.state.sentRequests && this.state.receivedGroupRequests && this.state.sentGroupRequests)
-    return (
-      <View style={{flex:1}}>
-        <ScrollableTabView
-          style={{marginTop: 0}}
-          renderTabBar={() => <DefaultTabBar />}
-          // onChangeTab = {(i, ref) => {this.setState({onFriends: !this.state.onFriends})}}
-          tabBarBackgroundColor = {'#f4511e'}
-          tabBarActiveTextColor = {'white'}
-          tabBarInactiveTextColor = {'black'}
-          tabBarUnderlineStyle = {{backgroundColor:'white'}}
-        >
-          <SectionList
-            tabLabel='Received'
-            onRefresh={this.refreshReceived}
-            refreshing={this.state.refreshingR}
-            renderItem={this.renderReceivedRequest}
-            sections={[
-              { title: 'Groups', data: this.state.receivedGroupRequests, renderItem: this.renderReceivedGroupRequest },
-              { title: 'Friends', data: this.state.receivedRequests },
-            ]}
-            keyExtractor={(item, index) => item + index}
-            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-          />
-          <SectionList
-            tabLabel='Sent'
-            renderItem={this.renderSentRequest}
-            onRefresh={this.refreshSent}
-            refreshing={this.state.refreshingS}
-            sections={[
-              { title: 'Groups', data: this.state.sentGroupRequests, renderItem: this.renderSentGroupRequest },
-              { title: 'Friends', data: this.state.sentRequests },
-            ]}
-            keyExtractor={(item, index) => item + index}
-            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-          />
-        </ScrollableTabView>
+    if (this.state.receivedRequests && this.state.sentRequests && this.state.receivedGroupRequests && this.state.sentGroupRequests) {
+      receivedLen = this.state.receivedRequests.length
+      sentLen = this.state.sentRequests.length
+      receivedGroupLen = this.state.receivedGroupRequests.length
+      sentGroupLen = this.state.sentGroupRequests.length
+    if (receivedLen === 0 && receivedGroupLen === 0 && sentLen === 0 && sentGroupLen === 0) {
+        console.log("no requests sent or received");
+        return (
+          <View style={{flex:1}}>
+            <ScrollableTabView
+              style={{marginTop: 0}}
+              renderTabBar={() => <DefaultTabBar />}
+              // onChangeTab = {(i, ref) => {this.setState({onFriends: !this.state.onFriends})}}
+              tabBarBackgroundColor = {'#f4511e'}
+              tabBarActiveTextColor = {'white'}
+              tabBarInactiveTextColor = {'black'}
+              tabBarUnderlineStyle = {{backgroundColor:'white'}}
+            >
+              <SectionList
+                tabLabel='Received'
+                onRefresh={this.refreshReceived}
+                refreshing={this.state.refreshingR}
+                renderItem={this.renderReceivedRequest}
+                ListFooterComponent={<Text style={{textAlign: 'center', padding: 30}}>You have not received requests from friends for this week.</Text>}
+                sections={[]}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+              />
+              <SectionList
+                tabLabel='Sent'
+                renderItem={this.renderSentRequest}
+                onRefresh={this.refreshSent}
+                refreshing={this.state.refreshingS}
+                ListFooterComponent={<Text style={{textAlign: 'center', padding: 30}}>It feels a bit empty in here. Tap on the plus button to send meal requests to your friends!</Text>}
+                sections={[]}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+              />
+            </ScrollableTabView>
           {this.requestModal()}
           {this.respondModal()}
           {this.undoModal()}
           {this.receivedGroupRequestModal()}
           {this.sentGroupRequestModal()}
           {this.acceptedGroupRequestModal()}
-
-      </View>
-    )
-    else return (
+          </View>
+          )
+      } else if (receivedLen === 0 && receivedGroupLen === 0) {
+        console.log("no requests received");
+        return (
+           <View style={{flex:1}}>
+            <ScrollableTabView
+              style={{marginTop: 0}}
+              renderTabBar={() => <DefaultTabBar />}
+              // onChangeTab = {(i, ref) => {this.setState({onFriends: !this.state.onFriends})}}
+              tabBarBackgroundColor = {'#f4511e'}
+              tabBarActiveTextColor = {'white'}
+              tabBarInactiveTextColor = {'black'}
+              tabBarUnderlineStyle = {{backgroundColor:'white'}}
+            >
+              <SectionList
+                tabLabel='Received'
+                onRefresh={this.refreshReceived}
+                refreshing={this.state.refreshingR}
+                renderItem={this.renderReceivedRequest}
+                ListFooterComponent={<Text style={{textAlign: 'center', padding: 30}}>You have not received requests from friends for this week.</Text>}
+                sections={[]}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+              />
+              <SectionList
+                tabLabel='Sent'
+                renderItem={this.renderSentRequest}
+                onRefresh={this.refreshSent}
+                refreshing={this.state.refreshingS}
+                sections={[
+                  { title: 'Groups', data: this.state.sentGroupRequests, renderItem: this.renderSentGroupRequest },
+                  { title: 'Friends', data: this.state.sentRequests },
+                ]}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+              />
+            </ScrollableTabView>
+              {this.requestModal()}
+              {this.respondModal()}
+              {this.undoModal()}
+              {this.receivedGroupRequestModal()}
+              {this.sentGroupRequestModal()}
+              {this.acceptedGroupRequestModal()}
+          </View>
+          )
+      } else if (sentLen === 0 && sentGroupLen === 0) {
+        console.log("no requests sent");
+        return (
+          <View style={{flex:1}}>
+            <ScrollableTabView
+              style={{marginTop: 0}}
+              renderTabBar={() => <DefaultTabBar />}
+              // onChangeTab = {(i, ref) => {this.setState({onFriends: !this.state.onFriends})}}
+              tabBarBackgroundColor = {'#f4511e'}
+              tabBarActiveTextColor = {'white'}
+              tabBarInactiveTextColor = {'black'}
+              tabBarUnderlineStyle = {{backgroundColor:'white'}}
+            >
+              <SectionList
+                tabLabel='Received'
+                onRefresh={this.refreshReceived}
+                refreshing={this.state.refreshingR}
+                renderItem={this.renderReceivedRequest}
+                sections={[
+                  { title: 'Groups', data: this.state.receivedGroupRequests, renderItem: this.renderReceivedGroupRequest },
+                  { title: 'Friends', data: this.state.receivedRequests },
+                ]}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+              />
+              <SectionList
+                tabLabel='Sent'
+                ListFooterComponent={<Text style={{textAlign: 'center', padding: 30}}>It feels a bit empty in here. Tap on the plus button to send meal requests to your friends!</Text>}
+                renderItem={this.renderSentRequest}
+                onRefresh={this.refreshSent}
+                refreshing={this.state.refreshingS}
+                sections={[]}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+              />
+            </ScrollableTabView>
+              {this.requestModal()}
+              {this.respondModal()}
+              {this.undoModal()}
+              {this.receivedGroupRequestModal()}
+              {this.sentGroupRequestModal()}
+              {this.acceptedGroupRequestModal()}
+          </View>
+          )
+      } else {
+        return (
+          <View style={{flex:1}}>
+            <ScrollableTabView
+              style={{marginTop: 0}}
+              renderTabBar={() => <DefaultTabBar />}
+              // onChangeTab = {(i, ref) => {this.setState({onFriends: !this.state.onFriends})}}
+              tabBarBackgroundColor = {'#f4511e'}
+              tabBarActiveTextColor = {'white'}
+              tabBarInactiveTextColor = {'black'}
+              tabBarUnderlineStyle = {{backgroundColor:'white'}}
+            >
+              <SectionList
+                tabLabel='Received'
+                onRefresh={this.refreshReceived}
+                refreshing={this.state.refreshingR}
+                renderItem={this.renderReceivedRequest}
+                sections={[
+                  { title: 'Groups', data: this.state.receivedGroupRequests, renderItem: this.renderReceivedGroupRequest },
+                  { title: 'Friends', data: this.state.receivedRequests },
+                ]}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+              />
+              <SectionList
+                tabLabel='Sent'
+                renderItem={this.renderSentRequest}
+                onRefresh={this.refreshSent}
+                refreshing={this.state.refreshingS}
+                sections={[
+                  { title: 'Groups', data: this.state.sentGroupRequests, renderItem: this.renderSentGroupRequest },
+                  { title: 'Friends', data: this.state.sentRequests },
+                ]}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+              />
+            </ScrollableTabView>
+              {this.requestModal()}
+              {this.respondModal()}
+              {this.undoModal()}
+              {this.receivedGroupRequestModal()}
+              {this.sentGroupRequestModal()}
+              {this.acceptedGroupRequestModal()}
+          </View>
+        )}
+    } else {
+      return (
       <View>
           <ActivityIndicator size="large" color="#0000ff" />
       </View>
-    )
+    )}
   }
 
   requestModal() {
@@ -432,12 +567,12 @@ export default class RequestsScreen extends React.Component {
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Reschedule Meal</Text>
           </TouchableHighlight>
         </View>
-        <View style={{padding: 10}}>
+        {!this.state.curUser.conflict && <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#5bc0de", borderRadius: 5}}
             onPress={this.changeSentLocation}>
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Change Location</Text>
           </TouchableHighlight>
-        </View>
+        </View>}
         <View style={{padding: 15, alignItems: 'center'}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
             onPress={() => this.setState({undoVisible: false})}>
@@ -476,18 +611,18 @@ export default class RequestsScreen extends React.Component {
         <Text>{this.state.curUser.displayDate} {this.state.curUser.TimeString} at {this.state.curUser.Location}</Text>
         </View>
         </View>
-        <View style={{padding: 10}}>
+        {this.state.curUser.conflict && <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#5cb85c", borderRadius: 5}}
             onPress={this.acceptRequest}>
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Accept</Text>
           </TouchableHighlight>
-        </View>
-        <View style={{padding: 10}}>
+        </View>}
+        {this.state.curUser.conflict && <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#5bc0de", borderRadius: 5}}
             onPress={this.changeLocation}>
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Change Location</Text>
           </TouchableHighlight>
-        </View>
+        </View>}
         <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
             onPress={this.rescheduleRequest}>
@@ -828,6 +963,7 @@ export default class RequestsScreen extends React.Component {
         docID: item.docID,
         DateTime: item.DateTime,
         dateobj: item.DateTime.toDateString(),
+        conflict: item.conflict,
         displayDate: item.DateTime.toDateString().substring(0,10)}});
   }
 
@@ -894,46 +1030,6 @@ export default class RequestsScreen extends React.Component {
       });
     })
 
-    //
-    // // update freefriends for acceptor
-    // friendsRef = db.collection("users").doc(userID).collection('Friends');
-    // friendsRef.get().then((querySnapshot) => {
-    //   friends = [];
-    //   querySnapshot.forEach((doc) => {
-    //     friends.push(doc.id)
-    //   })
-    //
-    //   console.log("friends", friends)
-    //
-    //   for (let friend of friends) {
-    //     thisday = weekdays[data['DateTime'].getDay()].day;
-    //     let freefriendsRef = db.collection("users").doc(friend).collection('NewFreeFriends').doc(thisday);
-    //     newRef = "Freefriends" + "." + index + "." + userID
-    //     foo = new Object();
-    //     foo[newRef] = false;
-    //     freefriendsRef.update(foo);
-    //   }
-    // })
-    //
-    // // update freefriends for other person if not already updated
-    // friendsRef2 = db.collection("users").doc(data['FriendID']).collection('Friends');
-    // friendsRef2.get().then((querySnapshot) => {
-    //   friends2 = [];
-    //   querySnapshot.forEach((doc) => {
-    //     friends2.push(doc.id)
-    //   })
-    //   console.log("friends2", friends2)
-    //
-    //   for (let friend of friends2) {
-    //     thisday = weekdays[data['DateTime'].getDay()].day;
-    //     let freefriendsRef = db.collection("users").doc(friend).collection('NewFreeFriends').doc(thisday);
-    //     newRef = "Freefriends" + "." + index + "." + data['FriendID']
-    //     foo = new Object();
-    //     foo[newRef] = false;
-    //     freefriendsRef.update(foo);
-    //   }
-    // })
-
     // increment number of meals between two users
     friendRef = db.collection("users").doc(userID).collection('Friends').doc(data['FriendID'])
     friendRef.get().then(function(doc) {
@@ -975,6 +1071,7 @@ export default class RequestsScreen extends React.Component {
                   console.log("got token " + expotoken);
 
                 if (expotoken !== undefined) {
+                  console.log("SENDING NOTIFICATION: " + userName + " accepted meal request");
                 return fetch('https://exp.host/--/api/v2/push/send', {
                   body: JSON.stringify({
                     to: expotoken,
@@ -1197,12 +1294,15 @@ export default class RequestsScreen extends React.Component {
         for (memberID in this.state.curUser.members) {
           if (memberID != this.state.curUser.initiator) {
             db.collection('users').doc(memberID).collection('Received Group Requests').doc(this.state.curUser.id).set(data)
-            expotoken = "";
+          }
+            if (memberID != userID) {
+                expotoken = "";
                 db.collection("users").doc(memberID).get().then(function(doc) {
                   expotoken = doc.data().Token;
                   console.log("got token " + expotoken);
 
                 if (expotoken !== undefined) {
+                  console.log("SENDING NOTIFICATION " + userName + " accepted meal to " + memberID);
                 return fetch('https://exp.host/--/api/v2/push/send', {
                   body: JSON.stringify({
                     to: expotoken,
@@ -1217,7 +1317,7 @@ export default class RequestsScreen extends React.Component {
                 });
                 }
               })
-          }
+            }
         }
 
         day = weekdays[data['DateTime'].getDay()].day
