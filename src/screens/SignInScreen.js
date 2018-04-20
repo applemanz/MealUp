@@ -82,7 +82,7 @@ export default class SignInScreen extends React.Component {
   onSignInWithFacebook = async () => {
       const options = {permissions: ['public_profile', 'email', 'user_friends'],}
       const {type, token} = await Facebook.logInWithReadPermissionsAsync("159765391398008", options);
-      firstTime = false
+      let firstTime = false
       if (type === 'success') {
         try {
           userToken = token;
@@ -103,6 +103,8 @@ export default class SignInScreen extends React.Component {
           // auth.signInWithCredential(credential);
           db.collection('users').doc(userID).get().then(function(doc) {
             if (!doc.exists) {
+              console.log('what is firsttime')
+              console.log(firstTime)
               firstTime = true
               console.log("First time visit");
             }
@@ -148,7 +150,7 @@ export default class SignInScreen extends React.Component {
               if (doc.exists) {
                   // console.log("Document data:", doc.data());
               } else {
-                  firstTime = true
+                  // firstTime = true
 
                   // console.log("No such document!");
                   for (dofW of daysOfWeek) {
@@ -200,6 +202,7 @@ export default class SignInScreen extends React.Component {
           registerForPushNotificationsAsync();
           this._notificationSubscription = Notifications.addListener(this._handleNotification);
 
+          console.log(firstTime)
           if (firstTime == true) {
             console.log("true")
             this.props.navigation.navigate('FirstTime');
