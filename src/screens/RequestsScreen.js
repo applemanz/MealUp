@@ -343,15 +343,18 @@ export default class RequestsScreen extends React.Component {
                 renderItem={this.renderSentRequest}
                 onRefresh={this.refreshSent}
                 refreshing={this.state.refreshingS}
-                ListFooterComponent={<Text style={{textAlign: 'center', padding: 30}}>You have not sent any requests to your friends for this week.</Text>}
+                ListFooterComponent={<Text style={{textAlign: 'center', padding: 30}}>It feels a bit empty in here. Tap on the plus button to send meal requests to your friends!</Text>}
                 sections={[]}
                 keyExtractor={(item, index) => item + index}
                 renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
               />
             </ScrollableTabView>
-            <View style={{flex:1, alignItems:'center'}}>
-             <Text>You currently have no requests available for this week.</Text>
-            </View>
+          {this.requestModal()}
+          {this.respondModal()}
+          {this.undoModal()}
+          {this.receivedGroupRequestModal()}
+          {this.sentGroupRequestModal()}
+          {this.acceptedGroupRequestModal()}
           </View>
           )
       } else if (receivedLen === 0 && receivedGroupLen === 0) {
@@ -390,13 +393,12 @@ export default class RequestsScreen extends React.Component {
                 renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
               />
             </ScrollableTabView>
-            <View style={{flex:1, alignItems:'center'}}>
-             <Text>You have not received requests from friends for this week.</Text>
-            </View>
-            {this.requestModal()}
-            {this.undoModal()}
-            {this.sentGroupRequestModal()}
-            {this.acceptedGroupRequestModal()}
+              {this.requestModal()}
+              {this.respondModal()}
+              {this.undoModal()}
+              {this.receivedGroupRequestModal()}
+              {this.sentGroupRequestModal()}
+              {this.acceptedGroupRequestModal()}
           </View>
           )
       } else if (sentLen === 0 && sentGroupLen === 0) {
@@ -426,7 +428,8 @@ export default class RequestsScreen extends React.Component {
               />
               <SectionList
                 tabLabel='Sent'
-                ListFooterComponent={<Text style={{textAlign: 'center', padding: 30}}>You have not sent any requests to your friends for this week.</Text>}
+                ListFooterComponent={<Text style={{textAlign: 'center', padding: 30}}>It feels a bit empty in here. Tap on the plus button to send meal requests to your friends!</Text>}
+                renderItem={this.renderSentRequest}
                 onRefresh={this.refreshSent}
                 refreshing={this.state.refreshingS}
                 sections={[]}
@@ -434,10 +437,12 @@ export default class RequestsScreen extends React.Component {
                 renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
               />
             </ScrollableTabView>
-            {this.requestModal()}
-            {this.respondModal()}
-            {this.receivedGroupRequestModal()}
-            {this.acceptedGroupRequestModal()}
+              {this.requestModal()}
+              {this.respondModal()}
+              {this.undoModal()}
+              {this.receivedGroupRequestModal()}
+              {this.sentGroupRequestModal()}
+              {this.acceptedGroupRequestModal()}
           </View>
           )
       } else {
