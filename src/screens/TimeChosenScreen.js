@@ -66,7 +66,26 @@ export default class TimeChosenScreen extends React.Component {
   render() {
     const { params } = this.props.navigation.state;
     // console.log(this.state.free)
-    if (this.state.free)
+    if (this.state.free) {
+      freeLen = Object.keys(this.state.free).length
+      console.log(freeLen)
+      if (freeLen === 0) {
+        return(
+          <View>
+        <SectionList
+          // in previous version no need object.keys
+          sections={[]}
+          ListFooterComponent={<Text style={{textAlign: 'center', padding: 30}}>Your friends are unavailable for a meal at the selected time :(</Text>}
+          renderItem={({item}) =>
+          <ListItem
+            title = {this.state.free[item]}
+            />}
+          renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+          keyExtractor={(item, index) => index}
+        />
+      </View>
+          )
+      } else {
       return (
       <View>
         <SectionList
@@ -93,14 +112,16 @@ export default class TimeChosenScreen extends React.Component {
           renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
           keyExtractor={(item, index) => index}
         />
-      </View>)
-    return(
-      <View>
-        <ActivityIndicator size="large" color="#0000ff" />
       </View>
-    )
+      )}
+    } else {
+      return(
+        <View>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      )}
+    }
   }
-}
 
 const styles = StyleSheet.create({
   container: {
