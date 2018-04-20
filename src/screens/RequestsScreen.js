@@ -562,12 +562,12 @@ export default class RequestsScreen extends React.Component {
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Reschedule Meal</Text>
           </TouchableHighlight>
         </View>
-        <View style={{padding: 10}}>
+        {!this.state.curUser.conflict && <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#5bc0de", borderRadius: 5}}
             onPress={this.changeSentLocation}>
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Change Location</Text>
           </TouchableHighlight>
-        </View>
+        </View>}
         <View style={{padding: 15, alignItems: 'center'}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
             onPress={() => this.setState({undoVisible: false})}>
@@ -606,18 +606,18 @@ export default class RequestsScreen extends React.Component {
         <Text>{this.state.curUser.displayDate} {this.state.curUser.TimeString} at {this.state.curUser.Location}</Text>
         </View>
         </View>
-        <View style={{padding: 10}}>
+        {this.state.curUser.conflict && <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#5cb85c", borderRadius: 5}}
             onPress={this.acceptRequest}>
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Accept</Text>
           </TouchableHighlight>
-        </View>
-        <View style={{padding: 10}}>
+        </View>}
+        {this.state.curUser.conflict && <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#5bc0de", borderRadius: 5}}
             onPress={this.changeLocation}>
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Change Location</Text>
           </TouchableHighlight>
-        </View>
+        </View>}
         <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
             onPress={this.rescheduleRequest}>
@@ -958,6 +958,7 @@ export default class RequestsScreen extends React.Component {
         docID: item.docID,
         DateTime: item.DateTime,
         dateobj: item.DateTime.toDateString(),
+        conflict: item.conflict,
         displayDate: item.DateTime.toDateString().substring(0,10)}});
   }
 
