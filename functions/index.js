@@ -49,12 +49,33 @@ exports.updateFreeFriends = functions.firestore
           friends.push(doc.id)
         })
         promises = []
-        for (friendID of friends) {
+        for (let friendID of friends) {
           let friendRef = admin.firestore().collection('users').doc(friendID).collection('FreeFriends').doc(dayOfWeek)
           let newRef = "Freefriends" + "." + index + "." + userID
           let foo = new Object()
           foo[newRef] = updateAsFree
           promises.push(friendRef.update(foo))
+
+          return friendRef.get().then((doc) => {
+            let friendRef2 = admin.firestore().collection('users').doc(friendID).collection('hasFreeFriends').doc(dayOfWeek)
+            let newRef2 = "hasFreefriends" + "." + index + "." + userID
+            let foo2 = new Object()
+            let hasFreeFriend = false;
+
+            if (updateAsFree) hasFreeFriend = true;
+            else {
+              for (let friendID2 in doc.data().Freefriends[index]) {
+                if (friendID2 === userID) continue;
+                if (doc.data().Freefriends[index][friendID2] === true) {
+                  hasFreeFriend = true;
+                  break;
+                }
+              }
+              foo2[newRef2] = updateAsFree
+              promises.push(friendRef2.update(foo2))
+            }
+            return Promise.all(promises)
+          })
         }
         return Promise.all(promises)
       })
