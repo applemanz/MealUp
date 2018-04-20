@@ -69,6 +69,9 @@ export default class SignInScreen extends React.Component {
   // state = {
   //   notification: {},
   // };
+  state = {
+    firstTime: false
+  }
 
   componentWillMount() {
     const value = AsyncStorage.getItem('loggedIn');
@@ -82,7 +85,7 @@ export default class SignInScreen extends React.Component {
   onSignInWithFacebook = async () => {
       const options = {permissions: ['public_profile', 'email', 'user_friends'],}
       const {type, token} = await Facebook.logInWithReadPermissionsAsync("159765391398008", options);
-      firstTime = false
+      // firstTime = false
       if (type === 'success') {
         try {
           userToken = token;
@@ -101,9 +104,9 @@ export default class SignInScreen extends React.Component {
 
           // const credential = provider.credential(token);
           // auth.signInWithCredential(credential);
-          db.collection('users').doc(userID).get().then(function(doc) {
+          db.collection('users').doc(userID).get().then((doc) => {
             if (!doc.exists) {
-              firstTime = true
+              this.setState({firstTime: true});
               console.log("First time visit");
             }
           }).catch(function(error) {
@@ -144,11 +147,14 @@ export default class SignInScreen extends React.Component {
 
           docRef = db.collection('users').doc(userID).collection('Freetime').doc('Monday');
 
-          docRef.get().then(function(doc) {
+          docRef.get().then((doc) => {
               if (doc.exists) {
                   // console.log("Document data:", doc.data());
+                  this.props.navigation.navigate('Main');
               } else {
-                  firstTime = true
+                  this.setState({firstTime: true});
+                  console.log("firstTime");
+                  console.log("this.firstTime in the else statement is " + this.state.firstTime);
 
                   // console.log("No such document!");
                   for (dofW of daysOfWeek) {
@@ -190,8 +196,7 @@ export default class SignInScreen extends React.Component {
                       // console.log("Freefriends", freeFriends)
                     })
                   }
-
-
+                this.props.navigation.navigate('FirstTime');
               }
           }).catch(function(error) {
               console.log("Error getting document:", error);
@@ -200,13 +205,16 @@ export default class SignInScreen extends React.Component {
           registerForPushNotificationsAsync();
           this._notificationSubscription = Notifications.addListener(this._handleNotification);
 
-          if (firstTime == true) {
-            console.log("true")
-            this.props.navigation.navigate('FirstTime');
-          } else {
-            console.log("false")
-            this.props.navigation.navigate('Main');
-          }
+          // console.log("this.firstTime is " + this.state.firstTime);
+
+          // this.setState({firstTime: true})
+          // if (this.state.firstTime === true) {
+          //   console.log("true")
+          //   this.props.navigation.navigate('FirstTime');
+          // } else {
+          //   console.log("false")
+          //   this.props.navigation.navigate('Main');
+          // }
 
         } catch (error) {
             console.error(error);
@@ -233,40 +241,17 @@ export default class SignInScreen extends React.Component {
   render() {
     return (
       <View style={{flex:1, alignItems:'center', justifyContent:'center', backgroundColor:'#f4511e'}}>
-        <Image source={require('../../assets/images/restaurant-cutlery-circular-symbol-of-a-spoon-and-a-fork-in-a-circle.png')}
+        <Image source={require('../../assets/images/signin_logo_circle.png')}
                 style={{height:250, width:250}}/>
-        <Text style={{fontSize:40, fontWeight:'bold', marginTop:20, paddingBottom:10}}>MealUp</Text>
+        <Text style={{fontSize:40, fontWeight:'bold', marginTop:20, paddingBottom:10, color:'#fff'}}>MealUp</Text>
           <SocialIcon
             raised
             button
             type='facebook'
-            style= {{width:250}}
+            style= {{width:250, marginTop: 60}}
             title='Sign In With Facebook'
             iconSize={20}
             onPress={this.onSignInWithFacebook}/>
-            <Button title='Andrew' onPress={()=>{
-              userID = '10210889686788547'
-              userName = 'Andrew Zeng'
-              // this.props.navigation.navigate('Main')
-              firstTime = true
-              if (firstTime == true) {
-                console.log("true")
-                this.props.navigation.navigate('FirstTime');
-              } else {
-                console.log("false")
-                this.props.navigation.navigate('Main');
-              }
-            }}/>
-            <Button title='TestUser' onPress={()=>{
-              userID = '129522174550269'
-              userName = 'Meal Up'
-              this.props.navigation.navigate('Main')
-            }}/>
-            <Button title='Thomas' onPress={()=>{
-              userID = '598952760450186'
-              userName = 'Thomas Ferrante'
-              this.props.navigation.navigate('Main')
-            }}/>
       </View>
     );
   }
