@@ -210,8 +210,8 @@ export default class FinalRequestScreen extends React.Component {
                   body: JSON.stringify({
                     to: expotoken,
                     //title: "title",
-                    body: `New group meal request from ${userName}!`,
-                    data: { message: `New group meal request from ${userName}!` },
+                    body: `Group meal request from ${userName} rescheduled!`,
+                    data: { message: `Group meal request from ${userName} rescheduled!` },
                   }),
                   headers: {
                     'Content-Type': 'application/json',
@@ -337,6 +337,7 @@ export default class FinalRequestScreen extends React.Component {
               data['FriendID'] = userID
               for (let thisid in prevData['members']) {
                 db.collection("users").doc(thisid).collection('Received Requests').doc(docRef.id).set(data)
+                if (reschedule == undefined) {
                 expotoken = "";
                 db.collection("users").doc(thisid).get().then(function(doc) {
                   expotoken = doc.data().Token;
@@ -362,11 +363,13 @@ export default class FinalRequestScreen extends React.Component {
                   console.log("Error getting document:", error);
                 });
               }
+              }
           })
           .catch(function(error) {
               console.error("Error adding document: ", error);
           })
       if (reschedule !== undefined) {
+        var strTime = "";
         console.log("RESCHEDULE: " + reschedule);
         if (sent == 2) { // meal being rescheduled
           prevMealRef = db.collection("users").doc(userID).collection('Meals').doc(reschedule)
@@ -378,6 +381,7 @@ export default class FinalRequestScreen extends React.Component {
               console.log(weekday)
               amPM = prevMealRefData['DateTime'].getHours() >= 12 ? "PM" : "AM"
               hours = (prevMealRefData['DateTime'].getHours() % 12 || 12) + ":" + ("0" + prevMealRefData['DateTime'].getMinutes()).slice(-2) + " " + amPM
+              strTime = hours;
               index = data_flip[hours]
               console.log(hours)
 
@@ -418,8 +422,35 @@ export default class FinalRequestScreen extends React.Component {
               }
               db.collection("users").doc(userID).collection('Meals').doc(reschedule).delete().then(() => {
                 console.log("Document successfully deleted!");
-                for (let memberid in prevData['members'])
+                for (let memberid in prevData['members']) {
                   db.collection("users").doc(memberid).collection('Meals').doc(reschedule).delete()
+                 if (memberid != userID) {
+                  expotoken = "";
+                db.collection("users").doc(memberid).get().then(function(doc) {
+                  expotoken = doc.data().Token;
+                  console.log("got token " + expotoken);
+
+                if (expotoken !== undefined) {
+                  console.log("SENDING NOTIFICATION NEW MEAL REQUEST FROM " + userName + " to " + memberid);
+                return fetch('https://exp.host/--/api/v2/push/send', {
+                  body: JSON.stringify({
+                    to: expotoken,
+                    //title: "title",
+                    body: `${userName} wants to reschedule your meal on ${prevMealRefData['DateTime'].toDateString().substring(0,10) + " at " + strTime}!`,
+                    data: { message: `${userName} wants to reschedule your meal on ${prevMealRefData['DateTime'].toDateString().substring(0,10) + " at " + strTime}!` },
+                  }),
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  method: 'POST',
+                });
+                }
+
+                }).catch(function(error) {
+                  console.log("Error getting document:", error);
+                });
+                  }
+              }
               }).catch(function(error) {
                 console.error("Error removing document: ", error);
               });
