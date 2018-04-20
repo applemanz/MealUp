@@ -28,10 +28,9 @@ export default class FirstTimeScreen extends React.Component {
               {
                 backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/iOS/ios_welcome.png')}
-                 style={{width:175, height:356, opacity: 0.85, alignItems: 'center',
-                  shadowColor:'#d1c7c7', shadowOffset: {width: 0, height: 2}, shadowRadius: 2}}/>,
+                 style={{width:175, height:356, opacity: 0.85, alignItems: 'center'}}/>,
                 title: 'Welcome to MealUp!',
-                subtitle: 'Meet up & eat up with friends easily. Swipe to learn how.',
+                subtitle: 'Meet up & eat up with friends easily. \n Swipe to learn how.',
               },
               {
                 backgroundColor: '#fff',
@@ -85,7 +84,7 @@ export default class FirstTimeScreen extends React.Component {
                 backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/robot-dev.png')} />,
                 title: 'Organize Groups',
-                subtitle: 'Connect more with groups.',
+                subtitle: 'Connect to your friends more with groups.',
               },
             ]}
             onDone = {() => {this.props.navigation.navigate('Meals')}}
