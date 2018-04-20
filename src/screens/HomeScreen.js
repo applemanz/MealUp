@@ -39,66 +39,92 @@ export default class HomeScreen extends Component {
       calendars: [],
       selectedCalendar: {}
     }
-    this.cancelRequest = this.cancelRequest.bind(this)
+    // this.cancelRequest = this.cancelRequest.bind(this)
   }
 
-  componentDidMount() {
-    this.props.navigation.addListener('willFocus', ()=>{
-      this.onRefresh();
-    });
-    db.collection("users").doc(userID).collection('Meals').get().then((querySnapshot) => {
-      meals = [];
-      querySnapshot.forEach((doc) => {
-        today = new Date()
-        today.setHours(0, 0, 0, 0)
-        if (doc.data().DateTime >= today) {
-            if (!doc.data().inCalendar) {
-              meal = doc.data()
-              meal.docid = doc.id
-              this.addToCalendar(meal)
+  componentWillMount() {
+    db.collection('users').doc(userID).get().then((doc)=>{
+      if (doc.data().selectedCalendar)
+        this.setState({selectedCalendar:doc.data().selectedCalendar})
+      console.log(doc.data().selectedCalendar)
+    })
+  }
+
+  async componentDidMount() {
+    // this.props.navigation.addListener('willFocus', ()=>{
+    //   this.onRefresh();
+    // });
+
+    db.collection("users").doc(userID).collection('Meals').onSnapshot((querySnapshot) => {
+      // meals = [];
+      db.collection('users').doc(userID).get().then((userinfo)=>{
+        calendarInfo = userinfo.data().Calendar
+        // console.log(calendarInfo)
+        let meals = []
+        querySnapshot.forEach(async (doc) => {
+          if (doc.id === 'calendar') {return}
+          today = new Date()
+          today.setHours(0, 0, 0, 0)
+          if (doc.data().DateTime >= today) {
+
+            try {
+              calendarPermission = await AsyncStorage.getItem('calendarPermission');
+            } catch (error) {
+              calendarPermission = false
             }
 
-          meals.push(doc.data());
-          meals[meals.length-1]['docid'] = doc.id;
-          //console.log("SETTING DOCID TO " + meals[meals.length-1] + " " + doc.id);
-        }
-        else {
-          //console.log("MEAL HAS PASSED: " + doc.data().DateTime);
-          // TODO convert meal back to freetime in array
-          weekday = weekdays[doc.data().DateTime.getDay()].day
-          freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(weekday);
-          freetimeRef.get().then(function(doc) {
-            freetimeData = doc.data();
-            for (i = 0; i < freetimeData['Freetime'].length; i++) {
-              if (freetimeData['Freetime'][i] === 2) {
-                freetimeData['Freetime'][i] = 1
+            if (this.state.selectedCalendar.id) {
+              if (calendarInfo) {
+                  if (!calendarInfo[doc.id] || !calendarInfo[doc.id].inCalendar) {
+                    let meal = doc.data()
+                    meal.docid = doc.id
+                    this.addToCalendar(meal)
+                  }
               }
             }
-          freetimeRef.set(freetimeData).then(() => {
-            // console.log("My Document updated");
+            meals.push(doc.data());
+            meals[meals.length-1]['docid'] = doc.id;
+            //console.log("SETTING DOCID TO " + meals[meals.length-1] + " " + doc.id);
+          }
+          else {
+            //console.log("MEAL HAS PASSED: " + doc.data().DateTime);
+            // TODO convert meal back to freetime in array
+            weekday = weekdays[doc.data().DateTime.getDay()].day
+            freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(weekday);
+            freetimeRef.get().then(function(doc) {
+              freetimeData = doc.data();
+              for (i = 0; i < freetimeData['Freetime'].length; i++) {
+                if (freetimeData['Freetime'][i] === 2) {
+                  freetimeData['Freetime'][i] = 1
+                }
+              }
+            freetimeRef.set(freetimeData).then(() => {
+              // console.log("My Document updated");
+              })
+              .catch(function(error) {
+                // console.error("Error updating", error);
+              });
             })
-            .catch(function(error) {
-              // console.error("Error updating", error);
+            db.collection("users").doc(userID).collection('Meals').doc(doc.id).delete().then(() => {
+              //console.log("Document successfully deleted!");
+              db.collection("users").doc(doc.data().FriendID).collection('Meals').doc(doc.id).delete()
+            }).catch(function(error) {
+              // console.error("Error removing document: ", error);
             });
-          })
-          db.collection("users").doc(userID).collection('Meals').doc(doc.id).delete().then(() => {
-            //console.log("Document successfully deleted!");
-            db.collection("users").doc(doc.data().FriendID).collection('Meals').doc(doc.id).delete()
-          }).catch(function(error) {
-            // console.error("Error removing document: ", error);
+          }
+        })
+        console.log('meals')
+        console.log(meals)
+        if (meals.length == 0) {
+          updatedItems = this.createEmptyData()
+          this.setState((prevState) => {
+            return {items: updatedItems}
           });
         }
-      });
-      if (meals.length == 0) {
-        updatedItems = this.createEmptyData()
-        this.setState((prevState) => {
-          return {items: updatedItems}
-        });
-      }
-      //console.log(meals)
-      // this.setState({meals:meals})
-      this.updateItems(meals);
-
+        console.log(meals)
+        // this.setState({meals:meals})
+        this.updateItems(meals);
+      })
     });
   }
 
@@ -195,61 +221,61 @@ export default class HomeScreen extends Component {
     });
   }
 
-  onRefresh = () => {
-    this.setState({refreshing: true});
-    db.collection("users").doc(userID).collection('Meals').get().then((querySnapshot) => {
-      meals = [];
-      querySnapshot.forEach((doc) => {
-        today = new Date()
-        today.setHours(0, 0, 0, 0)
-        if (doc.data().DateTime >= today) {
-          if (!doc.data().inCalendar) {
-            meal = doc.data()
-            meal.docid = doc.id
-            this.addToCalendar(meal)
-          }
-          meals.push(doc.data());
-          meals[meals.length-1]['docid'] = doc.id;
-        } else {
-          //console.log("MEAL HAS PASSED: " + doc.data().DateTime);
-          // TODO convert meal back to freetime in array
-          weekday = weekdays[doc.data().DateTime.getDay()].day
-          freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(weekday);
-          freetimeRef.get().then(function(doc) {
-            freetimeData = doc.data();
-            for (i = 0; i < freetimeData['Freetime'].length; i++) {
-              if (freetimeData['Freetime'][i] === 2) {
-                freetimeData['Freetime'][i] = 1
-              }
-            }
-          freetimeRef.set(freetimeData).then(() => {
-            // console.log("My Document updated");
-            })
-            .catch(function(error) {
-              // console.error("Error updating", error);
-            });
-          })
-          db.collection("users").doc(userID).collection('Meals').doc(doc.id).delete().then(() => {
-            //console.log("Document successfully deleted!");
-            db.collection("users").doc(doc.data().FriendID).collection('Meals').doc(doc.id).delete()
-          }).catch(function(error) {
-            // console.error("Error removing document: ", error);
-          });
-        }
-      });
-      if (meals.length == 0) {
-        updatedItems = this.createEmptyData()
-        this.setState((prevState) => {
-          return {items: updatedItems}
-        });
-      }
-      //console.log(meals)
-      //console.log("M0 " + meals[0].docid);
-      this.updateItems(meals);
-      //console.log("M01 " + meals[0].docid);
-    });
-    this.setState({refreshing: false});
-  }
+  // onRefresh = () => {
+  //   this.setState({refreshing: true});
+  //   db.collection("users").doc(userID).collection('Meals').get().then((querySnapshot) => {
+  //     meals = [];
+  //     querySnapshot.forEach((doc) => {
+  //       today = new Date()
+  //       today.setHours(0, 0, 0, 0)
+  //       if (doc.data().DateTime >= today) {
+  //         if (!doc.data().inCalendar) {
+  //           meal = doc.data()
+  //           meal.docid = doc.id
+  //           this.addToCalendar(meal)
+  //         }
+  //         meals.push(doc.data());
+  //         meals[meals.length-1]['docid'] = doc.id;
+  //       } else {
+  //         //console.log("MEAL HAS PASSED: " + doc.data().DateTime);
+  //         // TODO convert meal back to freetime in array
+  //         weekday = weekdays[doc.data().DateTime.getDay()].day
+  //         freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(weekday);
+  //         freetimeRef.get().then(function(doc) {
+  //           freetimeData = doc.data();
+  //           for (i = 0; i < freetimeData['Freetime'].length; i++) {
+  //             if (freetimeData['Freetime'][i] === 2) {
+  //               freetimeData['Freetime'][i] = 1
+  //             }
+  //           }
+  //         freetimeRef.set(freetimeData).then(() => {
+  //           // console.log("My Document updated");
+  //           })
+  //           .catch(function(error) {
+  //             // console.error("Error updating", error);
+  //           });
+  //         })
+  //         db.collection("users").doc(userID).collection('Meals').doc(doc.id).delete().then(() => {
+  //           //console.log("Document successfully deleted!");
+  //           db.collection("users").doc(doc.data().FriendID).collection('Meals').doc(doc.id).delete()
+  //         }).catch(function(error) {
+  //           // console.error("Error removing document: ", error);
+  //         });
+  //       }
+  //     });
+  //     if (meals.length == 0) {
+  //       updatedItems = this.createEmptyData()
+  //       this.setState((prevState) => {
+  //         return {items: updatedItems}
+  //       });
+  //     }
+  //     //console.log(meals)
+  //     //console.log("M0 " + meals[0].docid);
+  //     this.updateItems(meals);
+  //     //console.log("M01 " + meals[0].docid);
+  //   });
+  //   this.setState({refreshing: false});
+  // }
 
   render() {
     today = new Date()
@@ -270,8 +296,8 @@ export default class HomeScreen extends Component {
         <Divider style={{ backgroundColor: '#cbd2d9' }}/>
       <Agenda items={this.state.items}
         style={{flex:1}}
-        refreshing={this.state.refreshing}
-        onRefresh={this.onRefresh}
+        // refreshing={this.state.refreshing}
+        // onRefresh={this.onRefresh}
         // loadItemsForMonth={this.loadMeals.bind(this)}
         selected={minDate}
         // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
@@ -350,10 +376,14 @@ export default class HomeScreen extends Component {
               title={item.title}
               // onPress={()=>this.setState({selectedCalendar:item})}
               onSwitch={()=>{
-                if (this.state.selectedCalendar.id === item.id)
+                if (this.state.selectedCalendar.id === item.id) {
                   this.setState({selectedCalendar:{}})
-                else
-                this.setState({selectedCalendar:item})
+                  db.collection('users').doc(userID).update({selectedCalendar:null})
+                }
+                else {
+                  this.setState({selectedCalendar:item})
+                  db.collection('users').doc(userID).update({selectedCalendar:item})
+                }
               }}
               hideChevron
               switchButton
@@ -381,11 +411,12 @@ export default class HomeScreen extends Component {
   exportMeals = () => {
     db.collection("users").doc(userID).collection('Meals').get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        if (!doc.data().inCalendar) {
-            meal = doc.data()
-            meal.docid = doc.id
-            this.addToCalendar(meal)
-        }
+        let data = {[`Calendar.${doc.id}.inCalendar`]: true}
+        console.log(data)
+        db.collection("users").doc(userID).update(data)
+        meal = doc.data()
+        meal.docid = doc.id
+        this.addToCalendar(meal)
       })
     })
   }
@@ -414,18 +445,26 @@ export default class HomeScreen extends Component {
     console.log(this.state.selectedCalendar.id)
     mealID = await Calendar.createEventAsync(this.state.selectedCalendar.id, details)
     console.log(mealID)
-    // store mealID in database
-    db.collection('users').doc(userID).collection('Meals').doc(meal.docid).update({inCalendar:true, eventID:mealID})
+    // db.collection('users').doc(userID).collection('Meals').doc(meal.docid).update({eventID:mealID})
+    let key = `Calendar.${meal.docid}.eventID`
+    db.collection("users").doc(userID).update({
+      key : mealID
+    })
     }
     }
 
   }
 
   calendarSetUp = async () => {
-    if (!this.state.hasCalendarPermission) {
-      const { status } = await Permissions.askAsync(Permissions.CALENDAR);
-      this.setState({ hasCalendarPermission: status === 'granted' })
+    const { status } = await Permissions.askAsync(Permissions.CALENDAR);
+    console.log(status)
+    try {
+      await AsyncStorage.setItem('calendarPermission', status === 'granted');
+    } catch (error) {
+      console.log('could not save calendar permission')
     }
+
+    // console.log(this.state.hasCalendarPermission)
 
     cals = await Calendar.getCalendarsAsync()
     console.log(cals)
@@ -446,10 +485,12 @@ export default class HomeScreen extends Component {
     }
     console.log(sections)
     sections.sort(function(a, b) {
-      if (a.title < b.title) {
+      aTitle = a.title.toUpperCase()
+      bTitle = b.title.toUpperCase()
+      if (aTitle < bTitle) {
         return -1;
       }
-      if (a.title > b.title) {
+      if (aTitle > bTitle) {
         return 1;
       }
       return 0;
@@ -722,7 +763,7 @@ export default class HomeScreen extends Component {
     console.log(this.state.curMeal)
     curMeal = this.state.curMeal
     curMealRef = db.collection("users").doc(userID).collection('Meals').doc(this.state.curMeal)
-    curMealRef.get().then(function(doc) {
+    curMealRef.get().then((doc) => {
       if (!doc.exists) {
         console.log("No such document!");
       } else {

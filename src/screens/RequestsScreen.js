@@ -395,7 +395,7 @@ export default class RequestsScreen extends React.Component {
   }
   undoModal() {
     return <View>
-    <Modal onRequestClose={() => this.setState({newRequestModalVisible: false})} transparent={true} visible={this.state.undoVisible}>
+    <Modal onRequestClose={() => this.setState({undoVisible: false})} transparent={true} visible={this.state.undoVisible}>
       <View style={{
         flex: 1,
         flexDirection: 'column',
@@ -451,7 +451,7 @@ export default class RequestsScreen extends React.Component {
   }
   respondModal() {
     return (
-    <Modal onRequestClose={() => this.setState({newRequestModalVisible: false})} transparent={true} visible={this.state.respondVisible}>
+    <Modal onRequestClose={() => this.setState({respondVisible: false})} transparent={true} visible={this.state.respondVisible}>
       <View style={{
         flex: 1,
         flexDirection: 'column',
