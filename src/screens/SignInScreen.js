@@ -69,9 +69,7 @@ export default class SignInScreen extends React.Component {
   // state = {
   //   notification: {},
   // };
-  state = {
-    firstTime: false
-  }
+  firstTime = false
 
   componentWillMount() {
     const value = AsyncStorage.getItem('loggedIn');
@@ -107,7 +105,7 @@ export default class SignInScreen extends React.Component {
           // auth.signInWithCredential(credential);
           db.collection('users').doc(userID).get().then((doc) => {
             if (!doc.exists) {
-              this.setState({firstTime: true});
+              this.firstTime = true
               console.log("First time visit");
             }
           }).catch(function(error) {
@@ -153,7 +151,7 @@ export default class SignInScreen extends React.Component {
                   // console.log("Document data:", doc.data());
                   this.props.navigation.navigate('Main');
               } else {
-                  this.setState({firstTime: true});
+                  this.firstTime = true
                 
                   // console.log("No such document!");
                   for (dofW of daysOfWeek) {
@@ -210,7 +208,7 @@ export default class SignInScreen extends React.Component {
 //             this.props.navigation.navigate('FirstTime');
 //           } else {
 //             console.log("false")
-            this.props.navigation.navigate('Main');
+            // this.props.navigation.navigate('Main');
 //           }
 
         } catch (error) {
