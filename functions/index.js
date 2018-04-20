@@ -57,6 +57,7 @@ exports.updateFreeFriends = functions.firestore
           promises.push(friendRef.update(foo))
 
           return friendRef.get().then((doc) => {
+            if (!doc.exists) return;
             let friendRef2 = admin.firestore().collection('users').doc(friendID).collection('hasFreeFriends').doc(dayOfWeek)
             let newRef2 = "hasFreefriends" + "." + index + "." + userID
             let foo2 = new Object()
@@ -87,7 +88,7 @@ exports.findTimeConflicts = functions.firestore
       const newValue = snap.data();
       const fdID = newValue.FriendID
       const startTime = new Date(newValue.DateTime);
-      const endTime = new Date(startTime.getTime() 
+      const endTime = new Date(startTime.getTime()
       + parseFloat(newValue.Length) * 60 * 60 * 1000);
       console.log(startTime)
       console.log(endTime)
@@ -143,7 +144,7 @@ exports.findTimeConflicts = functions.firestore
                   conflictMeals.push({type:'Received Requests',mealID:thisMealID,id:fdID})
               })
 
-        
+
               let foo = new Object();
               foo['conflict'] = true
 

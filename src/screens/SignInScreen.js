@@ -152,7 +152,7 @@ export default class SignInScreen extends React.Component {
                   this.props.navigation.navigate('Main');
               } else {
                   this.firstTime = true
-                
+
                   // console.log("No such document!");
                   for (dofW of daysOfWeek) {
                     db.collection('users').doc(userID).collection('Freetime').doc(dofW).set({
@@ -167,13 +167,14 @@ export default class SignInScreen extends React.Component {
 
                   for (dofW of daysOfWeek) {
                     freeFriends[dofW] = {};
+                    hasFreeFriends[dofW] = {};
                     for (i = 0; i < 25; i++) {
                       freeFriends[dofW][i] = {}
                       hasFreeFriends[dofW][i] = false;
                     }
                   }
 
-                  // console.log("I'm here 1")
+                  console.log("I'm here 1")
                   // initialize freeFriends object
                   for (friend of friendsList) {
                     let thisfriend = friend;

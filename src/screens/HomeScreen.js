@@ -412,7 +412,7 @@ export default class HomeScreen extends Component {
       querySnapshot.forEach((doc) => {
         let data = {[`Calendar.${doc.id}.inCalendar`]: true}
         console.log(data)
-        db.collection("users").doc(userID).update(data)
+        // db.collection("users").doc(userID).update(data)
         meal = doc.data()
         meal.docid = doc.id
         this.addToCalendar(meal)
@@ -445,17 +445,16 @@ export default class HomeScreen extends Component {
     mealID = await Calendar.createEventAsync(this.state.selectedCalendar.id, details)
     console.log(mealID)
     // db.collection('users').doc(userID).collection('Meals').doc(meal.docid).update({eventID:mealID})
-    let key = `Calendar.${meal.docid}.eventID`
-    db.collection("users").doc(userID).update({
-      key : mealID
-    })
+    let data = {[`Calendar.${meal.docid}.inCalendar`]: true, [`Calendar.${meal.docid}.eventID`]:mealID}
+    console.log(data)
+    db.collection("users").doc(userID).update(data)
     }
     }
 
   }
 
   calendarSetUp = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CALENDAR);
+    const { status } = await Permissions.askAsync('calendar');
     console.log(status)
     try {
       await AsyncStorage.setItem('calendarPermission', status === 'granted');
@@ -466,11 +465,11 @@ export default class HomeScreen extends Component {
     // console.log(this.state.hasCalendarPermission)
 
     cals = await Calendar.getCalendarsAsync()
-    console.log(cals)
+    // console.log(cals)
 
     if (Platform.OS === 'ios') {
     sources = await Calendar.getSourcesAsync()
-    console.log(sources)
+    // console.log(sources)
     calendars = []
     sections = []
     for (let source of sources) {
