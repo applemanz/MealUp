@@ -17,6 +17,7 @@ export default class FriendsScreen extends React.Component {
     title: 'Friends'
   };
 
+
   state = {friends: [], groups: []}
 
   componentDidMount() {

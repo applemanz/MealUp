@@ -39,7 +39,6 @@ export default class HomeScreen extends Component {
       calendars: [],
       selectedCalendar: {}
     }
-    // this.cancelRequest = this.cancelRequest.bind(this)
   }
 
   componentWillMount() {
