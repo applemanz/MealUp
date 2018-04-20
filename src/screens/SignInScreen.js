@@ -86,6 +86,7 @@ export default class SignInScreen extends React.Component {
       const options = {permissions: ['public_profile', 'email', 'user_friends'],}
       const {type, token} = await Facebook.logInWithReadPermissionsAsync("159765391398008", options);
       // firstTime = false
+
       if (type === 'success') {
         try {
           userToken = token;
@@ -153,9 +154,7 @@ export default class SignInScreen extends React.Component {
                   this.props.navigation.navigate('Main');
               } else {
                   this.setState({firstTime: true});
-                  console.log("firstTime");
-                  console.log("this.firstTime in the else statement is " + this.state.firstTime);
-
+                
                   // console.log("No such document!");
                   for (dofW of daysOfWeek) {
                     db.collection('users').doc(userID).collection('Freetime').doc(dofW).set({
@@ -205,16 +204,14 @@ export default class SignInScreen extends React.Component {
           registerForPushNotificationsAsync();
           this._notificationSubscription = Notifications.addListener(this._handleNotification);
 
-          // console.log("this.firstTime is " + this.state.firstTime);
-
-          // this.setState({firstTime: true})
-          // if (this.state.firstTime === true) {
-          //   console.log("true")
-          //   this.props.navigation.navigate('FirstTime');
-          // } else {
-          //   console.log("false")
-          //   this.props.navigation.navigate('Main');
-          // }
+//           console.log(firstTime)
+//           if (firstTime == true) {
+//             console.log("true")
+//             this.props.navigation.navigate('FirstTime');
+//           } else {
+//             console.log("false")
+            this.props.navigation.navigate('Main');
+//           }
 
         } catch (error) {
             console.error(error);
@@ -252,6 +249,30 @@ export default class SignInScreen extends React.Component {
             title='Sign In With Facebook'
             iconSize={20}
             onPress={this.onSignInWithFacebook}/>
+            {/* <Button title='Andrew' onPress={()=>{
+              userID = '10210889686788547'
+              userName = 'Andrew Zeng'
+              // this.props.navigation.navigate('Main')
+              firstTime = true
+              if (firstTime == true) {
+                console.log("true")
+                this.props.navigation.navigate('FirstTime');
+              } else {
+                console.log("false")
+                this.props.navigation.navigate('Main');
+              }
+            }}/>
+            <Button title='TestUser' onPress={()=>{
+              userID = '129522174550269'
+              userName = 'Meal Up'
+              this.props.navigation.navigate('Main')
+            }}/>
+            <Button title='Thomas' onPress={()=>{
+              userID = '598952760450186'
+              userName = 'Thomas Ferrante'
+              this.props.navigation.navigate('Main')
+            }}/> */}
+
       </View>
     );
   }
