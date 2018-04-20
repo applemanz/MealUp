@@ -54,8 +54,8 @@ export default class FirstTimeScreen extends React.Component {
                 subtitle: 'Connect to your friends more with groups.',
               },
             ]}
-            onDone = {() => {this.props.navigation.navigate('FreeTime')}}
-            onSkip = {() => {this.props.navigation.navigate('FreeTime')}}
+            onDone = {() => {this.props.navigation.navigate('Meals')}}
+            onSkip = {() => {this.props.navigation.navigate('Meals')}}
           />
         )
     } else if (Platform.OS === 'android') {
@@ -91,8 +91,8 @@ export default class FirstTimeScreen extends React.Component {
                 subtitle: 'Connect to your friends more with groups.',
               },
             ]}
-            onDone = {() => {this.props.navigation.navigate('FreeTime')}}
-            onSkip = {() => {this.props.navigation.navigate('FreeTime')}}
+            onDone = {() => {this.props.navigation.navigate('Meals')}}
+            onSkip = {() => {this.props.navigation.navigate('Meals')}}
           />
       )} else {
         console.error("error loading", error);
