@@ -722,7 +722,7 @@ export default class HomeScreen extends Component {
     console.log(this.state.curMeal)
     curMeal = this.state.curMeal
     curMealRef = db.collection("users").doc(userID).collection('Meals').doc(this.state.curMeal)
-    curMealRef.get().then(function(doc) {
+    curMealRef.get().then((doc) => {
       if (!doc.exists) {
         console.log("No such document!");
       } else {
