@@ -43,14 +43,14 @@ export default class FirstTimeScreen extends React.Component {
                 backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/iOS/ios_requests.png')} 
                   style={{width:286, height:346, opacity: 0.85, alignItems: 'center'}}/>,
-                title: 'Schedule Meals',
+                title: 'Schedule meals',
                 subtitle: 'Send and respond to meal requests.',
               },
               {
                 backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/iOS/ios_groups.png')} 
                   style={{width:286, height:346, opacity: 0.85, alignItems: 'center'}}/>,
-                title: 'Organize Groups',
+                title: 'Organize groups',
                 subtitle: 'Connect to your friends more with groups.',
               },
             ]}
@@ -80,14 +80,14 @@ export default class FirstTimeScreen extends React.Component {
                 backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/iOS/ios_requests.png')} 
                   style={{width:286, height:346, opacity: 0.85, alignItems: 'center'}}/>,
-                title: 'Schedule Meals',
+                title: 'Schedule meals',
                 subtitle: 'Send and respond to meal requests.',
               },
               {
                 backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/iOS/ios_groups.png')} 
                   style={{width:286, height:346, opacity: 0.85, alignItems: 'center'}}/>,
-                title: 'Organize Groups',
+                title: 'Organize groups',
                 subtitle: 'Connect to your friends more with groups.',
               },
             ]}
