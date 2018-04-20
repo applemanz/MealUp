@@ -163,12 +163,16 @@ export default class SignInScreen extends React.Component {
                   // console.log("I'm here 0")
                   // create new freeFriends object
                   freeFriends = new Object()
+                  hasFreeFriends = new Object()
+
                   for (dofW of daysOfWeek) {
                     freeFriends[dofW] = {};
                     for (i = 0; i < 25; i++) {
                       freeFriends[dofW][i] = {}
+                      hasFreeFriends[dofW][i] = false;
                     }
                   }
+
                   // console.log("I'm here 1")
                   // initialize freeFriends object
                   for (friend of friendsList) {
@@ -179,6 +183,7 @@ export default class SignInScreen extends React.Component {
                         for (i = 0; i < 25; i++) {
                           if (doc.data().Freetime[i] === 1) {
                             freeFriends[doc.id][i][thisfriend.id] = true;
+                            hasFreeFriends[doc.id][i] = true;
                           }
                         }
                       })
@@ -187,6 +192,9 @@ export default class SignInScreen extends React.Component {
                       for (dofW of daysOfWeek) {
                         db.collection('users').doc(userID).collection('FreeFriends').doc(dofW).set({
                           Freefriends: freeFriends[dofW]
+                        })
+                        db.collection('users').doc(userID).collection('hasFreeFriends').doc(dofW).set({
+                          hasFreeFriends: hasFreeFriends[dofW]
                         })
                       }
                       // console.log("I'm here 2")
