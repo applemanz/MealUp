@@ -197,8 +197,32 @@ export default class FinalRequestScreen extends React.Component {
         db.collection("users").doc(userID).collection('Sent Group Requests').doc(reschedule).set(data)
             .then((docRef) => {
                 for (let thisid in prevData['members']) {
-                  if (thisid != userID)
+                  if (thisid != userID) {
                   db.collection("users").doc(thisid).collection('Received Group Requests').doc(docRef.id).set(data)
+                  expotoken = "";
+                db.collection("users").doc(thisid).get().then(function(doc) {
+                  expotoken = doc.data().Token;
+                  console.log("got token " + expotoken);
+
+                if (expotoken !== undefined) {
+                  console.log("SENDING NOTIFICATION NEW GROUP MEAL REQUEST FROM " + userName + " to " + thisid);
+                return fetch('https://exp.host/--/api/v2/push/send', {
+                  body: JSON.stringify({
+                    to: expotoken,
+                    //title: "title",
+                    body: `New group meal request from ${userName}!`,
+                    data: { message: `New group meal request from ${userName}!` },
+                  }),
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  method: 'POST',
+                });
+                }
+                }).catch(function(error) {
+                  console.log("Error getting document:", error);
+                });
+              }
                 }
                 day = weekdays[data['DateTime'].getDay()].day
                 amPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
@@ -231,8 +255,32 @@ export default class FinalRequestScreen extends React.Component {
           .then((docRef) => {
               console.log("Document written with ID: ", docRef.id);
               for (let thisid in prevData['members']) {
-                if (thisid != userID)
+                if (thisid != userID) {
                 db.collection("users").doc(thisid).collection('Received Group Requests').doc(docRef.id).set(data)
+                expotoken = "";
+                db.collection("users").doc(thisid).get().then(function(doc) {
+                  expotoken = doc.data().Token;
+                  console.log("got token " + expotoken);
+
+                if (expotoken !== undefined) {
+                  console.log("SENDING NOTIFICATION NEW GROUP MEAL REQUEST FROM " + userName + " to " + thisid);
+                return fetch('https://exp.host/--/api/v2/push/send', {
+                  body: JSON.stringify({
+                    to: expotoken,
+                    //title: "title",
+                    body: `New group meal request from ${userName}!`,
+                    data: { message: `New group meal request from ${userName}!` },
+                  }),
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  method: 'POST',
+                });
+                }
+                }).catch(function(error) {
+                  console.log("Error getting document:", error);
+                });
+              }
               }
               day = weekdays[data['DateTime'].getDay()].day
               amPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
@@ -287,8 +335,33 @@ export default class FinalRequestScreen extends React.Component {
               console.log("Document written with ID: ", docRef.id);
               data['FriendName'] = userName
               data['FriendID'] = userID
-              for (let thisid in prevData['members'])
+              for (let thisid in prevData['members']) {
                 db.collection("users").doc(thisid).collection('Received Requests').doc(docRef.id).set(data)
+                expotoken = "";
+                db.collection("users").doc(thisid).get().then(function(doc) {
+                  expotoken = doc.data().Token;
+                  console.log("got token " + expotoken);
+
+                if (expotoken !== undefined) {
+                  console.log("SENDING NOTIFICATION NEW MEAL REQUEST FROM " + userName + " to " + thisid);
+                return fetch('https://exp.host/--/api/v2/push/send', {
+                  body: JSON.stringify({
+                    to: expotoken,
+                    //title: "title",
+                    body: `New meal request from ${userName}!`,
+                    data: { message: `New meal request from ${userName}!` },
+                  }),
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  method: 'POST',
+                });
+                }
+
+                }).catch(function(error) {
+                  console.log("Error getting document:", error);
+                });
+              }
           })
           .catch(function(error) {
               console.error("Error adding document: ", error);

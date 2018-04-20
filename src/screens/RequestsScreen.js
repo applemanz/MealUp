@@ -1024,46 +1024,6 @@ export default class RequestsScreen extends React.Component {
       });
     })
 
-    //
-    // // update freefriends for acceptor
-    // friendsRef = db.collection("users").doc(userID).collection('Friends');
-    // friendsRef.get().then((querySnapshot) => {
-    //   friends = [];
-    //   querySnapshot.forEach((doc) => {
-    //     friends.push(doc.id)
-    //   })
-    //
-    //   console.log("friends", friends)
-    //
-    //   for (let friend of friends) {
-    //     thisday = weekdays[data['DateTime'].getDay()].day;
-    //     let freefriendsRef = db.collection("users").doc(friend).collection('NewFreeFriends').doc(thisday);
-    //     newRef = "Freefriends" + "." + index + "." + userID
-    //     foo = new Object();
-    //     foo[newRef] = false;
-    //     freefriendsRef.update(foo);
-    //   }
-    // })
-    //
-    // // update freefriends for other person if not already updated
-    // friendsRef2 = db.collection("users").doc(data['FriendID']).collection('Friends');
-    // friendsRef2.get().then((querySnapshot) => {
-    //   friends2 = [];
-    //   querySnapshot.forEach((doc) => {
-    //     friends2.push(doc.id)
-    //   })
-    //   console.log("friends2", friends2)
-    //
-    //   for (let friend of friends2) {
-    //     thisday = weekdays[data['DateTime'].getDay()].day;
-    //     let freefriendsRef = db.collection("users").doc(friend).collection('NewFreeFriends').doc(thisday);
-    //     newRef = "Freefriends" + "." + index + "." + data['FriendID']
-    //     foo = new Object();
-    //     foo[newRef] = false;
-    //     freefriendsRef.update(foo);
-    //   }
-    // })
-
     // increment number of meals between two users
     friendRef = db.collection("users").doc(userID).collection('Friends').doc(data['FriendID'])
     friendRef.get().then(function(doc) {
@@ -1105,6 +1065,7 @@ export default class RequestsScreen extends React.Component {
                   console.log("got token " + expotoken);
 
                 if (expotoken !== undefined) {
+                  console.log("SENDING NOTIFICATION: " + userName + " accepted meal request");
                 return fetch('https://exp.host/--/api/v2/push/send', {
                   body: JSON.stringify({
                     to: expotoken,
@@ -1327,12 +1288,15 @@ export default class RequestsScreen extends React.Component {
         for (memberID in this.state.curUser.members) {
           if (memberID != this.state.curUser.initiator) {
             db.collection('users').doc(memberID).collection('Received Group Requests').doc(this.state.curUser.id).set(data)
-            expotoken = "";
+          }
+            if (memberID != userID) {
+                expotoken = "";
                 db.collection("users").doc(memberID).get().then(function(doc) {
                   expotoken = doc.data().Token;
                   console.log("got token " + expotoken);
 
                 if (expotoken !== undefined) {
+                  console.log("SENDING NOTIFICATION " + userName + " accepted meal to " + memberID);
                 return fetch('https://exp.host/--/api/v2/push/send', {
                   body: JSON.stringify({
                     to: expotoken,
@@ -1347,7 +1311,7 @@ export default class RequestsScreen extends React.Component {
                 });
                 }
               })
-          }
+            }
         }
 
         day = weekdays[data['DateTime'].getDay()].day
