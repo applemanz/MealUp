@@ -530,7 +530,7 @@ export default class RequestsScreen extends React.Component {
   }
   undoModal() {
     return <View>
-    <Modal onRequestClose={() => this.setState({newRequestModalVisible: false})} transparent={true} visible={this.state.undoVisible}>
+    <Modal onRequestClose={() => this.setState({undoVisible: false})} transparent={true} visible={this.state.undoVisible}>
       <View style={{
         flex: 1,
         flexDirection: 'column',
@@ -586,7 +586,7 @@ export default class RequestsScreen extends React.Component {
   }
   respondModal() {
     return (
-    <Modal onRequestClose={() => this.setState({newRequestModalVisible: false})} transparent={true} visible={this.state.respondVisible}>
+    <Modal onRequestClose={() => this.setState({respondVisible: false})} transparent={true} visible={this.state.respondVisible}>
       <View style={{
         flex: 1,
         flexDirection: 'column',
@@ -611,13 +611,13 @@ export default class RequestsScreen extends React.Component {
         <Text>{this.state.curUser.displayDate} {this.state.curUser.TimeString} at {this.state.curUser.Location}</Text>
         </View>
         </View>
-        {this.state.curUser.conflict && <View style={{padding: 10}}>
+        {!this.state.curUser.conflict && <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#5cb85c", borderRadius: 5}}
             onPress={this.acceptRequest}>
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Accept</Text>
           </TouchableHighlight>
         </View>}
-        {this.state.curUser.conflict && <View style={{padding: 10}}>
+        {!this.state.curUser.conflict && <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#5bc0de", borderRadius: 5}}
             onPress={this.changeLocation}>
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Change Location</Text>
@@ -979,6 +979,7 @@ export default class RequestsScreen extends React.Component {
         Length: item.Length,
         DateTime: item.DateTime,
         dateobj: item.DateTime.toDateString(),
+        conflict: item.conflict,
         displayDate: item.DateTime.toDateString().substring(0,10)}});
   }
 
