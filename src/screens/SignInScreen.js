@@ -236,9 +236,9 @@ export default class SignInScreen extends React.Component {
   render() {
     return (
       <View style={{flex:1, alignItems:'center', justifyContent:'center', backgroundColor:'#f4511e'}}>
-        <Image source={require('../../assets/images/restaurant-cutlery-circular-symbol-of-a-spoon-and-a-fork-in-a-circle.png')}
+        <Image source={require('../../assets/images/signin_logo_circle.png')}
                 style={{height:250, width:250}}/>
-        <Text style={{fontSize:40, fontWeight:'bold', marginTop:20, paddingBottom:10}}>MealUp</Text>
+        <Text style={{fontSize:40, fontWeight:'bold', color: 'white', marginTop:20, paddingBottom:10}}>MealUp</Text>
           <SocialIcon
             raised
             button
@@ -247,7 +247,7 @@ export default class SignInScreen extends React.Component {
             title='Sign In With Facebook'
             iconSize={20}
             onPress={this.onSignInWithFacebook}/>
-            <Button title='Andrew' onPress={()=>{
+            {/* <Button title='Andrew' onPress={()=>{
               userID = '10210889686788547'
               userName = 'Andrew Zeng'
               // this.props.navigation.navigate('Main')
@@ -269,7 +269,7 @@ export default class SignInScreen extends React.Component {
               userID = '598952760450186'
               userName = 'Thomas Ferrante'
               this.props.navigation.navigate('Main')
-            }}/>
+            }}/> */}
       </View>
     );
   }
