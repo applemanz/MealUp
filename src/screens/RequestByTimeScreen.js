@@ -25,10 +25,19 @@ export default class RequestByTimeScreen extends React.Component {
   componentDidMount() {
     time = Object.assign(this.state.time);
     db.collection("users").doc(userID).collection('Freetime').get().then((querySnapshot) => {
+      querySnapshot.forEach(function(doc) {
+          time[doc.id] = doc.data().Freetime
+      });
+      // get the has free friends and then check
+      db.collection("users").doc(userID).collection('hasFreeFriends').get().then((querySnapshot) => {
         querySnapshot.forEach(function(doc) {
-            time[doc.id] = doc.data().Freetime
+          for (let i = 0; i < 25; i++) {
+            if (doc.data().hasFreeFriends[i] === false)
+            time[doc.id][i] = 0;
+          }
         });
         this.setState({time:time});
+      })
     });
   }
 
