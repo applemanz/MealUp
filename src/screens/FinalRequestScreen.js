@@ -4,6 +4,7 @@ import NavigationBar from 'navigationbar-react-native';
 import {Button} from 'react-native-elements';
 import { StackNavigator } from 'react-navigation';
 import firebase from "../config/firebase";
+import { Calendar } from 'expo';
 import { userName, userID } from '../screens/SignInScreen';
 
 const db = firebase.firestore();
@@ -316,8 +317,10 @@ export default class FinalRequestScreen extends React.Component {
 
   submitRequest = () => {
     prevData = this.props.navigation.state.params
-    reschedule = prevData['reschedule'];
-    sent = prevData['sent'];
+    let reschedule = prevData['reschedule'];
+    let sent = prevData['sent'];
+    let mealID = prevData['mealID'];
+    Calendar.deleteEventAsync(mealID)
     data = new Object()
     data['FriendName'] = prevData['name']
     data['FriendID'] = Object.keys(prevData['members'])[0]

@@ -147,6 +147,7 @@ export default class FriendChosenScreen extends React.Component {
 
       const reschedule = params ? params.reschedule : undefined;
       const sent = params ? params.sent : undefined;
+      const mealID = params ? params.mealID : undefined;
 
       match1 = [];
       match2 = [];
@@ -252,6 +253,7 @@ export default class FriendChosenScreen extends React.Component {
                         sent: sent,
                         reschedule: reschedule,
                         name: name,
+                        mealID: mealID,
                         // id: id,
                         members: member,
                         dateobj: ymd.toString(),
@@ -291,6 +293,7 @@ export default class FriendChosenScreen extends React.Component {
                         sent: sent,
                         reschedule: reschedule,
                         name: name,
+                        mealID: mealID,
                         // id: id,
                         members: member,
                         dateobj: ymd.toString(),

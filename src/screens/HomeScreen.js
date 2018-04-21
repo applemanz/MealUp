@@ -411,31 +411,42 @@ export default class HomeScreen extends Component {
     db.collection('users').doc(userID).get().then((userinfo)=>{
       let calendarInfo = userinfo.data().Calendar
       let selectedCalendar = userinfo.data().selectedCalendar
-      db.collection("users").doc(userID).collection('Meals').get().then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
 
-          if (this.state.selectedCalendar.id) {
-            if (this.state.selectedCalendar.id != userinfo.data().selectedCalendar.id) {
+      // first time uploading
+      if (!calendarInfo && this.state.selectedCalendar.id) {
+        db.collection("users").doc(userID).collection('Meals').get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            let meal = doc.data()
+            meal.docid = doc.id
+            this.addToCalendar(meal)
+          })
+        })
+      }
+      else if (this.state.selectedCalendar.id && selectedCalendar !== this.state.selectedCalendar) {
+        console.log('new calendar selected')
+        db.collection("users").doc(userID).collection('Meals').get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            let meal = doc.data()
+            meal.docid = doc.id
+            this.addToCalendar(meal)
+          })
+        })
+        // bug
+        for (mealID in calendarInfo) {
+          Calendar.deleteEventAsync(calendarInfo[mealID].eventID)
+        }
+      }
+      else if (this.state.selectedCalendar.id) {
+        db.collection("users").doc(userID).collection('Meals').get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            if (!calendarInfo[doc.id] || !calendarInfo[doc.id].inCalendar) {
               let meal = doc.data()
               meal.docid = doc.id
               this.addToCalendar(meal)
             }
-            else {
-              if (!calendarInfo) {
-                let meal = doc.data()
-                meal.docid = doc.id
-                this.addToCalendar(meal)
-              }
-              else if (!calendarInfo[doc.id] || !calendarInfo[doc.id].inCalendar) {
-                let meal = doc.data()
-                meal.docid = doc.id
-                this.addToCalendar(meal)
-              }
-            }
-
-          }
+          })
         })
-      })
+      }
     })
   }
 
@@ -765,21 +776,29 @@ export default class HomeScreen extends Component {
 
   rescheduleMeal = () => {
     // console.log("reschedule " + this.state.curMeal);
-    this.setState({mealModal: false})
-    this.props.navigation.navigate('FriendChosen', {
-      sent: 2,
-      reschedule: this.state.curMeal,
-      name: this.state.mealItem.FriendName,
-      id: this.state.mealItem.FriendID,
-      url: `http://graph.facebook.com/${this.state.mealItem.FriendID}/picture?type=large`
-    });
+    this.setState({mealModal: false});
+    db.collection('users').doc(userID).get().then((doc)=>{
+      let mealID = doc.data().Calendar[this.state.curMeal].eventID;
+      this.props.navigation.navigate('FriendChosen', {
+        sent: 2,
+        reschedule: this.state.curMeal,
+        name: this.state.mealItem.FriendName,
+        id: this.state.mealItem.FriendID,
+        url: `http://graph.facebook.com/${this.state.mealItem.FriendID}/picture?type=large`,
+        mealID: mealID
+      });
+    })
   }
 
   cancelRequest = () => {
-    // TODO: free up the freetimes
     console.log(this.state.curMeal)
     curMeal = this.state.curMeal
+    db.collection('users').doc(userID).get().then((doc)=>{
+      let id = doc.data().Calendar[this.state.curMeal].eventID
+      Calendar.deleteEventAsync(id)
+    })
     curMealRef = db.collection("users").doc(userID).collection('Meals').doc(this.state.curMeal)
+
     curMealRef.get().then((doc) => {
       if (!doc.exists) {
         console.log("No such document!");
