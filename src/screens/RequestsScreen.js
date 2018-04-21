@@ -553,6 +553,7 @@ export default class RequestsScreen extends React.Component {
         </View>
         <View style={{padding: 10}}>
         <Text>{this.state.curUser.displayDate} {this.state.curUser.TimeString} at {this.state.curUser.Location}</Text>
+        {this.state.curUser.conflict && <Text style = {{color:'red', textAlign: 'center'}}>You have a conflicting meal scheduled already!</Text>}
         </View>
         </View>
         <View style={{padding: 10}}>
@@ -609,6 +610,7 @@ export default class RequestsScreen extends React.Component {
         </View>
         <View style={{padding: 10}}>
         <Text>{this.state.curUser.displayDate} {this.state.curUser.TimeString} at {this.state.curUser.Location}</Text>
+        {this.state.curUser.conflict && <Text style = {{color:'red', textAlign: 'center'}}>You have a conflicting meal scheduled already!</Text>}
         </View>
         </View>
         {!this.state.curUser.conflict && <View style={{padding: 10}}>
