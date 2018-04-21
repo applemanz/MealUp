@@ -9,7 +9,7 @@ import {
   Image,
   Alert
 } from 'react-native';
-import { Facebook } from 'expo';
+import { Facebook, AppLoading,Permissions, Notifications } from 'expo';
 import {Button, SocialIcon, Divider} from 'react-native-elements';
 
 import firebase from "../config/firebase";
@@ -21,8 +21,6 @@ var provider = new firebase.auth.FacebookAuthProvider();
 var userID;
 var userName;
 var userToken;
-
-import { Permissions, Notifications } from 'expo';
 
 async function registerForPushNotificationsAsync() {
   const { status: existingStatus } = await Permissions.getAsync(
@@ -60,23 +58,52 @@ async function registerForPushNotificationsAsync() {
   });
 }
 
-
 export default class SignInScreen extends React.Component {
   static navigationOptions = {
   header: null,
   };
 
-  // state = {
-  //   notification: {},
-  // };
+  state = {
+    isLoading: true,
+  }
   firstTime = false
 
-  componentWillMount() {
-    const value = AsyncStorage.getItem('loggedIn');
-      if (value === 'true') {
-        // console.log(value);
-        this.props.navigation.navigate('Main');
-      }
+  async componentWillMount() {
+    registerForPushNotificationsAsync();
+    this._notificationSubscription = Notifications.addListener(this._handleNotification);
+
+    AsyncStorage.multiGet(['loggedIn', 'userID', 'userName', 'userToken'], (err, stores) => {
+       let userInfo = stores.map((result) => {
+         // get at each store's key/value so you can work with it
+         return result[1]
+       });
+       console.log(userInfo)
+       if (userInfo[0]==='true') {
+         userID = userInfo[1]
+         userName = userInfo[2]
+         userToken = userInfo[3]
+         this.setState({loggedIn:true})
+         this.props.navigation.navigate('Main');
+       }
+       else {
+         this.setState({loggedIn:false})
+       }
+
+
+     });
+
+    // this.setState({loggedIn:false})
+
+    //
+    // const value = await AsyncStorage.getItem('loggedIn');
+    //   if (value === 'true') {
+    //     console.log(value);
+    //     this.setState({loggedIn:value})
+    //     this.props.navigation.navigate('Main');
+    //   }
+    //   else {
+    //     this.setState({loggedIn:false})
+    //   }
   }
 
   //get users permission authorization (ret: facebook token)
@@ -98,8 +125,12 @@ export default class SignInScreen extends React.Component {
           userID = userData.id;
           // console.log(userName);
           // console.log(userID);
+          try {
+            await AsyncStorage.multiSet([['loggedIn', 'true'],['userID',userID],['userName', userName],['userToken', token]]);
+          } catch (error) {
+            console.log('error storing loggedIn')
+          }
 
-          AsyncStorage.setItem('loggedIn', 'true');
 
           // const credential = provider.credential(token);
           // auth.signInWithCredential(credential);
@@ -208,8 +239,7 @@ export default class SignInScreen extends React.Component {
               console.log("Error getting document:", error);
           });
 
-          registerForPushNotificationsAsync();
-          this._notificationSubscription = Notifications.addListener(this._handleNotification);
+
 
 //           console.log(firstTime)
 //           if (firstTime == true) {
@@ -243,45 +273,53 @@ export default class SignInScreen extends React.Component {
 
   // Render any loading content that you like here
   render() {
-    return (
-      <View style={{flex:1, alignItems:'center', justifyContent:'center', backgroundColor:'#f4511e'}}>
-        <Image source={require('../../assets/images/signin_logo_circle.png')}
-                style={{height:250, width:250}}/>
-        <Text style={{fontSize:40, fontWeight:'bold', marginTop:20, paddingBottom:10, color:'#fff'}}>MealUp</Text>
-          <SocialIcon
-            raised
-            button
-            type='facebook'
-            style= {{width:250, marginTop: 60}}
-            title='Sign In With Facebook'
-            iconSize={20}
-            onPress={this.onSignInWithFacebook}/>
-            {/* <Button title='Andrew' onPress={()=>{
-              userID = '10210889686788547'
-              userName = 'Andrew Zeng'
-              // this.props.navigation.navigate('Main')
-              firstTime = true
-              if (firstTime == true) {
-                console.log("true")
-                this.props.navigation.navigate('FirstTime');
-              } else {
-                console.log("false")
-                this.props.navigation.navigate('Main');
-              }
-            }}/>
-            <Button title='TestUser' onPress={()=>{
-              userID = '129522174550269'
-              userName = 'Meal Up'
-              this.props.navigation.navigate('Main')
-            }}/>
-            <Button title='Thomas' onPress={()=>{
-              userID = '598952760450186'
-              userName = 'Thomas Ferrante'
-              this.props.navigation.navigate('Main')
-            }}/> */}
+    if (this.state.loggedIn === false) {
+      return (
+        <View style={{flex:1, alignItems:'center', justifyContent:'center', backgroundColor:'#f4511e'}}>
+          <Image source={require('../../assets/images/signin_logo_circle.png')}
+                  style={{height:250, width:250}}/>
+          <Text style={{fontSize:40, fontWeight:'bold', marginTop:20, paddingBottom:10, color:'#fff'}}>MealUp</Text>
+            <SocialIcon
+              raised
+              button
+              type='facebook'
+              style= {{width:250, marginTop: 60}}
+              title='Sign In With Facebook'
+              iconSize={20}
+              onPress={this.onSignInWithFacebook}/>
+              {/* <Button title='Andrew' onPress={()=>{
+                userID = '10210889686788547'
+                userName = 'Andrew Zeng'
+                // this.props.navigation.navigate('Main')
+                firstTime = true
+                if (firstTime == true) {
+                  console.log("true")
+                  this.props.navigation.navigate('FirstTime');
+                } else {
+                  console.log("false")
+                  this.props.navigation.navigate('Main');
+                }
+              }}/>
+              <Button title='TestUser' onPress={()=>{
+                userID = '129522174550269'
+                userName = 'Meal Up'
+                this.props.navigation.navigate('Main')
+              }}/>
+              <Button title='Thomas' onPress={()=>{
+                userID = '598952760450186'
+                userName = 'Thomas Ferrante'
+                this.props.navigation.navigate('Main')
+              }}/> */}
 
-      </View>
-    );
+        </View>
+      );
+
+    }
+    else {
+      return (
+        <AppLoading/>
+      )
+    }
   }
 }
 

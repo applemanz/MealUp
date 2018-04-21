@@ -15,7 +15,7 @@ const AuthStack = StackNavigator(
  },
 );
 
-const RootStackNavigator = SwitchNavigator(
+const RootSwitchNavigator = SwitchNavigator(
   {
     Main: {
       screen: MainTabNavigator,
@@ -45,7 +45,7 @@ export default class RootNavigator extends React.Component {
         originalSend.call(this, body);
       }
     };
-    return <RootStackNavigator />
+    return <RootSwitchNavigator/>
 ;
   }
 

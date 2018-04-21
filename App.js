@@ -28,18 +28,23 @@ export default class App extends React.Component {
         <View style={styles.container}>
           {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
           {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
-          <RootNavigation />
+          <RootNavigation/>
         </View>
       );
     }
   }
 
   _loadResourcesAsync = async () => {
-    return Promise.all([
-      Asset.loadAsync([
-        require('./assets/images/signin_logo_circle.png'),
-      ]),
-    ]);
+    await Asset.loadAsync([require('./assets/images/signin_logo_circle.png')]);
+    // try {
+    //   const value = await AsyncStorage.getItem('loggedIn');
+    //   if (value !== null){
+    //     console.log(value);
+    //     this.setState({loggedIn:value})
+    //   }
+    // } catch (error) {
+    //   // Error retrieving data
+    // }
   };
 
   _handleLoadingError = error => {

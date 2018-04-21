@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Text, View, StyleSheet, Platform, TouchableHighlight, Modal, Button, Image, ScrollView, SectionList} from 'react-native';
+import {Text, View, StyleSheet, Platform, TouchableHighlight, Modal, Button, Image, ScrollView, SectionList, AsyncStorage} from 'react-native';
 import { Avatar, ListItem, Divider } from 'react-native-elements';
 import {Agenda} from 'react-native-calendars';
 import firebase from "../config/firebase";
@@ -41,7 +41,18 @@ export default class HomeScreen extends Component {
     }
   }
 
-  componentWillMount() {
+  async componentWillMount() {
+    try {
+      calendarPermission = await AsyncStorage.getItem('calendarPermission');
+    } catch (error) {
+      calendarPermission = false
+    }
+    if (calendarPermission === 'true') {
+      calendarPermission = true
+    }
+    console.log(calendarPermission)
+    this.setState({calendarPermission:calendarPermission})
+
     db.collection('users').doc(userID).get().then((doc)=>{
       if (doc.data().selectedCalendar)
         this.setState({selectedCalendar:doc.data().selectedCalendar})
@@ -60,19 +71,15 @@ export default class HomeScreen extends Component {
         calendarInfo = userinfo.data().Calendar
         // console.log(calendarInfo)
         let meals = []
-        querySnapshot.forEach(async (doc) => {
+        querySnapshot.forEach((doc) => {
           // if (doc.id === 'calendar') {return}
           today = new Date()
           today.setHours(0, 0, 0, 0)
           if (doc.data().DateTime >= today) {
 
-            try {
-              calendarPermission = await AsyncStorage.getItem('calendarPermission');
-            } catch (error) {
-              calendarPermission = false
-            }
 
-            if (this.state.selectedCalendar.id) {
+
+            if (this.state.calendarPermission && this.state.selectedCalendar.id) {
               if (calendarInfo) {
                   if (!calendarInfo[doc.id] || !calendarInfo[doc.id].inCalendar) {
                     let meal = doc.data()
@@ -220,62 +227,6 @@ export default class HomeScreen extends Component {
     });
   }
 
-  // onRefresh = () => {
-  //   this.setState({refreshing: true});
-  //   db.collection("users").doc(userID).collection('Meals').get().then((querySnapshot) => {
-  //     meals = [];
-  //     querySnapshot.forEach((doc) => {
-  //       today = new Date()
-  //       today.setHours(0, 0, 0, 0)
-  //       if (doc.data().DateTime >= today) {
-  //         if (!doc.data().inCalendar) {
-  //           meal = doc.data()
-  //           meal.docid = doc.id
-  //           this.addToCalendar(meal)
-  //         }
-  //         meals.push(doc.data());
-  //         meals[meals.length-1]['docid'] = doc.id;
-  //       } else {
-  //         //console.log("MEAL HAS PASSED: " + doc.data().DateTime);
-  //         // TODO convert meal back to freetime in array
-  //         weekday = weekdays[doc.data().DateTime.getDay()].day
-  //         freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(weekday);
-  //         freetimeRef.get().then(function(doc) {
-  //           freetimeData = doc.data();
-  //           for (i = 0; i < freetimeData['Freetime'].length; i++) {
-  //             if (freetimeData['Freetime'][i] === 2) {
-  //               freetimeData['Freetime'][i] = 1
-  //             }
-  //           }
-  //         freetimeRef.set(freetimeData).then(() => {
-  //           // console.log("My Document updated");
-  //           })
-  //           .catch(function(error) {
-  //             // console.error("Error updating", error);
-  //           });
-  //         })
-  //         db.collection("users").doc(userID).collection('Meals').doc(doc.id).delete().then(() => {
-  //           //console.log("Document successfully deleted!");
-  //           db.collection("users").doc(doc.data().FriendID).collection('Meals').doc(doc.id).delete()
-  //         }).catch(function(error) {
-  //           // console.error("Error removing document: ", error);
-  //         });
-  //       }
-  //     });
-  //     if (meals.length == 0) {
-  //       updatedItems = this.createEmptyData()
-  //       this.setState((prevState) => {
-  //         return {items: updatedItems}
-  //       });
-  //     }
-  //     //console.log(meals)
-  //     //console.log("M0 " + meals[0].docid);
-  //     this.updateItems(meals);
-  //     //console.log("M01 " + meals[0].docid);
-  //   });
-  //   this.setState({refreshing: false});
-  // }
-
   render() {
     today = new Date()
     // console.log(today)
@@ -377,11 +328,11 @@ export default class HomeScreen extends Component {
               onSwitch={()=>{
                 if (this.state.selectedCalendar.id === item.id) {
                   this.setState({selectedCalendar:{}})
-                  db.collection('users').doc(userID).update({selectedCalendar:null})
+                  // db.collection('users').doc(userID).update({selectedCalendar:null})
                 }
                 else {
                   this.setState({selectedCalendar:item})
-                  db.collection('users').doc(userID).update({selectedCalendar:item})
+                  // db.collection('users').doc(userID).update({selectedCalendar:item})
                 }
               }}
               hideChevron
@@ -408,6 +359,7 @@ export default class HomeScreen extends Component {
   }
 
   exportMeals = () => {
+
     db.collection('users').doc(userID).get().then((userinfo)=>{
       let calendarInfo = userinfo.data().Calendar
       let selectedCalendar = userinfo.data().selectedCalendar
@@ -424,6 +376,16 @@ export default class HomeScreen extends Component {
       }
       else if (this.state.selectedCalendar.id && selectedCalendar !== this.state.selectedCalendar) {
         console.log('new calendar selected')
+        // bug
+        if (selectedCalendar) {
+          for (mealID in calendarInfo) {
+            console.log(calendarInfo[mealID].calendarID)
+            console.log(selectedCalendar.id)
+            if (calendarInfo[mealID].calendarID === selectedCalendar.id)
+              Calendar.deleteEventAsync(calendarInfo[mealID].eventID)
+          }
+        }
+
         db.collection("users").doc(userID).collection('Meals').get().then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
             let meal = doc.data()
@@ -431,10 +393,6 @@ export default class HomeScreen extends Component {
             this.addToCalendar(meal)
           })
         })
-        // bug
-        for (mealID in calendarInfo) {
-          Calendar.deleteEventAsync(calendarInfo[mealID].eventID)
-        }
       }
       else if (this.state.selectedCalendar.id) {
         db.collection("users").doc(userID).collection('Meals').get().then((querySnapshot) => {
@@ -447,6 +405,11 @@ export default class HomeScreen extends Component {
           })
         })
       }
+
+      if (this.state.selectedCalendar.id)
+        db.collection('users').doc(userID).update({selectedCalendar:this.state.selectedCalendar})
+      else
+        db.collection('users').doc(userID).update({selectedCalendar:null})
     })
   }
 
@@ -473,9 +436,8 @@ export default class HomeScreen extends Component {
     console.log(details)
     console.log(this.state.selectedCalendar.id)
     mealID = await Calendar.createEventAsync(this.state.selectedCalendar.id, details)
-    console.log(mealID)
-    // db.collection('users').doc(userID).collection('Meals').doc(meal.docid).update({eventID:mealID})
-    let data = {[`Calendar.${meal.docid}.inCalendar`]: true, [`Calendar.${meal.docid}.eventID`]:mealID}
+    mealID = mealID.toString()
+    let data = {[`Calendar.${meal.docid}.inCalendar`]: true, [`Calendar.${meal.docid}.eventID`]:mealID, [`Calendar.${meal.docid}.calendarID`]: this.state.selectedCalendar.id}
     console.log(data)
     db.collection("users").doc(userID).update(data)
     }
@@ -485,74 +447,77 @@ export default class HomeScreen extends Component {
 
   calendarSetUp = async () => {
     const { status } = await Permissions.askAsync('calendar');
-    console.log(status)
+    if (status === 'granted') hasCalendarPermission = 'true'
+    else hasCalendarPermission = 'false'
+    console.log(hasCalendarPermission)
     try {
-      await AsyncStorage.setItem('calendarPermission', status === 'granted');
+      await AsyncStorage.setItem('calendarPermission', hasCalendarPermission);
     } catch (error) {
       console.log('could not save calendar permission')
+      console.log(error)
     }
 
-    // console.log(this.state.hasCalendarPermission)
+    if (hasCalendarPermission === 'true') {
 
-    cals = await Calendar.getCalendarsAsync()
-    // console.log(cals)
-
-    if (Platform.OS === 'ios') {
-    sources = await Calendar.getSourcesAsync()
-    // console.log(sources)
-    calendars = []
-    sections = []
-    for (let source of sources) {
-      sections.push({title:source.name, data:[]})
-    }
-    console.log(sections)
-    for (let cal of cals) {
-      console.log(cal.source.name)
-      index = sections.findIndex(source => source.title===cal.source.name)
-      sections[index].data.push(cal)
-    }
-    console.log(sections)
-    sections.sort(function(a, b) {
-      aTitle = a.title.toUpperCase()
-      bTitle = b.title.toUpperCase()
-      if (aTitle < bTitle) {
-        return -1;
-      }
-      if (aTitle > bTitle) {
-        return 1;
-      }
-      return 0;
-    })
-
-    this.setState({calendars:sections})
-    }
-    else {
-      sections = []
-      sources = new Set()
-      for (let cal of cals) {
-        sources.add(cal.source.name)
-      }
-      for (let source of sources) {
-        sections.push({title:source, data:[]})
-      }
-      for (let cal of cals) {
-        index = sections.findIndex(source => source.title===cal.source.name)
-        sections[index].data.push(cal)
-      }
-      console.log(sections)
-      sections.sort(function(a, b) {
-        if (a.title < b.title) {
-          return -1;
+      cals = await Calendar.getCalendarsAsync()
+      // console.log(cals)
+      if (Platform.OS === 'ios') {
+        sources = await Calendar.getSourcesAsync()
+        // console.log(sources)
+        calendars = []
+        sections = []
+        for (let source of sources) {
+          sections.push({title:source.name, data:[]})
         }
-        if (a.title > b.title) {
-          return 1;
+        // console.log(sections)
+        for (let cal of cals) {
+          console.log(cal.source.name)
+          index = sections.findIndex(source => source.title===cal.source.name)
+          sections[index].data.push(cal)
         }
-        return 0;
-      })
+        // console.log(sections)
+        sections.sort(function(a, b) {
+          aTitle = a.title.toUpperCase()
+          bTitle = b.title.toUpperCase()
+          if (aTitle < bTitle) {
+            return -1;
+          }
+          if (aTitle > bTitle) {
+            return 1;
+          }
+          return 0;
+        })
 
-      this.setState({calendars:sections})
+        this.setState({calendars:sections})
+      }
+      else {
+        sections = []
+        sources = new Set()
+        for (let cal of cals) {
+          sources.add(cal.source.name)
+        }
+        for (let source of sources) {
+          sections.push({title:source, data:[]})
+        }
+        for (let cal of cals) {
+          index = sections.findIndex(source => source.title===cal.source.name)
+          sections[index].data.push(cal)
+        }
+        // console.log(sections)
+        sections.sort(function(a, b) {
+          if (a.title < b.title) {
+            return -1;
+          }
+          if (a.title > b.title) {
+            return 1;
+          }
+          return 0;
+        })
+
+        this.setState({calendars:sections})
+      }
+      this.setState({selectCalendarModal:true})
     }
-    this.setState({selectCalendarModal:true})
   }
 
   itemPressed = (item) => {
@@ -793,10 +758,17 @@ export default class HomeScreen extends Component {
   cancelRequest = () => {
     console.log(this.state.curMeal)
     curMeal = this.state.curMeal
-    db.collection('users').doc(userID).get().then((doc)=>{
-      let id = doc.data().Calendar[this.state.curMeal].eventID
-      Calendar.deleteEventAsync(id)
-    })
+    console.log(this.state.calendarPermission)
+
+    if (this.state.calendarPermission) {
+      db.collection('users').doc(userID).get().then((doc)=>{
+        let id = doc.data().Calendar[this.state.curMeal].eventID
+        console.log('event id')
+        console.log(id)
+        Calendar.deleteEventAsync(id)
+        console.log('deleting event')
+      })
+    }
     curMealRef = db.collection("users").doc(userID).collection('Meals').doc(this.state.curMeal)
 
     curMealRef.get().then((doc) => {
@@ -927,12 +899,67 @@ const styles = StyleSheet.create({
     // padding: 10,
     marginRight: 10,
     marginTop: 40,
+    marginBottom: 10,
     alignItems: 'center',
     justifyContent:'center'
   },
 });
 
-
+// onRefresh = () => {
+//   this.setState({refreshing: true});
+//   db.collection("users").doc(userID).collection('Meals').get().then((querySnapshot) => {
+//     meals = [];
+//     querySnapshot.forEach((doc) => {
+//       today = new Date()
+//       today.setHours(0, 0, 0, 0)
+//       if (doc.data().DateTime >= today) {
+//         if (!doc.data().inCalendar) {
+//           meal = doc.data()
+//           meal.docid = doc.id
+//           this.addToCalendar(meal)
+//         }
+//         meals.push(doc.data());
+//         meals[meals.length-1]['docid'] = doc.id;
+//       } else {
+//         //console.log("MEAL HAS PASSED: " + doc.data().DateTime);
+//         // TODO convert meal back to freetime in array
+//         weekday = weekdays[doc.data().DateTime.getDay()].day
+//         freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(weekday);
+//         freetimeRef.get().then(function(doc) {
+//           freetimeData = doc.data();
+//           for (i = 0; i < freetimeData['Freetime'].length; i++) {
+//             if (freetimeData['Freetime'][i] === 2) {
+//               freetimeData['Freetime'][i] = 1
+//             }
+//           }
+//         freetimeRef.set(freetimeData).then(() => {
+//           // console.log("My Document updated");
+//           })
+//           .catch(function(error) {
+//             // console.error("Error updating", error);
+//           });
+//         })
+//         db.collection("users").doc(userID).collection('Meals').doc(doc.id).delete().then(() => {
+//           //console.log("Document successfully deleted!");
+//           db.collection("users").doc(doc.data().FriendID).collection('Meals').doc(doc.id).delete()
+//         }).catch(function(error) {
+//           // console.error("Error removing document: ", error);
+//         });
+//       }
+//     });
+//     if (meals.length == 0) {
+//       updatedItems = this.createEmptyData()
+//       this.setState((prevState) => {
+//         return {items: updatedItems}
+//       });
+//     }
+//     //console.log(meals)
+//     //console.log("M0 " + meals[0].docid);
+//     this.updateItems(meals);
+//     //console.log("M01 " + meals[0].docid);
+//   });
+//   this.setState({refreshing: false});
+// }
 // if (Platform.OS === 'ios') {
 //   sources = await Calendar.getSourcesAsync()
 //   console.log(sources)
