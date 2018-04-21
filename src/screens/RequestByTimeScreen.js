@@ -20,10 +20,10 @@ export default class RequestByTimeScreen extends React.Component {
       };
     };
 
-  state = {time: {}};
+  state = {};
 
   componentDidMount() {
-    time = Object.assign(this.state.time);
+    time = this.state.time ? Object.assign(this.state.time) : {};
     db.collection("users").doc(userID).collection('Freetime').get().then((querySnapshot) => {
       querySnapshot.forEach(function(doc) {
           time[doc.id] = doc.data().Freetime
@@ -135,10 +135,10 @@ export default class RequestByTimeScreen extends React.Component {
       if (temp.length > 0)
         time2.push({title: diff, data: temp})
     }
-
+    
     time1.sort((a,b) => a.title - b.title)
     time2.sort((a,b) => a.title - b.title)
-
+    
     for (i of time1) {
       i.title = this.printDate(month,date,day,i.title)
     }
@@ -157,7 +157,9 @@ export default class RequestByTimeScreen extends React.Component {
           tabBarInactiveTextColor = {'black'}
           tabBarUnderlineStyle = {{backgroundColor:'white'}}
         >
-          <SectionList
+          {(this.state.time && time1.length === 0) ? (<Text tabLabel = '30 minutes' style={{textAlign: 'center', padding: 30}}>No friend is free for any of your selected time...{"\n"}
+              Make sure you've selected your availability for meals in the Free Time tab!</Text>) : 
+              (<SectionList
             tabLabel='30 minutes'
             sections={time1}
             renderItem={({item,section}) =>
@@ -167,8 +169,11 @@ export default class RequestByTimeScreen extends React.Component {
               />}
             renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
             keyExtractor={(item, index) => index}
-          />
-          <SectionList
+          />)}
+
+          {(this.state.time && time2.length === 0) ? (<Text tabLabel = '1 hour' style={{textAlign: 'center', padding: 30}}>No friend is free for any of your selected time...{"\n"}
+              Make sure you've selected your availability for meals in the Free Time tab!</Text>) : 
+              (<SectionList
             tabLabel='1 hour'
             sections={time2}
             renderItem={({item,section}) =>
@@ -178,7 +183,8 @@ export default class RequestByTimeScreen extends React.Component {
               />}
             renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
             keyExtractor={(item, index) => index}
-          />
+          />)}
+
         </ScrollableTabView>
       </View>
     )
