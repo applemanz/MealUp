@@ -40,7 +40,7 @@ export default class RequestByTimeScreen extends React.Component {
       })
     });
   }
-
+  
   printTime = (num, ampm = false) => {
     hour = 7 + Math.floor((num+1)/2)
     min = num%2 === 0 ? "30" : "00"
@@ -98,7 +98,7 @@ export default class RequestByTimeScreen extends React.Component {
     for (thisday in this.state.time) {
       let temp = [];
       for (j = 0; j < 25; j++) {
-        if (days.indexOf(thisday) == day && j <= thisIndex) {
+        if (days.indexOf(thisday) == day && thisIndex <= 24 && j <= thisIndex) {
           continue;
         }
         if (this.state.time[thisday][j] === 1) {
