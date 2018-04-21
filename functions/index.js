@@ -86,13 +86,11 @@ exports.findTimeConflicts = functions.firestore
     .document('users/{userID}/Meals/{mealID}')
     .onCreate((snap, context) => {
       const newValue = snap.data();
-      const fdID = newValue.FriendID
       const startTime = new Date(newValue.DateTime);
       const endTime = new Date(startTime.getTime()
       + parseFloat(newValue.Length) * 60 * 60 * 1000);
       console.log(startTime)
       console.log(endTime)
-      console.log(fdID)
 
       const userID = context.params.userID
       const mealID = context.params.mealID
@@ -100,7 +98,6 @@ exports.findTimeConflicts = functions.firestore
       console.log(mealID)
 
       const userRef = admin.firestore().collection("users").doc(userID)
-      const fdRef = admin.firestore().collection("users").doc(fdID)
       promises = [];
 
       conflictMeals = [];
@@ -124,27 +121,6 @@ exports.findTimeConflicts = functions.firestore
               conflictMeals.push({type:'Received Requests',mealID:thisMealID,id:userID})
           })
 
-          return fdRef.collection('Sent Requests').get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              let thisMealID = doc.id
-              let thisStartTime = new Date(doc.data().DateTime);
-              let thisEndTime = new Date(thisStartTime.getTime()
-              + parseFloat(doc.data().Length) * 60 * 60 * 1000);
-              if (!(thisEndTime < startTime || thisStartTime > endTime))
-                conflictMeals.push({type:'Sent Requests',mealID:thisMealID,id:fdID})
-            })
-
-            return fdRef.collection('Received Requests').get().then((querySnapshot) => {
-              querySnapshot.forEach((doc) => {
-                let thisMealID = doc.id
-                let thisStartTime = new Date(doc.data().DateTime);
-                let thisEndTime = new Date(thisStartTime.getTime()
-                + parseFloat(doc.data().Length) * 60 * 60 * 1000);
-                if (!(thisEndTime < startTime || thisStartTime > endTime))
-                  conflictMeals.push({type:'Received Requests',mealID:thisMealID,id:fdID})
-              })
-
-
               let foo = new Object();
               foo['conflict'] = true
 
@@ -155,11 +131,68 @@ exports.findTimeConflicts = functions.firestore
 
 
             return Promise.all(promises)
-            })
-          })
         })
       })
     })
+
+exports.removeTimeConflicts = functions.firestore
+    .document('users/{userID}/Meals/{mealID}')
+    .onDelete((snap, context) => {
+      const deletedValue = snap.data();
+      const startTime = new Date(deletedValue.DateTime);
+      const endTime = new Date(startTime.getTime()
+      + parseFloat(deletedValue.Length) * 60 * 60 * 1000);
+      console.log(startTime)
+      console.log(endTime)
+
+      const userID = context.params.userID
+      const mealID = context.params.mealID
+      console.log(userID)
+      console.log(mealID)
+
+      const userRef = admin.firestore().collection("users").doc(userID)
+
+      // if it's deleted because time has passed don't check
+      if (startTime >= new Date()) {
+        console.log("Deleted not because of time passed")
+        promises = [];
+
+        conflictMeals = [];
+        return userRef.collection('Sent Requests').get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            let thisMealID = doc.id
+            let thisStartTime = new Date(doc.data().DateTime);
+            let thisEndTime = new Date(thisStartTime.getTime()
+            + parseFloat(doc.data().Length) * 60 * 60 * 1000);
+            if (!(thisEndTime < startTime || thisStartTime > endTime))
+              conflictMeals.push({type:'Sent Requests',mealID:thisMealID,id:userID})
+          })
+
+          return userRef.collection('Received Requests').get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              let thisMealID = doc.id
+              let thisStartTime = new Date(doc.data().DateTime);
+              let thisEndTime = new Date(thisStartTime.getTime()
+              + parseFloat(doc.data().Length) * 60 * 60 * 1000);
+              if (!(thisEndTime < startTime || thisStartTime > endTime))
+                conflictMeals.push({type:'Received Requests',mealID:thisMealID,id:userID})
+            })
+
+                let foo = new Object();
+                foo['conflict'] = false
+
+                for (let meal of conflictMeals) {
+                  promises.push(admin.firestore().collection("users").doc(meal.id).collection(meal.type).doc(meal.mealID).update(foo))
+                  console.log("conflicting meal: ", meal.id, meal.mealID, meal.type)
+                }
+
+
+              return Promise.all(promises)
+          })
+        })
+      }
+    })
+    
 
 initializeFreeFriends = functions.firestore
   .document('users/{userId}/Freetime/{dayOfWeek}')
