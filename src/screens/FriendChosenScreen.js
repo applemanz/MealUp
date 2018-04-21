@@ -138,7 +138,7 @@ export default class FriendChosenScreen extends React.Component {
           <Image
               style={{width: 80, height: 80, borderRadius: 40}}
               source={{uri: url}}/>
-          <Text style={{textAlign: 'center', padding: 30}}>Seems like {name.split(" ")[0]} is not available for a meal this week...{"\n"}Make sure you've selected your availability for meals in the Free Time tab!</Text>
+          <Text style={{textAlign: 'center', padding: 30}}>{name.split(" ")[0]} is not available for a meal this week...{"\n"}Make sure you've selected your availability for meals in the Free Time tab!</Text>
         </View>
       )
     }
