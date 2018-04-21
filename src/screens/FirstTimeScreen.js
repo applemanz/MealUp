@@ -43,14 +43,14 @@ export default class FirstTimeScreen extends React.Component {
                 backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/iOS/ios_requests.png')} 
                   style={{width:286, height:346, opacity: 0.85, alignItems: 'center'}}/>,
-                title: 'Schedule Meals',
+                title: 'Schedule meals',
                 subtitle: 'Send and respond to meal requests.',
               },
               {
                 backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/iOS/ios_groups.png')} 
                   style={{width:286, height:346, opacity: 0.85, alignItems: 'center'}}/>,
-                title: 'Organize Groups',
+                title: 'Organize groups',
                 subtitle: 'Connect to your friends more with groups.',
               },
             ]}
@@ -64,30 +64,30 @@ export default class FirstTimeScreen extends React.Component {
             pages={[
               {
                 backgroundColor: '#fff',
-                image: <Image source={require('../../assets/images/iOS/ios_welcome.png')}
-                 style={{width:175, height:356, opacity: 0.85, alignItems: 'center'}}/>,
+                image: <Image source={require('../../assets/images/Android/android_welcome.png')}
+                 style={{width:166, height:356, opacity: 0.85, alignItems: 'center'}}/>,
                 title: 'Welcome to MealUp!',
                 subtitle: 'Meet up & eat up with friends easily. \n Swipe to learn how.',
               },
               {
                 backgroundColor: '#fff',
-                image: <Image source={require('../../assets/images/iOS/ios_freetime.png')} 
-                  style={{width:175, height:356, opacity: 0.85, alignItems: 'center'}}/>,
+                image: <Image source={require('../../assets/images/Android/android_freetime.png')} 
+                  style={{width:166, height:356, opacity: 0.85, alignItems: 'center'}}/>,
                 title: 'Manage your free time',
                 subtitle: 'Edit your schedule anytime and anywhere.',
               },
               {
                 backgroundColor: '#fff',
-                image: <Image source={require('../../assets/images/iOS/ios_requests.png')} 
-                  style={{width:286, height:346, opacity: 0.85, alignItems: 'center'}}/>,
-                title: 'Schedule Meals',
+                image: <Image source={require('../../assets/images/Android/android_requests.png')} 
+                  style={{width:268, height:346, opacity: 0.85, alignItems: 'center'}}/>,
+                title: 'Schedule meals',
                 subtitle: 'Send and respond to meal requests.',
               },
               {
                 backgroundColor: '#fff',
-                image: <Image source={require('../../assets/images/iOS/ios_groups.png')} 
-                  style={{width:286, height:346, opacity: 0.85, alignItems: 'center'}}/>,
-                title: 'Organize Groups',
+                image: <Image source={require('../../assets/images/Android/android_groups.png')} 
+                  style={{width:268, height:346, opacity: 0.85, alignItems: 'center'}}/>,
+                title: 'Organize groups',
                 subtitle: 'Connect to your friends more with groups.',
               },
             ]}

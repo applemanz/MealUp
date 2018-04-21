@@ -849,6 +849,37 @@ export default class HomeScreen extends Component {
       db.collection("users").doc(userID).collection('Meals').doc(curMeal).delete().then(() => {
         console.log("Document successfully deleted!");
         db.collection("users").doc(curMealRefData["FriendID"]).collection('Meals').doc(curMeal).delete()
+        expotoken = "";
+                db.collection("users").doc(curMealRefData["FriendID"]).get().then(function(doc) {
+                  expotoken = doc.data().Token;
+                  console.log("got token " + expotoken);
+
+                  var hours = curMealRefData['DateTime'].getHours();
+                  var minutes = curMealRefData['DateTime'].getMinutes();
+                  var ampm = hours >= 12 ? 'PM' : 'AM';
+                  hours = hours % 12;
+                  hours = hours ? hours : 12; // the hour '0' should be '12'
+                  minutes = minutes < 10 ? '0'+minutes : minutes;
+                  var strTime = hours + ':' + minutes + ' ' + ampm;
+
+                if (expotoken !== undefined) {
+                  console.log("SENDING NOTIFICATION NEW GROUP MEAL REQUEST FROM " + userName + " to " + curMealRefData["FriendID"]);
+                return fetch('https://exp.host/--/api/v2/push/send', {
+                  body: JSON.stringify({
+                    to: expotoken,
+                    //title: "title",
+                    body: `${userName} canceled your meal on ${curMealRefData['DateTime'].toDateString().substring(0,10) + " at " + strTime}!`,
+                    data: { message: `${userName} canceled your meal on ${curMealRefData['DateTime'].toDateString().substring(0,10) + " at " + strTime}!` },
+                  }),
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  method: 'POST',
+                });
+                }
+                }).catch(function(error) {
+                  console.log("Error getting document:", error);
+                });
       }).catch(function(error) {
         console.error("Error removing document: ", error);
       });
