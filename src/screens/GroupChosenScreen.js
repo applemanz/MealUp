@@ -269,9 +269,11 @@ export default class GroupChosenScreen extends React.Component {
                       source={{uri:urls[2]}}/>
                   </View>
                 </View>
+            <Text style={{fontSize:15, fontWeight:'bold'}}>{groupName}</Text>
             <Text style={{fontSize:15}}>{'There is no matching time for your group.'}</Text>
-            <Text style={{fontSize:15}}>{'Here are the potential times when one person is gone:'}</Text>
+            {matchFewer1.length !== 0 && <Text style={{fontSize:15}}>{'Here are the potential times when one person is gone:'}</Text>}
             </View>
+            {matchFewer1.length !== 0 &&
             <ScrollableTabView
               style={{marginTop: 0, flex:1}}
               renderTabBar={() => <DefaultTabBar />}
@@ -369,7 +371,7 @@ export default class GroupChosenScreen extends React.Component {
                 renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
                 keyExtractor={(item, index) => index}
               />
-            </ScrollableTabView>
+            </ScrollableTabView>}
           </View>
         )
       }
