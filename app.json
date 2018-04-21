@@ -2,20 +2,30 @@
   "expo": {
     "name": "my-new-project",
     "description": "A very interesting project.",
-    "slug": "my-new-project",
+    "slug": "expo.io/COS333/MealUp",
     "privacy": "public",
     "sdkVersion": "25.0.0",
+    "githubUrl": "https://github.com/applemanz/MealUp",
     "platforms": ["ios", "android"],
     "version": "1.0.0",
+    "primaryColr": "#000000"
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#f4511e"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "icon": "./assets/images/iOSIcon.png",
+      "package": "com.mealupteam.mealup",
+      
+    },
+    "android": {
+      "icon": "./assets/images/androidIcon.png",
+      "package":"com.mealupteam.mealup",
+      "versionCode": 1,
+
     }
   }
 }

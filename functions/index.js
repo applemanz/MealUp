@@ -56,28 +56,36 @@ exports.updateFreeFriends = functions.firestore
           foo[newRef] = updateAsFree
           promises.push(friendRef.update(foo))
 
-          return friendRef.get().then((doc) => {
-            if (!doc.exists) return;
-            let friendRef2 = admin.firestore().collection('users').doc(friendID).collection('hasFreeFriends').doc(dayOfWeek)
-            let newRef2 = "hasFreefriends" + "." + index + "." + userID
-            let foo2 = new Object()
-            let hasFreeFriend = false;
+          // return
+          promises.push(friendRef.get().then((doc) => {
+                promises2 = []
+                if (!doc.exists) return;
+                let friendRef2 = admin.firestore().collection('users').doc(friendID).collection('hasFreeFriends').doc(dayOfWeek)
+                let newRef2 = "hasFreeFriends" + "." + index
+                let foo2 = new Object()
+                let hasFreeFriend = false;
 
-            if (updateAsFree) hasFreeFriend = true;
-            else {
-              for (let friendID2 in doc.data().Freefriends[index]) {
-                if (friendID2 === userID) continue;
-                if (doc.data().Freefriends[index][friendID2] === true) {
-                  hasFreeFriend = true;
-                  break;
+                if (updateAsFree) hasFreeFriend = true;
+                else {
+                  for (let friendID2 in doc.data().Freefriends[index]) {
+                    console.log("key is ", friendID2)
+                    if (friendID2 === userID) continue;
+                    if (doc.data().Freefriends[index][friendID2] === true) {
+                      hasFreeFriend = true;
+                      break;
+                    }
+                  }
                 }
-              }
-              foo2[newRef2] = updateAsFree
-              promises.push(friendRef2.update(foo2))
-            }
-            return Promise.all(promises)
-          })
+                  foo2[newRef2] = hasFreeFriend
+                  console.log('pushing update')
+                  promises2.push(friendRef2.update(foo2))
+
+                console.log('returning promises2')
+                return Promise.all(promises2)
+              })
+            )
         }
+        console.log('returning promises')
         return Promise.all(promises)
       })
     })

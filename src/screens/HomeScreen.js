@@ -61,7 +61,7 @@ export default class HomeScreen extends Component {
         // console.log(calendarInfo)
         let meals = []
         querySnapshot.forEach(async (doc) => {
-          if (doc.id === 'calendar') {return}
+          // if (doc.id === 'calendar') {return}
           today = new Date()
           today.setHours(0, 0, 0, 0)
           if (doc.data().DateTime >= today) {
@@ -408,14 +408,33 @@ export default class HomeScreen extends Component {
   }
 
   exportMeals = () => {
-    db.collection("users").doc(userID).collection('Meals').get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        let data = {[`Calendar.${doc.id}.inCalendar`]: true}
-        console.log(data)
-        // db.collection("users").doc(userID).update(data)
-        meal = doc.data()
-        meal.docid = doc.id
-        this.addToCalendar(meal)
+    db.collection('users').doc(userID).get().then((userinfo)=>{
+      let calendarInfo = userinfo.data().Calendar
+      let selectedCalendar = userinfo.data().selectedCalendar
+      db.collection("users").doc(userID).collection('Meals').get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+
+          if (this.state.selectedCalendar.id) {
+            if (this.state.selectedCalendar.id != userinfo.data().selectedCalendar.id) {
+              let meal = doc.data()
+              meal.docid = doc.id
+              this.addToCalendar(meal)
+            }
+            else {
+              if (!calendarInfo) {
+                let meal = doc.data()
+                meal.docid = doc.id
+                this.addToCalendar(meal)
+              }
+              else if (!calendarInfo[doc.id] || !calendarInfo[doc.id].inCalendar) {
+                let meal = doc.data()
+                meal.docid = doc.id
+                this.addToCalendar(meal)
+              }
+            }
+
+          }
+        })
       })
     })
   }
