@@ -197,17 +197,66 @@ export default class FinalRequestScreen extends React.Component {
     if (data['Location'] != "" && data['Location'] != "Custom Location") {
       if (reschedule) {
         if (sent == 2) {
+          prevMealRef = db.collection("users").doc(userID).collection('Meals').doc(reschedule)
+          prevMealRef.get().then(function(doc) {
+            prevMealRefData = doc.data();
+            console.log(prevMealRefData);
+            if (prevMealRefData && prevMealRefData['DateTime']) {
+              weekday = weekdays[prevMealRefData['DateTime'].getDay()].day
+              console.log(weekday)
+              amPM = prevMealRefData['DateTime'].getHours() >= 12 ? "PM" : "AM"
+              hours = (prevMealRefData['DateTime'].getHours() % 12 || 12) + ":" + ("0" + prevMealRefData['DateTime'].getMinutes()).slice(-2) + " " + amPM
+              strTime = hours;
+              index = data_flip[hours]
+              console.log(hours)
+
+              // update freetimes
+              freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(weekday);
+              freetimeRef.get().then(function(doc) {
+                freetimeData = doc.data();
+                freetimeData['Freetime'][index] = 1
+                console.log(prevMealRefData['Length'])
+                if (prevMealRefData['Length'] === 1) {
+                  freetimeData['Freetime'][index+1] = 1
+                }
+              // console.log("my data", freetimeData)
+              freetimeRef.update(freetimeData).then(() => {
+                console.log("My Document updated");
+                })
+                .catch(function(error) {
+                  console.error("Error updating", error);
+                });
+              })
+
+              for (let thisid in prevData['members']) {
+                freetimeRef_other = db.collection("users").doc(thisid).collection('Freetime').doc(weekday);
+                freetimeRef_other.get().then(function(doc) {
+                  freetimeData_other = doc.data();
+                  freetimeData_other['Freetime'][index] = 1
+                  if (prevMealRefData['Length'] === 1) {
+                    freetimeData_other['Freetime'][index+1] = 1
+                  }
+                // console.log(freetimeData_other)
+                freetimeRef_other.update(freetimeData_other).then(() => {
+                  console.log("Document updated");
+                  })
+                  .catch(function(error) {
+                    console.error("Error updating", error);
+                  });
+                })
+              }
+            }
+          });
           db.collection("users").doc(userID).collection('Meals').doc(reschedule).delete().then(() => {
             console.log("Document successfully deleted!");
-
-          for (let thisid in prevData['members']) {
-            if (thisid != userID) {
-            db.collection("users").doc(thisid).collection('Meals').doc(reschedule).delete()
+            for (let thisid in prevData['members']) {
+              if (thisid != userID) {
+              db.collection("users").doc(thisid).collection('Meals').doc(reschedule).delete()
+              }
             }
-          }
-        });
+          });
           db.collection("users").doc(userID).collection('Sent Group Requests').add(data)
-        .then(function(docRef) {
+          .then(function(docRef) {
             for (let thisid in prevData['members']) {
               if (thisid != userID) {
               db.collection("users").doc(thisid).collection('Received Group Requests').doc(docRef.id).set(data)
