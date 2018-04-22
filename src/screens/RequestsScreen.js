@@ -1411,6 +1411,7 @@ export default class RequestsScreen extends React.Component {
     amPM = this.state.curUser.DateTime.getHours() >= 12 ? "PM" : "AM"
     hours = (this.state.curUser.DateTime.getHours() % 12 || 12) + ":" + ("0" + this.state.curUser.DateTime.getMinutes()).slice(-2) + " " + amPM
     index = data_flip[hours]
+    data = Object.assign({}, this.state.curUser)
 
     db.collection("users").doc(userID).collection('Sent Group Requests').doc(this.state.curUser.id).delete().then(() => {
       console.log("Document successfully deleted!")

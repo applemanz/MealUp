@@ -193,63 +193,132 @@ export default class FinalRequestScreen extends React.Component {
     data['DateTime'] = new Date(prevData['dateobj'])
     data['Length'] = prevData['length']
     data['TimeString'] = prevData['time']
+    data['isGroup'] = true
     if (data['Location'] != "" && data['Location'] != "Custom Location") {
       if (reschedule) {
-        db.collection("users").doc(userID).collection('Sent Group Requests').doc(reschedule).set(data)
-            .then((docRef) => {
-                for (let thisid in prevData['members']) {
-                  if (thisid != userID) {
-                  db.collection("users").doc(thisid).collection('Received Group Requests').doc(docRef.id).set(data)
-                  expotoken = "";
-                db.collection("users").doc(thisid).get().then(function(doc) {
-                  expotoken = doc.data().Token;
-                  console.log("got token " + expotoken);
+        if (sent == 2) {
+          db.collection("users").doc(userID).collection('Meals').doc(reschedule).delete().then(() => {
+            console.log("Document successfully deleted!");
 
-                if (expotoken !== undefined) {
-                  console.log("SENDING NOTIFICATION NEW GROUP MEAL REQUEST FROM " + userName + " to " + thisid);
-                return fetch('https://exp.host/--/api/v2/push/send', {
-                  body: JSON.stringify({
-                    to: expotoken,
-                    //title: "title",
-                    body: `Group meal request from ${userName} rescheduled!`,
-                    data: { message: `Group meal request from ${userName} rescheduled!` },
-                  }),
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  method: 'POST',
-                });
-                }
-                }).catch(function(error) {
-                  console.log("Error getting document:", error);
-                });
-              }
-                }
-                day = weekdays[data['DateTime'].getDay()].day
-                amPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
-                hours = (data['DateTime'].getHours() % 12 || 12) + ":" + ("0" + data['DateTime'].getMinutes()).slice(-2) + " " + amPM
-                index = data_flip[hours]
+          for (let thisid in prevData['members']) {
+            if (thisid != userID) {
+            db.collection("users").doc(thisid).collection('Meals').doc(reschedule).delete()
+            }
+          }
+        });
+          db.collection("users").doc(userID).collection('Sent Group Requests').add(data)
+        .then(function(docRef) {
+            for (let thisid in prevData['members']) {
+              if (thisid != userID) {
+              db.collection("users").doc(thisid).collection('Received Group Requests').doc(docRef.id).set(data)
+              expotoken = "";
+            db.collection("users").doc(thisid).get().then(function(doc) {
+              expotoken = doc.data().Token;
+              console.log("got token " + expotoken);
 
-                // update freetimes
-                freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(day);
-                freetimeRef.get().then((doc) => {
-                  freetimeData = doc.data();
-                  freetimeData['Freetime'][index] = 2
-                  if (data['Length'] === 1) {
-                    freetimeData['Freetime'][index+1] = 2
-                  }
-                  // console.log("my data", freetimeData)
-                freetimeRef.set(freetimeData).then(() => {
-                  console.log("My Document updated");
-                  })
-                  .catch(function(error) {
-                    console.error("Error updating", error);
-                  });
-                })
-            })
-            .catch(function(error) {
-                console.error("Error adding document: ", error);
+            if (expotoken !== undefined) {
+              console.log("SENDING NOTIFICATION NEW GROUP MEAL REQUEST FROM " + userName + " to " + thisid);
+            return fetch('https://exp.host/--/api/v2/push/send', {
+              body: JSON.stringify({
+                to: expotoken,
+                //title: "title",
+                body: `Group meal reschedule request from ${userName}!`,
+                data: { message: `Group meal reschedule request from ${userName}!` },
+              }),
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              method: 'POST',
             });
+            }
+
+            }).catch(function(error) {
+              console.log("Error getting document:", error);
+            });
+          }
+            }
+            day = weekdays[data['DateTime'].getDay()].day
+            amPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
+            hours = (data['DateTime'].getHours() % 12 || 12) + ":" + ("0" + data['DateTime'].getMinutes()).slice(-2) + " " + amPM
+            index = data_flip[hours]
+
+            // update freetimes
+            freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(day);
+            freetimeRef.get().then((doc) => {
+              freetimeData = doc.data();
+              freetimeData['Freetime'][index] = 2
+              if (data['Length'] === 1) {
+                freetimeData['Freetime'][index+1] = 2
+              }
+              // console.log("my data", freetimeData)
+            freetimeRef.set(freetimeData).then(() => {
+              console.log("My Document updated");
+              })
+              .catch(function(error) {
+                console.error("Error updating", error);
+              });
+            })
+        })
+        .catch(function(error) {
+            console.error("Error adding document: ", error);
+        });
+      }
+        else {
+          db.collection("users").doc(userID).collection('Sent Group Requests').doc(reschedule).set(data)
+        .then((docRef) => {
+            for (let thisid in prevData['members']) {
+              if (thisid != userID) {
+              db.collection("users").doc(thisid).collection('Received Group Requests').doc(docRef.id).set(data)
+              expotoken = "";
+            db.collection("users").doc(thisid).get().then(function(doc) {
+              expotoken = doc.data().Token;
+              console.log("got token " + expotoken);
+
+            if (expotoken !== undefined) {
+              console.log("SENDING NOTIFICATION NEW GROUP MEAL REQUEST FROM " + userName + " to " + thisid);
+            return fetch('https://exp.host/--/api/v2/push/send', {
+              body: JSON.stringify({
+                to: expotoken,
+                //title: "title",
+                body: `Group meal request from ${userName}!`,
+                data: { message: `Group meal request from ${userName}!` },
+              }),
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              method: 'POST',
+            });
+            }
+            }).catch(function(error) {
+              console.log("Error getting document:", error);
+            });
+          }
+            }
+            day = weekdays[data['DateTime'].getDay()].day
+            amPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
+            hours = (data['DateTime'].getHours() % 12 || 12) + ":" + ("0" + data['DateTime'].getMinutes()).slice(-2) + " " + amPM
+            index = data_flip[hours]
+
+            // update freetimes
+            freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(day);
+            freetimeRef.get().then((doc) => {
+              freetimeData = doc.data();
+              freetimeData['Freetime'][index] = 2
+              if (data['Length'] === 1) {
+                freetimeData['Freetime'][index+1] = 2
+              }
+              // console.log("my data", freetimeData)
+            freetimeRef.set(freetimeData).then(() => {
+              console.log("My Document updated");
+              })
+              .catch(function(error) {
+                console.error("Error updating", error);
+              });
+            })
+        })
+        .catch(function(error) {
+            console.error("Error adding document: ", error);
+        });}
       }
       else {
         db.collection("users").doc(userID).collection('Sent Group Requests').add(data)
@@ -464,7 +533,7 @@ export default class FinalRequestScreen extends React.Component {
             console.error("Error updating freetime: ", error);
           })
         }
-        else if (sent == true) {
+        else if (sent == true) { // sent request being rescheduled
           db.collection("users").doc(userID).collection('Sent Requests').doc(reschedule).delete().then(() => {
             console.log("Document successfully deleted!");
             for (let thisid in prevData['members']) {
@@ -498,7 +567,7 @@ export default class FinalRequestScreen extends React.Component {
             console.error("Error removing document: ", error);
           });
         }
-        else {
+        else { // received request being rescheduled
           db.collection("users").doc(userID).collection('Received Requests').doc(reschedule).delete().then(() => {
             console.log("Document successfully deleted!");
             db.collection("users").doc(Object.keys(prevData['members'])[0]).collection('Sent Requests').doc(reschedule).delete()

@@ -723,7 +723,7 @@ export default class HomeScreen extends Component {
             </View>
             <View style={{padding: 10}}>
               <TouchableHighlight style={{padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
-                onPress={this.rescheduleMeal}>
+                onPress={this.rescheduleGroupMeal}>
                 <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Reschedule Meal</Text>
               </TouchableHighlight>
             </View>
@@ -775,6 +775,21 @@ export default class HomeScreen extends Component {
         id: this.state.mealItem.FriendID,
         url: `http://graph.facebook.com/${this.state.mealItem.FriendID}/picture?type=large`,
         // mealID: mealID
+      });
+    })
+  }
+
+  rescheduleGroupMeal = () => {
+    // console.log("reschedule " + this.state.curMeal);
+    this.setState({mealModal: false});
+    db.collection('users').doc(userID).get().then((doc)=>{
+      // let mealID = doc.data().Calendar[this.state.curMeal].eventID;
+      this.props.navigation.navigate('GroupChosen', {
+        sent: 2,
+        reschedule: this.state.curMeal,
+        groupName: this.state.mealItem.groupName,
+        members: this.state.mealItem.members,
+        id: this.state.curMeal
       });
     })
   }
