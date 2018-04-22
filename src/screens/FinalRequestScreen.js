@@ -467,8 +467,33 @@ export default class FinalRequestScreen extends React.Component {
         else if (sent == true) {
           db.collection("users").doc(userID).collection('Sent Requests').doc(reschedule).delete().then(() => {
             console.log("Document successfully deleted!");
-            for (let thisid in prevData['members'])
+            for (let thisid in prevData['members']) {
               db.collection("users").doc(thisid).collection('Received Requests').doc(reschedule).delete()
+              expotoken = "";
+                db.collection("users").doc(thisid).get().then(function(doc) {
+                  expotoken = doc.data().Token;
+                  console.log("got token " + expotoken);
+
+                if (expotoken !== undefined) {
+                  console.log("SENDING NOTIFICATION NEW MEAL REQUEST FROM " + userName + " to " + thisid);
+                return fetch('https://exp.host/--/api/v2/push/send', {
+                  body: JSON.stringify({
+                    to: expotoken,
+                    //title: "title",
+                    body: `New meal request from ${userName}!`,
+                    data: { message: `New meal request from ${userName}!` },
+                  }),
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  method: 'POST',
+                });
+                }
+
+                }).catch(function(error) {
+                  console.log("Error getting document:", error);
+                });
+              }
           }).catch(function(error) {
             console.error("Error removing document: ", error);
           });
@@ -477,6 +502,30 @@ export default class FinalRequestScreen extends React.Component {
           db.collection("users").doc(userID).collection('Received Requests').doc(reschedule).delete().then(() => {
             console.log("Document successfully deleted!");
             db.collection("users").doc(Object.keys(prevData['members'])[0]).collection('Sent Requests').doc(reschedule).delete()
+            expotoken = "";
+                db.collection("users").doc(Object.keys(prevData['members'])[0]).get().then(function(doc) {
+                  expotoken = doc.data().Token;
+                  console.log("got token " + expotoken);
+
+                if (expotoken !== undefined) {
+                  console.log("SENDING NOTIFICATION NEW MEAL REQUEST FROM " + userName + " to " + Object.keys(prevData['members'])[0]);
+                return fetch('https://exp.host/--/api/v2/push/send', {
+                  body: JSON.stringify({
+                    to: expotoken,
+                    //title: "title",
+                    body: `New meal request from ${userName}!`,
+                    data: { message: `New meal request from ${userName}!` },
+                  }),
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  method: 'POST',
+                });
+                }
+
+                }).catch(function(error) {
+                  console.log("Error getting document:", error);
+                });
           }).catch(function(error) {
             console.error("Error removing document: ", error);
           });
