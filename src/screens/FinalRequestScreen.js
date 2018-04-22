@@ -4,7 +4,7 @@ import NavigationBar from 'navigationbar-react-native';
 import {Button} from 'react-native-elements';
 import { StackNavigator } from 'react-navigation';
 import firebase from "../config/firebase";
-import { Calendar } from 'expo';
+import { Calendar, Permissions } from 'expo';
 import { userName, userID } from '../screens/SignInScreen';
 
 const db = firebase.firestore();
@@ -384,14 +384,20 @@ export default class FinalRequestScreen extends React.Component {
 
   }
 
-  submitRequest = () => {
+  submitRequest = async () => {
     prevData = this.props.navigation.state.params
     let reschedule = prevData['reschedule'];
     let sent = prevData['sent'];
-    // if (prevData['mealID']) {
-    //   let mealID = prevData['mealID'];
-    //   Calendar.deleteEventAsync(mealID)
-    // }
+    if (prevData['mealID'] && reschedule) {
+      const { status } = await Permissions.getAsync('calendar');
+      if (status === 'granted') {
+        let mealID = prevData['mealID'];
+        Calendar.deleteEventAsync(mealID);
+        db.collection('users').doc(userID).update({
+          [`Calendar.${reschedule}`]:firebase.firestore.FieldValue.delete()
+        })
+      }
+    }
     data = new Object()
     data['FriendName'] = prevData['name']
     data['FriendID'] = Object.keys(prevData['members'])[0]
