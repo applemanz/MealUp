@@ -1,8 +1,6 @@
 import { Notifications } from 'expo';
 import React from 'react';
 import { StackNavigator, SwitchNavigator } from 'react-navigation';
-// import { ActionSheetProvider, connectActionSheet } from '@expo/react-native-action-sheet';
-
 import MainTabNavigator from './MainTabNavigator';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
 import SignInScreen from '../screens/SignInScreen';

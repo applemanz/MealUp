@@ -63,14 +63,12 @@ export default class SignInScreen extends React.Component {
   header: null,
   };
 
-  state = {
-    isLoading: true,
-  }
+  state = {}
   firstTime = false
 
   async componentWillMount() {
     registerForPushNotificationsAsync();
-    this._notificationSubscription = Notifications.addListener(this._handleNotification);
+    Notifications.addListener(this._handleNotification);
 
     AsyncStorage.multiGet(['loggedIn', 'userID', 'userName', 'userToken'], (err, stores) => {
        let userInfo = stores.map((result) => {
@@ -233,6 +231,8 @@ export default class SignInScreen extends React.Component {
                       // console.log("Freefriends", freeFriends)
                     })
                   }
+                registerForPushNotificationsAsync();
+                Notifications.addListener(this._handleNotification);
                 this.props.navigation.navigate('FirstTime');
               }
           }).catch(function(error) {

@@ -319,10 +319,10 @@ export default class FinalRequestScreen extends React.Component {
     prevData = this.props.navigation.state.params
     let reschedule = prevData['reschedule'];
     let sent = prevData['sent'];
-    if (prevData['mealID']) {
-      let mealID = prevData['mealID'];
-      Calendar.deleteEventAsync(mealID)
-    }
+    // if (prevData['mealID']) {
+    //   let mealID = prevData['mealID'];
+    //   Calendar.deleteEventAsync(mealID)
+    // }
     data = new Object()
     data['FriendName'] = prevData['name']
     data['FriendID'] = Object.keys(prevData['members'])[0]

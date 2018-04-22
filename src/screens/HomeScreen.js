@@ -743,14 +743,14 @@ export default class HomeScreen extends Component {
     // console.log("reschedule " + this.state.curMeal);
     this.setState({mealModal: false});
     db.collection('users').doc(userID).get().then((doc)=>{
-      let mealID = doc.data().Calendar[this.state.curMeal].eventID;
+      // let mealID = doc.data().Calendar[this.state.curMeal].eventID;
       this.props.navigation.navigate('FriendChosen', {
         sent: 2,
         reschedule: this.state.curMeal,
         name: this.state.mealItem.FriendName,
         id: this.state.mealItem.FriendID,
         url: `http://graph.facebook.com/${this.state.mealItem.FriendID}/picture?type=large`,
-        mealID: mealID
+        // mealID: mealID
       });
     })
   }
