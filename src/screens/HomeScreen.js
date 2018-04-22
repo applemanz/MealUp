@@ -638,7 +638,9 @@ export default class HomeScreen extends Component {
   }
 
   mealModal() {
-    if (this.state.mealItem.isGroup)
+    if (this.state.mealItem.isGroup && this.state.mealItem.initiator == userID)
+      height = 400
+    else if (this.state.mealItem.isGroup)
       height = 275
     else height = 420
     return (
@@ -682,7 +684,7 @@ export default class HomeScreen extends Component {
             </Text>
           </View>
 
-          {this.state.mealItem.isGroup &&
+          {this.state.mealItem.isGroup && this.state.mealItem.initiator !== userID &&
             <TouchableHighlight
               style={{marginTop:30,padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
               onPress={() => this.setState({mealModal: false})}>
@@ -690,6 +692,28 @@ export default class HomeScreen extends Component {
             </TouchableHighlight>
           }
           {!this.state.mealItem.isGroup &&
+            <View>
+            <View style={{padding: 10}}>
+              <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
+                onPress={this.cancelRequest}>
+                <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Cancel Meal</Text>
+              </TouchableHighlight>
+            </View>
+            <View style={{padding: 10}}>
+              <TouchableHighlight style={{padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
+                onPress={this.rescheduleMeal}>
+                <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Reschedule Meal</Text>
+              </TouchableHighlight>
+            </View>
+            <View style={{padding: 15, alignItems: 'center'}}>
+              <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
+                onPress={() => this.setState({mealModal: false})}>
+                <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Close</Text>
+              </TouchableHighlight>
+            </View>
+            </View>
+          }
+          {this.state.mealItem.isGroup && userID == this.state.mealItem.initiator &&
             <View>
             <View style={{padding: 10}}>
               <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
@@ -835,8 +859,55 @@ export default class HomeScreen extends Component {
             })
           }
         }
+
       console.log("canceling " + curMeal)
       this.setState({mealModal: false})
+
+      if (curMealRefData["isGroup"] === true) {
+        db.collection("users").doc(userID).collection('Meals').doc(curMeal).delete().then(() => {
+          console.log("Document successfully deleted!");
+          for (let thisid in curMealRefData["members"]) {
+          
+          db.collection("users").doc(thisid).collection('Meals').doc(curMeal).delete()
+          expotoken = "";
+          if (thisid !== userID) {
+                  db.collection("users").doc(thisid).get().then(function(doc) {
+                    expotoken = doc.data().Token;
+                    console.log("got token " + expotoken);
+  
+                    var hours = curMealRefData['DateTime'].getHours();
+                    var minutes = curMealRefData['DateTime'].getMinutes();
+                    var ampm = hours >= 12 ? 'PM' : 'AM';
+                    hours = hours % 12;
+                    hours = hours ? hours : 12; // the hour '0' should be '12'
+                    minutes = minutes < 10 ? '0'+minutes : minutes;
+                    var strTime = hours + ':' + minutes + ' ' + ampm;
+  
+                  if (expotoken !== undefined) {
+                    console.log("SENDING NOTIFICATION NEW GROUP MEAL REQUEST FROM " + userName + " to " + thisid);
+                  return fetch('https://exp.host/--/api/v2/push/send', {
+                    body: JSON.stringify({
+                      to: expotoken,
+                      //title: "title",
+                      body: `${userName} canceled your group meal on ${curMealRefData['DateTime'].toDateString().substring(0,10) + " at " + strTime}!`,
+                      data: { message: `${userName} canceled your group meal on ${curMealRefData['DateTime'].toDateString().substring(0,10) + " at " + strTime}!` },
+                    }),
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    method: 'POST',
+                  });
+                  }
+                  }).catch(function(error) {
+                    console.log("Error getting document:", error);
+                  });
+                }
+                }
+        }).catch(function(error) {
+          console.error("Error removing document: ", error);
+        });
+      
+      } else {
       db.collection("users").doc(userID).collection('Meals').doc(curMeal).delete().then(() => {
         console.log("Document successfully deleted!");
         db.collection("users").doc(curMealRefData["FriendID"]).collection('Meals').doc(curMeal).delete()
@@ -875,6 +946,7 @@ export default class HomeScreen extends Component {
         console.error("Error removing document: ", error);
       });
       }
+    }
     }).catch(function(error) {
        console.error("Error updating freetime: ", error);
     });
