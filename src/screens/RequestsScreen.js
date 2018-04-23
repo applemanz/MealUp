@@ -134,7 +134,7 @@ export default class RequestsScreen extends React.Component {
           data['id'] = doc.id
           console.log('meal declined')
           console.log(data.declined)
-          if (!data.declined)
+          if (!data.members[userID].declined)
             groupRequestR.push(data)
         } else {
           // console.log("REQUEST HAS PASSED: " + doc.data().DateTime);
@@ -561,7 +561,7 @@ export default class RequestsScreen extends React.Component {
             onPress={this.changeSentLocation}>
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Change Location</Text>
           </TouchableHighlight>
-        </View>}      
+        </View>}
         <View style={{padding: 10}}>
           <TouchableHighlight style={{padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
             onPress={this.rescheduleSentRequest}>

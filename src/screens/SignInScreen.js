@@ -29,7 +29,6 @@ export default class SignInScreen extends React.Component {
 
   async componentWillMount() {
     Notifications.addListener(this._handleNotification);
-
     AsyncStorage.multiGet(['loggedIn', 'userID', 'userName', 'userToken'], (err, stores) => {
        let userInfo = stores.map((result) => {
          // get at each store's key/value so you can work with it
@@ -48,6 +47,11 @@ export default class SignInScreen extends React.Component {
        }
      });
   }
+
+  // componentDidMount() {
+  //   registerForPushNotificationsAsync();
+  //   Notifications.addListener(this._handleNotification);
+  // }
 
   onSignInWithFacebook = async () => {
     const options = {permissions: ['public_profile', 'email', 'user_friends']};
@@ -68,7 +72,7 @@ export default class SignInScreen extends React.Component {
           console.log('error storing loggedIn')
         }
 
-        db.collection('users').doc(userID).get().then((doc) => {
+        db.collection('users').doc(userID).get().then(async (doc) => {
           if (!doc.exists) {
             this.firstTime = true
             console.log("First time visit");
@@ -76,94 +80,78 @@ export default class SignInScreen extends React.Component {
             db.collection('users').doc(userID).set({
               Name: userName,
             }, { merge: true })
-            .catch(function(error) {
-            console.error("Error updating document: ", error);
-            });
+            .then(async () => {
+              await this.registerForPushNotificationsAsync();
+              Notifications.addListener(this._handleNotification);
 
-          }
-          else {
-            this.props.navigation.navigate('Main');
-          }
-        }).catch(function(error) {
-          console.log("error detecting if doc exists", error);
-        });
-
-        for (var friend of friendsList) {
-          let thisfriend = friend;
-          db.collection('users').doc(userID).collection('Friends').doc(thisfriend.id).get().then(function(doc) {
-            if (!doc.exists) {
-              console.log("Friend doesn't exist", thisfriend.name)
-              db.collection('users').doc(userID).collection('Friends').doc(thisfriend.id).set({
-                Name: thisfriend.name,
-                CanViewMe: true,
-                CanViewFriend: true,
-                numOfMeals: 0
-              })
-            }
-          })
-        }
-
-        docRef = db.collection('users').doc(userID).collection('Freetime').doc('Monday');
-        docRef.get().then((doc) => {
-            if (doc.exists) {
-              this.props.navigation.navigate('Main');
-            }
-            else {
-              this.firstTime = true
+              // initialize friends
+              for (var friend of friendsList) {
+                db.collection('users').doc(userID).collection('Friends').doc(friend.id).set({
+                  Name: friend.name,
+                  CanViewMe: true,
+                  CanViewFriend: true,
+                  numOfMeals: 0
+                })
+              }
 
               // initialize Freetimes
               for (dofW of daysOfWeek) {
-                  db.collection('users').doc(userID).collection('Freetime').doc(dofW).set({
-                    Freetime: Array.from(Array(25), () => 0),
-                  })
-                }
+                db.collection('users').doc(userID).collection('Freetime').doc(dofW).set({
+                  Freetime: Array.from(Array(25), () => 0),
+                })
+              }
 
               // initialize  freeFriends and hasFreeFriends
               freeFriends = new Object()
               hasFreeFriends = new Object()
               for (dofW of daysOfWeek) {
-                  freeFriends[dofW] = {};
-                  hasFreeFriends[dofW] = {};
-                  for (i = 0; i < 25; i++) {
-                    freeFriends[dofW][i] = {}
-                    hasFreeFriends[dofW][i] = false;
-                  }
+                freeFriends[dofW] = {};
+                hasFreeFriends[dofW] = {};
+                for (i = 0; i < 25; i++) {
+                  freeFriends[dofW][i] = {}
+                  hasFreeFriends[dofW][i] = false;
                 }
+              }
 
               // populate freeFriends
               for (friend of friendsList) {
-                  let thisfriend = friend;
-                  db.collection('users').doc(thisfriend.id).collection('Freetime').get().then((querySnapshot) => {
-                    // console.log("I'm in then 1")
-                    querySnapshot.forEach(function(doc) {
-                      for (i = 0; i < 25; i++) {
-                        if (doc.data().Freetime[i] === 1) {
-                          freeFriends[doc.id][i][thisfriend.id] = true;
-                          hasFreeFriends[doc.id][i] = true;
-                        }
+                let thisfriend = friend;
+                db.collection('users').doc(thisfriend.id).collection('Freetime').get().then((querySnapshot) => {
+                  // console.log("I'm in then 1")
+                  querySnapshot.forEach(function(doc) {
+                    for (i = 0; i < 25; i++) {
+                      if (doc.data().Freetime[i] === 1) {
+                        freeFriends[doc.id][i][thisfriend.id] = true;
+                        hasFreeFriends[doc.id][i] = true;
                       }
-                    })
-
-                    // set freeFriends
-                    for (dofW of daysOfWeek) {
-                      db.collection('users').doc(userID).collection('FreeFriends').doc(dofW).set({
-                        Freefriends: freeFriends[dofW]
-                      })
-                      db.collection('users').doc(userID).collection('hasFreeFriends').doc(dofW).set({
-                        hasFreeFriends: hasFreeFriends[dofW]
-                      })
                     }
-                    // console.log("I'm here 2")
-                    // console.log("Freefriends", freeFriends)
                   })
-                }
 
-              registerForPushNotificationsAsync();
-              Notifications.addListener(this._handleNotification);
+                  // set freeFriends
+                  for (dofW of daysOfWeek) {
+                    db.collection('users').doc(userID).collection('FreeFriends').doc(dofW).set({
+                      Freefriends: freeFriends[dofW]
+                    })
+                    db.collection('users').doc(userID).collection('hasFreeFriends').doc(dofW).set({
+                      hasFreeFriends: hasFreeFriends[dofW]
+                    })
+                  }
+                })
+              }
+
               this.props.navigation.navigate('FirstTime');
-            }
+            })
+            .catch(function(error) {
+            console.error("Error updating document: ", error);
+            });
+          }
+          else {
+            await this.registerForPushNotificationsAsync();
+            Notifications.addListener(this._handleNotification);
+            this.props.navigation.navigate('Main');
+          }
         }).catch(function(error) {
-            console.log("Error getting document:", error);
+          console.log("error detecting if doc exists", error);
         });
       }
       catch (error) {
