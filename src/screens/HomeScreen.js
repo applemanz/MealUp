@@ -47,7 +47,6 @@ export default class HomeScreen extends Component {
     if (status === 'granted') {
       this.setState({calendarPermission:true})
     }
-
     db.collection("users").doc(userID).collection('Meals').onSnapshot((querySnapshot) => {
       db.collection('users').doc(userID).get().then((userinfo)=>{
         let calendarInfo = userinfo.data().Calendar
@@ -61,6 +60,7 @@ export default class HomeScreen extends Component {
         console.log('selectedCalendar')
         console.log(selectedCalendar)
         let meals = []
+        let mealIDs = []
         querySnapshot.forEach((doc) => {
           today = new Date()
           today.setHours(0, 0, 0, 0)
@@ -75,6 +75,7 @@ export default class HomeScreen extends Component {
               }
             }
             meals.push(doc.data());
+            mealIDs.push(doc.id)
             meals[meals.length-1]['docid'] = doc.id;
           }
           else {
@@ -102,7 +103,18 @@ export default class HomeScreen extends Component {
             });
           }
         })
-
+        console.log(meals)
+        if (calendarInfo) {
+          for (mealID in calendarInfo) {
+            if (!mealIDs.includes(mealID)) {
+              let id = calendarInfo[mealID].eventID
+              Calendar.deleteEventAsync(id)
+              db.collection('users').doc(userID).update({
+                [`Calendar.${mealID}`]:firebase.firestore.FieldValue.delete()
+              })
+            }
+          }
+        }
         if (meals.length == 0) {
           updatedItems = this.createEmptyData();
           this.setState({items: updatedItems});
@@ -654,7 +666,7 @@ export default class HomeScreen extends Component {
             <View>
             <View style={{padding: 10}}>
               <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
-                onPress={this.cancelRequest}>
+                onPress={this.cancelMeal}>
                 <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Cancel Meal</Text>
               </TouchableHighlight>
             </View>
@@ -676,7 +688,7 @@ export default class HomeScreen extends Component {
             <View>
             <View style={{padding: 10}}>
               <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
-                onPress={this.cancelRequest}>
+                onPress={this.cancelMeal}>
                 <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Cancel Meal</Text>
               </TouchableHighlight>
             </View>
@@ -756,7 +768,7 @@ export default class HomeScreen extends Component {
     })
   }
 
-  cancelRequest = () => {
+  cancelMeal = () => {
     console.log(this.state.curMeal)
     curMeal = this.state.curMeal
     console.log(this.state.calendarPermission)
@@ -778,6 +790,7 @@ export default class HomeScreen extends Component {
         }
       })
     }
+
     curMealRef = db.collection("users").doc(userID).collection('Meals').doc(this.state.curMeal)
 
     curMealRef.get().then((doc) => {
@@ -941,7 +954,6 @@ export default class HomeScreen extends Component {
 
 const styles = StyleSheet.create({
   item: {
-    // backgroundColor: '#f9a56a',
     flex: 1,
     borderRadius: 5,
     padding: 10,

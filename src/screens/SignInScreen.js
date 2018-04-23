@@ -28,8 +28,7 @@ export default class SignInScreen extends React.Component {
   firstTime = false
 
   async componentWillMount() {
-    // registerForPushNotificationsAsync();
-    // Notifications.addListener(this._handleNotification);
+    Notifications.addListener(this._handleNotification);
 
     AsyncStorage.multiGet(['loggedIn', 'userID', 'userName', 'userToken'], (err, stores) => {
        let userInfo = stores.map((result) => {
@@ -47,11 +46,9 @@ export default class SignInScreen extends React.Component {
        else {
          this.setState({loggedIn:false})
        }
-
      });
   }
 
-  //get users permission authorization (ret: facebook token)
   onSignInWithFacebook = async () => {
     const options = {permissions: ['public_profile', 'email', 'user_friends']};
     const {type, token} = await Facebook.logInWithReadPermissionsAsync("159765391398008", options);
@@ -173,7 +170,7 @@ export default class SignInScreen extends React.Component {
         console.error(error);
       }
     }
-  };
+  }
 
   async registerForPushNotificationsAsync() {
     const { status: existingStatus } = await Permissions.getAsync(
