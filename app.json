@@ -24,7 +24,7 @@
     "android": {
       "icon": "./assets/images/androidIcon.png",
       "package":"com.mealupteam.mealup",
-      "versionCode": 1,
+      "versionCode": 2,
 
     }
   }
