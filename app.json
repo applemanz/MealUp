@@ -23,9 +23,13 @@
     },
     "android": {
       "icon": "./assets/images/androidIcon.png",
+      "googleServicesFile": "./google-services.json",
       "package":"com.mealupteam.mealup",
-      "versionCode": 2,
-
+      "versionCode": 3,
+    },
+    "notification": {
+      "icon": "./assets/images/notificationIcon.png",
+      "color": "#FF531F"
     }
   }
 }

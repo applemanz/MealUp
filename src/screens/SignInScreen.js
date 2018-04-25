@@ -28,8 +28,7 @@ export default class SignInScreen extends React.Component {
   firstTime = false
 
   async componentWillMount() {
-    Notifications.addListener(this._handleNotification);
-    AsyncStorage.multiGet(['loggedIn', 'userID', 'userName', 'userToken'], (err, stores) => {
+    AsyncStorage.multiGet(['loggedIn', 'userID', 'userName', 'userToken'], async (err, stores) => {
        let userInfo = stores.map((result) => {
          // get at each store's key/value so you can work with it
          return result[1]
@@ -39,6 +38,8 @@ export default class SignInScreen extends React.Component {
          userID = userInfo[1]
          userName = userInfo[2]
          userToken = userInfo[3]
+         await this.registerForPushNotificationsAsync();
+         Notifications.addListener(this._handleNotification);
          this.setState({loggedIn:true})
          this.props.navigation.navigate('Main');
        }
@@ -47,11 +48,6 @@ export default class SignInScreen extends React.Component {
        }
      });
   }
-
-  // componentDidMount() {
-  //   registerForPushNotificationsAsync();
-  //   Notifications.addListener(this._handleNotification);
-  // }
 
   onSignInWithFacebook = async () => {
     const options = {permissions: ['public_profile', 'email', 'user_friends']};
