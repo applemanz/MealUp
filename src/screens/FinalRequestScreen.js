@@ -16,6 +16,7 @@ const data_flip = {'7:30 AM': 0, '8:00 AM': 1, '8:30 AM': 2, '9:00 AM': 3, '9:30
 '11:00 AM': 7, '11:30 AM': 8, '12:00 PM': 9, '12:30 PM': 10, '1:00 PM': 11, '1:30 PM': 12, '2:00 PM': 13, '2:30 PM': 14,
 '3:00 PM': 15, '3:30 PM': 16, '4:00 PM': 17, '4:30 PM': 18, '5:00 PM': 19, '5:30 PM': 20, '6:00 PM': 21, '6:30 PM': 22,
 '7:00 PM': 23, '7:30 PM': 24}
+const late_meal_hours = ['2:00', '2:30', '3:00', '3:30', '4:00', '4:30']
 const weekdays = [
 {key:0, day:'Sunday'}, {key:1, day:'Monday'}, {key:2, day:'Tuesday'}, {key:3, day:'Wednesday'}, {key:4, day:'Thursday'},
 {key:5, day:'Friday'}, {key:6, day:'Saturday'}
@@ -32,75 +33,99 @@ export default class FinalRequestScreen extends React.Component {
 	state = {location: "Wilcox"}
 
 
-  renderOptions() {
-    if (this.state.location == "Eating Clubs") {
-      return (<View>
+  renderOptions = ({time}) => {
+    if (late_meal_hours.indexOf(time.substring(0,4)) != -1) { // during late meal hours
+      if (this.state.location == "Frist" || this.state.location == "Wilcox") {
+        return (<Picker
+          selectedValue = {this.state.location}
+          onValueChange = {(itemValue, itemIndex) => {this.setState({location: itemValue})
+          }}>
+          <Picker.Item label="Frist" value="Frist" />
+          <Picker.Item label="Custom Location >" value="Custom Location" />
+        </Picker>);
+      } else { // custom location
+        return (<View>
+        <TextInput
+          style = {{height: 40, borderWidth: 0.5, backgroundColor: 'white', margin: 20, padding: 10}}
+          onChangeText = {(text) => this.setState({location: text})}
+          // value = {this.state.location}
+          maxLength = {40}
+          placeholder = {"Type your custom location..."}
+        />
+        <Button title="< Back" backgroundColor='#f4511e' borderRadius={50} raised onPress={() => {this.setState({location: "Wilcox"})}}/>
+        </View>);
+      }
+    } 
+    else { // not during late meal hours
+      if (this.state.location == "Eating Clubs") {
+        return (<View>
+          <Picker
+          selectedValue = {"Cannon"}
+          onValueChange = {(itemValue, itemIndex) => {this.setState({location: itemValue})
+          }}>
+          <Picker.Item label="Cannon" value="Cannon" />
+          <Picker.Item label="Cap" value="Cap" />
+          <Picker.Item label="Charter" value="Charter" />
+          <Picker.Item label="Cloister" value="Cloister" />
+          <Picker.Item label="Colonial" value="Colonial" />
+          <Picker.Item label="Cottage" value="Cottage" />
+          <Picker.Item label="Ivy" value="Ivy" />
+          <Picker.Item label="Quad" value="Quad" />
+          <Picker.Item label="Terrace" value="Terrace" />
+          <Picker.Item label="TI" value="TI" />
+          <Picker.Item label="Tower" value="Tower" />
+        </Picker>
+        <Button title="< Back" backgroundColor='#f4511e' borderRadius={50} raised onPress={() => {this.setState({location: "Wilcox"})}}/>
+        </View>);
+      } else if (eating_clubs.indexOf(this.state.location) != -1) {
+        return (<View>
         <Picker
-        selectedValue = {"Cannon"}
-        onValueChange = {(itemValue, itemIndex) => {this.setState({location: itemValue})
-        }}>
-        <Picker.Item label="Cannon" value="Cannon" />
-        <Picker.Item label="Cap" value="Cap" />
-        <Picker.Item label="Charter" value="Charter" />
-        <Picker.Item label="Cloister" value="Cloister" />
-        <Picker.Item label="Colonial" value="Colonial" />
-        <Picker.Item label="Cottage" value="Cottage" />
-        <Picker.Item label="Ivy" value="Ivy" />
-        <Picker.Item label="Quad" value="Quad" />
-        <Picker.Item label="Terrace" value="Terrace" />
-        <Picker.Item label="TI" value="TI" />
-        <Picker.Item label="Tower" value="Tower" />
-      </Picker>
-      <Button title="< Back" backgroundColor='#f4511e' borderRadius={50} raised onPress={() => {this.setState({location: "Wilcox"})}}/>
-      </View>);
-    } else if (eating_clubs.indexOf(this.state.location) != -1) {
-      return (<View>
-      <Picker
-        selectedValue = {this.state.location}
-        onValueChange = {(itemValue, itemIndex) => {this.setState({location: itemValue})
-        }}>
-        <Picker.Item label="Cannon" value="Cannon" />
-        <Picker.Item label="Cap" value="Cap" />
-        <Picker.Item label="Charter" value="Charter" />
-        <Picker.Item label="Cloister" value="Cloister" />
-        <Picker.Item label="Colonial" value="Colonial" />
-        <Picker.Item label="Cottage" value="Cottage" />
-        <Picker.Item label="Ivy" value="Ivy" />
-        <Picker.Item label="Quad" value="Quad" />
-        <Picker.Item label="Terrace" value="Terrace" />
-        <Picker.Item label="TI" value="TI" />
-        <Picker.Item label="Tower" value="Tower" />
-      </Picker>
-      <Button title="< Back" backgroundColor='#f4511e' borderRadius={50} raised onPress={() => {this.setState({location: "Wilcox"})}}/>
-      </View>);
-    } else if (all_options.indexOf(this.state.location) != -1) {
-      return (<Picker
-        selectedValue = {this.state.location}
-        onValueChange = {(itemValue, itemIndex) => {this.setState({location: itemValue})
-        }}>
-        <Picker.Item label="Wilcox" value="Wilcox" />
-        <Picker.Item label="Wu" value="Wu" />
-        <Picker.Item label="Rocky" value="Rocky" />
-        <Picker.Item label="Mathey" value="Mathey" />
-        <Picker.Item label="Whitman" value="Whitman" />
-        <Picker.Item label="Frist" value="Frist" />
-        <Picker.Item label="Forbes" value="Forbes" />
-        <Picker.Item label="CJL" value="CJL" />
-        <Picker.Item label="Grad College" value="Grad College" />
-        <Picker.Item label="Eating Clubs >" value="Eating Clubs" />
-        <Picker.Item label="Custom Location >" value="Custom Location" />
-      </Picker>);
-    } else {
-      return (<View>
-      <TextInput
-        style = {{height: 40, borderWidth: 0.5, backgroundColor: 'white', margin: 20, padding: 10}}
-        onChangeText = {(text) => this.setState({location: text})}
-        // value = {this.state.location}
-        maxLength = {40}
-        placeholder = {"Type your custom location..."}
-      />
-      <Button title="< Back" backgroundColor='#f4511e' borderRadius={50} raised onPress={() => {this.setState({location: "Wilcox"})}}/>
-      </View>);
+          selectedValue = {this.state.location}
+          onValueChange = {(itemValue, itemIndex) => {this.setState({location: itemValue})
+          }}>
+          <Picker.Item label="Cannon" value="Cannon" />
+          <Picker.Item label="Cap" value="Cap" />
+          <Picker.Item label="Charter" value="Charter" />
+          <Picker.Item label="Cloister" value="Cloister" />
+          <Picker.Item label="Colonial" value="Colonial" />
+          <Picker.Item label="Cottage" value="Cottage" />
+          <Picker.Item label="Ivy" value="Ivy" />
+          <Picker.Item label="Quad" value="Quad" />
+          <Picker.Item label="Terrace" value="Terrace" />
+          <Picker.Item label="TI" value="TI" />
+          <Picker.Item label="Tower" value="Tower" />
+        </Picker>
+        <Button title="< Back" backgroundColor='#f4511e' borderRadius={50} raised onPress={() => {this.setState({location: "Wilcox"})}}/>
+        </View>);
+      } else if (all_options.indexOf(this.state.location) != -1) {
+        return (<Picker
+          selectedValue = {this.state.location}
+          onValueChange = {(itemValue, itemIndex) => {this.setState({location: itemValue})
+          }}>
+          <Picker.Item label="Wilcox" value="Wilcox" />
+          <Picker.Item label="Wu" value="Wu" />
+          <Picker.Item label="Rocky" value="Rocky" />
+          <Picker.Item label="Mathey" value="Mathey" />
+          <Picker.Item label="Whitman" value="Whitman" />
+          <Picker.Item label="Frist" value="Frist" />
+          <Picker.Item label="Forbes" value="Forbes" />
+          <Picker.Item label="CJL" value="CJL" />
+          <Picker.Item label="Grad College" value="Grad College" />
+          <Picker.Item label="Eating Clubs >" value="Eating Clubs" />
+          <Picker.Item label="Custom Location >" value="Custom Location" />
+        </Picker>);
+      } else { // custom location
+        return (<View>
+        <TextInput
+          style = {{height: 40, borderWidth: 0.5, backgroundColor: 'white', margin: 20, padding: 10}}
+          onChangeText = {(text) => this.setState({location: text})}
+          // value = {this.state.location}
+          maxLength = {40}
+          placeholder = {"Type your custom location..."}
+        />
+        <Button title="< Back" backgroundColor='#f4511e' borderRadius={50} raised onPress={() => {this.setState({location: "Wilcox"})}}/>
+        </View>);
+      }
     }
   }
 
@@ -144,7 +169,7 @@ export default class FinalRequestScreen extends React.Component {
                <Text>Select a Location:</Text>
           </View>
           <View style = {{marginBottom:50}}>
-            { this.renderOptions() }
+            { this.renderOptions({time}) }
           </View>
           <Button title="Submit" backgroundColor='#f4511e' borderRadius={50} raised onPress={this.submitGroupRequest}/>
         </View>
@@ -166,7 +191,7 @@ export default class FinalRequestScreen extends React.Component {
     			     <Text>Select a Location:</Text>
     			</View>
           <View style = {{marginBottom:50}}>
-            { this.renderOptions() }
+            { this.renderOptions({time}) }
           </View>
     			<Button title="Submit" backgroundColor='#f4511e' borderRadius={50} raised onPress={this.submitRequest}/>
   			</View>
