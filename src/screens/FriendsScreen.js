@@ -21,9 +21,9 @@ export default class FriendsScreen extends React.Component {
 
   componentDidMount() {
     this.getFriendsAndGroups()
-    this.props.navigation.addListener('willFocus', ()=>{
-      this.onRefresh();
-    });
+    // this.props.navigation.addListener('willFocus', ()=>{
+    //   this.onRefresh();
+    // });
   }
 
   getFriendsAndGroups() {
@@ -56,8 +56,11 @@ export default class FriendsScreen extends React.Component {
 
 
   onRefresh  = async () => {
-    const response = await fetch(`https://graph.facebook.com/me?access_token=${userToken}&fields=friends`);
+    console.log(userToken)
+    const response = await fetch(`https://graph.facebook.com/me?access_token=${userToken}&fields=id,name,friends`);
+    console.log(response)
     const userData = await response.json();
+    console.log(userData)
     const friendsList = userData.friends.data;
     console.log(friendsList);
     for (var friend of friendsList) {

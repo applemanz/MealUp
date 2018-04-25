@@ -147,9 +147,9 @@ export default class FriendChosenScreen extends React.Component {
 
     if (this.state.matches1) {
 
-      const reschedule = params ? params.reschedule : undefined;
-      const sent = params ? params.sent : undefined;
-      const mealID = params ? params.mealID : undefined;
+      const reschedule = params.reschedule ? params.reschedule : undefined;
+      const sent = params.sent ? params.sent : undefined;
+      const mealID = params.mealID ? params.mealID : undefined;
 
       match1 = [];
       match2 = [];

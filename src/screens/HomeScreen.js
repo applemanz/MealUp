@@ -37,64 +37,48 @@ export default class HomeScreen extends Component {
       displaydate: "",
       selectCalendarModal: false,
       calendars: [],
-      selectedCalendar: {}
+      selectedCalendar: {},
+      calendarPermission: false,
     }
-  }
-
-  async componentWillMount() {
-    try {
-      calendarPermission = await AsyncStorage.getItem('calendarPermission');
-    } catch (error) {
-      calendarPermission = false
-    }
-    if (calendarPermission === 'true') {
-      calendarPermission = true
-    }
-    console.log(calendarPermission)
-    this.setState({calendarPermission:calendarPermission})
-
-    db.collection('users').doc(userID).get().then((doc)=>{
-      if (doc.data().selectedCalendar)
-        this.setState({selectedCalendar:doc.data().selectedCalendar})
-      console.log(doc.data().selectedCalendar)
-    })
   }
 
   async componentDidMount() {
-    // this.props.navigation.addListener('willFocus', ()=>{
-    //   this.onRefresh();
-    // });
-
+    const { status } = await Permissions.getAsync('calendar');
+    if (status === 'granted') {
+      this.setState({calendarPermission:true})
+    }
     db.collection("users").doc(userID).collection('Meals').onSnapshot((querySnapshot) => {
-      // meals = [];
       db.collection('users').doc(userID).get().then((userinfo)=>{
-        calendarInfo = userinfo.data().Calendar
-        // console.log(calendarInfo)
+        let calendarInfo = userinfo.data().Calendar
+        let selectedCalendar = userinfo.data().selectedCalendar
+        if (!selectedCalendar)
+          this.setState({selectedCalendar:{}})
+        else
+          this.setState({selectedCalendar:selectedCalendar})
+        console.log('calendarInfo')
+        console.log(calendarInfo)
+        console.log('selectedCalendar')
+        console.log(selectedCalendar)
         let meals = []
+        let mealIDs = []
         querySnapshot.forEach((doc) => {
-          // if (doc.id === 'calendar') {return}
           today = new Date()
           today.setHours(0, 0, 0, 0)
           if (doc.data().DateTime >= today) {
-
-
-
-            if (this.state.calendarPermission && this.state.selectedCalendar.id) {
+            if (this.state.calendarPermission === true && this.state.selectedCalendar.hasOwnProperty('id')) {
               if (calendarInfo) {
-                  if (!calendarInfo[doc.id] || !calendarInfo[doc.id].inCalendar) {
-                    let meal = doc.data()
-                    meal.docid = doc.id
-                    this.addToCalendar(meal)
-                  }
+                if (!calendarInfo.hasOwnProperty(doc.id)) {
+                  let meal = doc.data()
+                  meal.docid = doc.id
+                  this.addToCalendar(meal)
+                }
               }
             }
             meals.push(doc.data());
+            mealIDs.push(doc.id)
             meals[meals.length-1]['docid'] = doc.id;
-            //console.log("SETTING DOCID TO " + meals[meals.length-1] + " " + doc.id);
           }
           else {
-            //console.log("MEAL HAS PASSED: " + doc.data().DateTime);
-            // TODO convert meal back to freetime in array
             weekday = weekdays[doc.data().DateTime.getDay()].day
             freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(weekday);
             freetimeRef.get().then(function(doc) {
@@ -119,18 +103,24 @@ export default class HomeScreen extends Component {
             });
           }
         })
-        console.log('meals')
         console.log(meals)
-        if (meals.length == 0) {
-          updatedItems = this.createEmptyData()
-          this.setState((prevState) => {
-            return {items: updatedItems}
-          });
+        if (calendarInfo) {
+          for (mealID in calendarInfo) {
+            if (!mealIDs.includes(mealID)) {
+              let id = calendarInfo[mealID].eventID
+              Calendar.deleteEventAsync(id)
+              db.collection('users').doc(userID).update({
+                [`Calendar.${mealID}`]:firebase.firestore.FieldValue.delete()
+              })
+            }
+          }
         }
-        console.log(meals)
-        // this.setState({meals:meals})
+        if (meals.length == 0) {
+          updatedItems = this.createEmptyData();
+          this.setState({items: updatedItems});
+        }
         this.updateItems(meals);
-      })
+      });
     });
   }
 
@@ -359,10 +349,10 @@ export default class HomeScreen extends Component {
   }
 
   exportMeals = () => {
-
     db.collection('users').doc(userID).get().then((userinfo)=>{
       let calendarInfo = userinfo.data().Calendar
       let selectedCalendar = userinfo.data().selectedCalendar
+
 
       // first time uploading
       if (!calendarInfo && this.state.selectedCalendar.id) {
@@ -374,10 +364,11 @@ export default class HomeScreen extends Component {
           })
         })
       }
+      // changed calendar
       else if (this.state.selectedCalendar.id && selectedCalendar !== this.state.selectedCalendar) {
-        console.log('new calendar selected')
-        // bug
-        if (selectedCalendar) {
+        console.log('New calendar selected')
+        // delete events from old calendar
+        if (selectedCalendar !== null) {
           for (mealID in calendarInfo) {
             console.log(calendarInfo[mealID].calendarID)
             console.log(selectedCalendar.id)
@@ -385,23 +376,12 @@ export default class HomeScreen extends Component {
               Calendar.deleteEventAsync(calendarInfo[mealID].eventID)
           }
         }
-
+        // add meals to new calendar
         db.collection("users").doc(userID).collection('Meals').get().then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
             let meal = doc.data()
             meal.docid = doc.id
             this.addToCalendar(meal)
-          })
-        })
-      }
-      else if (this.state.selectedCalendar.id) {
-        db.collection("users").doc(userID).collection('Meals').get().then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            if (!calendarInfo[doc.id] || !calendarInfo[doc.id].inCalendar) {
-              let meal = doc.data()
-              meal.docid = doc.id
-              this.addToCalendar(meal)
-            }
           })
         })
       }
@@ -415,67 +395,58 @@ export default class HomeScreen extends Component {
 
   addToCalendar = async (meal) => {
     if (this.state.selectedCalendar.id) {
-    if (!meal.isGroup) {
-      start = moment(meal.DateTime)
-      if (meal.Length === 0.5)
-        start.add(30, 'm')
-      else start.add(1, 'h')
-      console.log(start.format())
-    let details = Platform.OS === 'ios' ? {
-        startDate: meal.DateTime.toISOString(),
-        endDate: start.toISOString(),
-        title: `Meal with ${meal.FriendName.split(" ")[0]}`,
-        location: meal.Location,
-      } : {
-        startDate: meal.DateTime.toISOString(),
-        endDate: start.toISOString(),
-        title: `Meal with ${meal.FriendName.split(" ")[0]}`,
-        location: meal.Location,
-        timeZone: "America/New_York",
-      }
-    console.log(details)
-    console.log(this.state.selectedCalendar.id)
-    mealID = await Calendar.createEventAsync(this.state.selectedCalendar.id, details)
-    mealID = mealID.toString()
-    let data = {[`Calendar.${meal.docid}.inCalendar`]: true, [`Calendar.${meal.docid}.eventID`]:mealID, [`Calendar.${meal.docid}.calendarID`]: this.state.selectedCalendar.id}
-    console.log(data)
-    db.collection("users").doc(userID).update(data)
+        start = moment(meal.DateTime)
+        if (meal.Length === 0.5)
+          start.add(30, 'm')
+        else
+          start.add(1, 'h')
+        if (!meal.isGroup) {
+          title = `Meal with ${meal.FriendName.split(" ")[0]}`
+        }
+        else {
+          title = `Meal with ${meal.groupName}`
+        }
+        let details = Platform.OS === 'ios' ? {
+          startDate: meal.DateTime.toISOString(),
+          endDate: start.toISOString(),
+          title: title,
+          location: meal.Location,
+        } : {
+          startDate: meal.DateTime.toISOString(),
+          endDate: start.toISOString(),
+          title: title,
+          location: meal.Location,
+          timeZone: "America/New_York",
+        }
+        console.log('adding meal to calendar')
+        mealID = await Calendar.createEventAsync(this.state.selectedCalendar.id, details)
+        mealID = mealID.toString()
+        let data = {
+          [`Calendar.${meal.docid}.inCalendar`]: true,
+          [`Calendar.${meal.docid}.eventID`]:mealID,
+          [`Calendar.${meal.docid}.calendarID`]: this.state.selectedCalendar.id
+        }
+        db.collection("users").doc(userID).update(data)
     }
-    }
-
   }
 
   calendarSetUp = async () => {
     const { status } = await Permissions.askAsync('calendar');
-    if (status === 'granted') hasCalendarPermission = 'true'
-    else hasCalendarPermission = 'false'
-    console.log(hasCalendarPermission)
-    try {
-      await AsyncStorage.setItem('calendarPermission', hasCalendarPermission);
-    } catch (error) {
-      console.log('could not save calendar permission')
-      console.log(error)
-    }
-
-    if (hasCalendarPermission === 'true') {
-
+    if (status === 'granted') {
+      this.setState({calendarPermission:true})
       cals = await Calendar.getCalendarsAsync()
-      // console.log(cals)
       if (Platform.OS === 'ios') {
         sources = await Calendar.getSourcesAsync()
-        // console.log(sources)
         calendars = []
         sections = []
         for (let source of sources) {
           sections.push({title:source.name, data:[]})
         }
-        // console.log(sections)
         for (let cal of cals) {
           console.log(cal.source.name)
           index = sections.findIndex(source => source.title===cal.source.name)
           sections[index].data.push(cal)
         }
-        // console.log(sections)
         sections.sort(function(a, b) {
           aTitle = a.title.toUpperCase()
           bTitle = b.title.toUpperCase()
@@ -638,7 +609,9 @@ export default class HomeScreen extends Component {
   }
 
   mealModal() {
-    if (this.state.mealItem.isGroup)
+    if (this.state.mealItem.isGroup && this.state.mealItem.initiator == userID)
+      height = 400
+    else if (this.state.mealItem.isGroup)
       height = 275
     else height = 420
     return (
@@ -682,7 +655,7 @@ export default class HomeScreen extends Component {
             </Text>
           </View>
 
-          {this.state.mealItem.isGroup &&
+          {this.state.mealItem.isGroup && this.state.mealItem.initiator !== userID &&
             <TouchableHighlight
               style={{marginTop:30,padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
               onPress={() => this.setState({mealModal: false})}>
@@ -693,13 +666,35 @@ export default class HomeScreen extends Component {
             <View>
             <View style={{padding: 10}}>
               <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
-                onPress={this.cancelRequest}>
+                onPress={this.cancelMeal}>
                 <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Cancel Meal</Text>
               </TouchableHighlight>
             </View>
             <View style={{padding: 10}}>
               <TouchableHighlight style={{padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
                 onPress={this.rescheduleMeal}>
+                <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Reschedule Meal</Text>
+              </TouchableHighlight>
+            </View>
+            <View style={{padding: 15, alignItems: 'center'}}>
+              <TouchableHighlight style={{padding: 10, backgroundColor: "#DDDDDD", borderRadius: 5}}
+                onPress={() => this.setState({mealModal: false})}>
+                <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Close</Text>
+              </TouchableHighlight>
+            </View>
+            </View>
+          }
+          {this.state.mealItem.isGroup && userID == this.state.mealItem.initiator &&
+            <View>
+            <View style={{padding: 10}}>
+              <TouchableHighlight style={{padding: 10, backgroundColor: "#d9534f", borderRadius: 5}}
+                onPress={this.cancelMeal}>
+                <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Cancel Meal</Text>
+              </TouchableHighlight>
+            </View>
+            <View style={{padding: 10}}>
+              <TouchableHighlight style={{padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
+                onPress={this.rescheduleGroupMeal}>
                 <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>Reschedule Meal</Text>
               </TouchableHighlight>
             </View>
@@ -740,10 +735,13 @@ export default class HomeScreen extends Component {
   }
 
   rescheduleMeal = () => {
-    // console.log("reschedule " + this.state.curMeal);
     this.setState({mealModal: false});
     db.collection('users').doc(userID).get().then((doc)=>{
-      let mealID = doc.data().Calendar[this.state.curMeal].eventID;
+      if (doc.data().Calendar) {
+        cal = doc.data().Calendar
+        if (cal.hasOwnProperty(this.state.curMeal))
+          mealID = cal[this.state.curMeal].eventID;
+      }
       this.props.navigation.navigate('FriendChosen', {
         sent: 2,
         reschedule: this.state.curMeal,
@@ -755,20 +753,44 @@ export default class HomeScreen extends Component {
     })
   }
 
-  cancelRequest = () => {
+  rescheduleGroupMeal = () => {
+    // console.log("reschedule " + this.state.curMeal);
+    this.setState({mealModal: false});
+    db.collection('users').doc(userID).get().then((doc)=>{
+      // let mealID = doc.data().Calendar[this.state.curMeal].eventID;
+      this.props.navigation.navigate('GroupChosen', {
+        sent: 2,
+        reschedule: this.state.curMeal,
+        groupName: this.state.mealItem.groupName,
+        members: this.state.mealItem.members,
+        id: this.state.curMeal
+      });
+    })
+  }
+
+  cancelMeal = () => {
     console.log(this.state.curMeal)
     curMeal = this.state.curMeal
     console.log(this.state.calendarPermission)
 
     if (this.state.calendarPermission) {
       db.collection('users').doc(userID).get().then((doc)=>{
-        let id = doc.data().Calendar[this.state.curMeal].eventID
-        console.log('event id')
-        console.log(id)
-        Calendar.deleteEventAsync(id)
-        console.log('deleting event')
+        cal = doc.data().Calendar
+        if (cal) {
+          if (cal.hasOwnProperty(this.state.curMeal)) {
+            let id = doc.data().Calendar[this.state.curMeal].eventID
+            console.log('event id')
+            console.log(id)
+            Calendar.deleteEventAsync(id)
+            console.log('deleting event')
+            db.collection('users').doc(userID).update({
+              [`Calendar.${this.state.curMeal}`]:firebase.firestore.FieldValue.delete()
+            })
+          }
+        }
       })
     }
+
     curMealRef = db.collection("users").doc(userID).collection('Meals').doc(this.state.curMeal)
 
     curMealRef.get().then((doc) => {
@@ -835,8 +857,55 @@ export default class HomeScreen extends Component {
             })
           }
         }
+
       console.log("canceling " + curMeal)
       this.setState({mealModal: false})
+
+      if (curMealRefData["isGroup"] === true) {
+        db.collection("users").doc(userID).collection('Meals').doc(curMeal).delete().then(() => {
+          console.log("Document successfully deleted!");
+          for (let thisid in curMealRefData["members"]) {
+
+          db.collection("users").doc(thisid).collection('Meals').doc(curMeal).delete()
+          expotoken = "";
+          if (thisid !== userID) {
+                  db.collection("users").doc(thisid).get().then(function(doc) {
+                    expotoken = doc.data().Token;
+                    console.log("got token " + expotoken);
+
+                    var hours = curMealRefData['DateTime'].getHours();
+                    var minutes = curMealRefData['DateTime'].getMinutes();
+                    var ampm = hours >= 12 ? 'PM' : 'AM';
+                    hours = hours % 12;
+                    hours = hours ? hours : 12; // the hour '0' should be '12'
+                    minutes = minutes < 10 ? '0'+minutes : minutes;
+                    var strTime = hours + ':' + minutes + ' ' + ampm;
+
+                  if (expotoken !== undefined) {
+                    console.log("SENDING NOTIFICATION NEW GROUP MEAL REQUEST FROM " + userName + " to " + thisid);
+                  return fetch('https://exp.host/--/api/v2/push/send', {
+                    body: JSON.stringify({
+                      to: expotoken,
+                      //title: "title",
+                      body: `${userName} canceled your group meal on ${curMealRefData['DateTime'].toDateString().substring(0,10) + " at " + strTime}!`,
+                      data: { message: `${userName} canceled your group meal on ${curMealRefData['DateTime'].toDateString().substring(0,10) + " at " + strTime}!` },
+                    }),
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    method: 'POST',
+                  });
+                  }
+                  }).catch(function(error) {
+                    console.log("Error getting document:", error);
+                  });
+                }
+                }
+        }).catch(function(error) {
+          console.error("Error removing document: ", error);
+        });
+
+      } else {
       db.collection("users").doc(userID).collection('Meals').doc(curMeal).delete().then(() => {
         console.log("Document successfully deleted!");
         db.collection("users").doc(curMealRefData["FriendID"]).collection('Meals').doc(curMeal).delete()
@@ -875,6 +944,7 @@ export default class HomeScreen extends Component {
         console.error("Error removing document: ", error);
       });
       }
+    }
     }).catch(function(error) {
        console.error("Error updating freetime: ", error);
     });
@@ -884,7 +954,6 @@ export default class HomeScreen extends Component {
 
 const styles = StyleSheet.create({
   item: {
-    // backgroundColor: '#f9a56a',
     flex: 1,
     borderRadius: 5,
     padding: 10,

@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { Platform, StatusBar, StyleSheet, View, AsyncStorage } from 'react-native';
-import { Provider } from 'react-redux';
-import { createStore } from 'redux';
 import { AppLoading, Asset, Font } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import RootNavigation from './src/navigation/RootNavigation';
