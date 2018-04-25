@@ -32,6 +32,7 @@ export default class FriendChosenScreen extends React.Component {
   }
 
   printDate = (month, date, day, next) => {
+    if (next == 0 && getTimeIndex() > 24);
     day += next;
     if (day >= 7) day -= 7;
 
@@ -65,6 +66,15 @@ export default class FriendChosenScreen extends React.Component {
     })
   }
 
+  getTimeIndex = () => {    
+    today = new Date();
+    thisDay = days[today.getDay()];
+    thisHour = today.getHours();
+    thisMin = today.getMinutes();
+    thisIndex = (thisHour - 7) * 2 + Math.floor(thisMin / 30) - 1;
+    return thisIndex
+  }
+  
   async matchFreeTimes(id) {
     freeTimeObj = new Object();
     freeTimeObj[userID] = await this.getFreeTimes(userID);
@@ -77,11 +87,7 @@ export default class FriendChosenScreen extends React.Component {
   match30min = (freeTimeObj) => {
     matches = new Object();
 
-    today = new Date();
-    thisDay = days[today.getDay()];
-    thisHour = today.getHours();
-    thisMin = today.getMinutes();
-    thisIndex = (thisHour - 7) * 2 + Math.floor(thisMin / 30) - 1;
+    thisIndex = getTimeIndex();
 
     for (const day in freeTimeObj[userID]) {
       matches[day] = Array.from(Array(25), () => true)
@@ -102,11 +108,7 @@ export default class FriendChosenScreen extends React.Component {
   match1hr = (freeTimeObj) => {
     matches = new Object();
 
-    today = new Date();
-    thisDay = days[today.getDay()];
-    thisHour = today.getHours();
-    thisMin = today.getMinutes();
-    thisIndex = (thisHour - 7) * 2 + Math.floor(thisMin / 30) - 1;
+    thisIndex = getTimeIndex();
 
     for (const day in freeTimeObj[userID]) {
       matches[day] = Array.from(Array(24), () => true)
