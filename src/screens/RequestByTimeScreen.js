@@ -41,6 +41,16 @@ export default class RequestByTimeScreen extends React.Component {
     });
   }
   
+  getTimeIndex = () => {    
+    today = new Date();
+    thisDay = days[today.getDay()];
+    thisHour = today.getHours();
+    thisMin = today.getMinutes();
+    thisIndex = (thisHour - 7) * 2 + Math.floor(thisMin / 30) - 1;
+    console.log("thisIndex: " + thisIndex)
+    return thisIndex
+  }
+
   printTime = (num, ampm = false) => {
     hour = 7 + Math.floor((num+1)/2)
     min = num%2 === 0 ? "30" : "00"
@@ -55,6 +65,10 @@ export default class RequestByTimeScreen extends React.Component {
     if (day >= 7) day -= 7;
 
     date += next;
+    if (this.getTimeIndex() >= 24) {
+      console.log("Date is over")
+      date += 7;
+    }
     if (date > numdays[month]) {
       date -= numdays[month];
       month++;

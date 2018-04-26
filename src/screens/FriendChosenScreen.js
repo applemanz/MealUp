@@ -32,11 +32,15 @@ export default class FriendChosenScreen extends React.Component {
   }
 
   printDate = (month, date, day, next) => {
-    if (next == 0 && getTimeIndex() > 24);
     day += next;
     if (day >= 7) day -= 7;
 
     date += next;
+    if (this.getTimeIndex() >= 24) {
+      console.log("Date is over")
+      date += 7;
+    }
+
     if (date > numdays[month]) {
       date -= numdays[month];
       month++;
@@ -72,6 +76,7 @@ export default class FriendChosenScreen extends React.Component {
     thisHour = today.getHours();
     thisMin = today.getMinutes();
     thisIndex = (thisHour - 7) * 2 + Math.floor(thisMin / 30) - 1;
+    console.log("thisIndex: " + thisIndex)
     return thisIndex
   }
   
@@ -87,12 +92,12 @@ export default class FriendChosenScreen extends React.Component {
   match30min = (freeTimeObj) => {
     matches = new Object();
 
-    thisIndex = getTimeIndex();
+    thisIndex = this.getTimeIndex();
 
     for (const day in freeTimeObj[userID]) {
       matches[day] = Array.from(Array(25), () => true)
       for (i=0; i < 25; i++) {
-        if (day === thisDay && i <= thisIndex) {
+        if (day === thisDay && thisIndex < 24 && i <= thisIndex) {
           matches[day][i] = false
           continue;
         }
@@ -108,12 +113,12 @@ export default class FriendChosenScreen extends React.Component {
   match1hr = (freeTimeObj) => {
     matches = new Object();
 
-    thisIndex = getTimeIndex();
+    thisIndex = this.getTimeIndex();
 
     for (const day in freeTimeObj[userID]) {
       matches[day] = Array.from(Array(24), () => true)
       for (i=0; i < 25; i++) {
-        if (day === thisDay && i <= thisIndex) {
+        if (day === thisDay && thisIndex < 24 && i <= thisIndex) {
           matches[day][i] = false
           continue;
         }
