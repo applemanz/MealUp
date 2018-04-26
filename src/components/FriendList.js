@@ -22,6 +22,7 @@ class MyListItem extends React.PureComponent {
       return (
         <ListItem
           title={this.props.name}
+          onPress = {() => {this.changeViewPermissions(this.props.id, !this.props.CanViewMe)}}
           leftIcon = {
             <Image
               style={{width: 50, height: 50, borderRadius:25, marginRight:10}}

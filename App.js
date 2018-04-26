@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Platform, StatusBar, StyleSheet, View, AsyncStorage } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View, AsyncStorage, SafeAreaView } from 'react-native';
 import { AppLoading, Asset, Font } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import RootNavigation from './src/navigation/RootNavigation';
@@ -23,26 +23,17 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
           {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
           {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
           <RootNavigation/>
-        </View>
+        </SafeAreaView>
       );
     }
   }
 
   _loadResourcesAsync = async () => {
     await Asset.loadAsync([require('./assets/images/signin_logo_circle.png')]);
-    // try {
-    //   const value = await AsyncStorage.getItem('loggedIn');
-    //   if (value !== null){
-    //     console.log(value);
-    //     this.setState({loggedIn:value})
-    //   }
-    // } catch (error) {
-    //   // Error retrieving data
-    // }
   };
 
   _handleLoadingError = error => {

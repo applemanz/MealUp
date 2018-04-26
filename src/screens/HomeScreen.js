@@ -80,6 +80,9 @@ export default class HomeScreen extends Component {
           }
           else {
             weekday = weekdays[doc.data().DateTime.getDay()].day
+            // amPM = doc.data().DateTime.getHours() >= 12 ? "PM" : "AM"
+            // hours = (doc.data().DateTime.getHours() % 12 || 12) + ":" + ("0" + doc.data().DateTime.getMinutes()).slice(-2) + " " + amPM
+            // index = data_flip[hours]
             freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(weekday);
             freetimeRef.get().then(function(doc) {
               freetimeData = doc.data();
@@ -92,14 +95,14 @@ export default class HomeScreen extends Component {
               // console.log("My Document updated");
               })
               .catch(function(error) {
-                // console.error("Error updating", error);
+                console.error("Error updating", error);
               });
             })
             db.collection("users").doc(userID).collection('Meals').doc(doc.id).delete().then(() => {
-              //console.log("Document successfully deleted!");
-              db.collection("users").doc(doc.data().FriendID).collection('Meals').doc(doc.id).delete()
+              // console.log("Document successfully deleted!");
+              // db.collection("users").doc(doc.data().FriendID).collection('Meals').doc(doc.id).delete()
             }).catch(function(error) {
-              // console.error("Error removing document: ", error);
+              console.error("Error removing document: ", error);
             });
           }
         })
@@ -959,6 +962,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginRight: 10,
     marginTop: 17,
+    // marginBottom: 10,
     flexDirection:'row'
   },
   empty: {

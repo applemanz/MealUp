@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "874574211968",
+    "firebase_url": "https://auth-f86eb.firebaseio.com",
+    "project_id": "auth-f86eb",
+    "storage_bucket": "auth-f86eb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:874574211968:android:786df9a4ab492279",
+        "android_client_info": {
+          "package_name": "com.mealupteam.mealup"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "874574211968-kggm7bh1as3lvj974buo4o0vlcncicl1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALpY0tPaBHBt6mCFFrq4WcaEpLh55C964"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
