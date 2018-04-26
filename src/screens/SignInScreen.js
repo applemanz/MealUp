@@ -93,7 +93,7 @@ export default class SignInScreen extends React.Component {
               // initialize Freetimes
               for (dofW of daysOfWeek) {
                 db.collection('users').doc(userID).collection('Freetime').doc(dofW).set({
-                  Freetime: Array.from(Array(25), () => 0),
+                  Freetime: Array.from(Array(29), () => 0),
                 })
               }
 
@@ -103,7 +103,7 @@ export default class SignInScreen extends React.Component {
               for (dofW of daysOfWeek) {
                 freeFriends[dofW] = {};
                 hasFreeFriends[dofW] = {};
-                for (i = 0; i < 25; i++) {
+                for (i = 0; i <= 28; i++) {
                   freeFriends[dofW][i] = {}
                   hasFreeFriends[dofW][i] = false;
                 }
@@ -115,7 +115,7 @@ export default class SignInScreen extends React.Component {
                 db.collection('users').doc(thisfriend.id).collection('Freetime').get().then((querySnapshot) => {
                   // console.log("I'm in then 1")
                   querySnapshot.forEach(function(doc) {
-                    for (i = 0; i < 25; i++) {
+                    for (i = 0; i <= 28; i++) {
                       if (doc.data().Freetime[i] === 1) {
                         freeFriends[doc.id][i][thisfriend.id] = true;
                         hasFreeFriends[doc.id][i] = true;

@@ -79,7 +79,7 @@ export default class SignInScreen extends React.Component {
                 // create free time arrays
                 for (dofW of daysOfWeek) {
                   db.collection('users').doc(userID).collection('Freetime').doc(dofW).set({
-                    Freetime: Array.from(Array(25), () => 0),
+                    Freetime: Array.from(Array(29), () => 0),
                   })
                   db.collection('users').doc(userID).collection('FreeFriends').doc(dofW).set({
                     DayOfWeek: dofW,
@@ -97,7 +97,7 @@ export default class SignInScreen extends React.Component {
                   for (index in friendsList) {
                     var batch = db.batch();
                     for (dofW of daysOfWeek) {
-                      for (i = 0; i < 25; i++) {
+                      for (i = 0; i <= 28; i++) {
                         ref = db.collection('users').doc(userID).collection('FreeFriends').doc(dofW).collection(i.toString()).doc(friendsList[index].id)
                         console.log(friendsFreeTimes[index][dofW][i])
                         if (friendsFreeTimes[index][dofW][i] == 1) isFree = true

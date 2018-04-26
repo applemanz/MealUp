@@ -31,7 +31,7 @@ export default class RequestByTimeScreen extends React.Component {
       // get the has free friends and then check
       db.collection("users").doc(userID).collection('hasFreeFriends').get().then((querySnapshot) => {
         querySnapshot.forEach(function(doc) {
-          for (let i = 0; i < 25; i++) {
+          for (let i = 0; i <= 28; i++) {
             if (doc.data().hasFreeFriends[i] === false)
             time[doc.id][i] = 0;
           }
@@ -65,7 +65,7 @@ export default class RequestByTimeScreen extends React.Component {
     if (day >= 7) day -= 7;
 
     date += next;
-    if (this.getTimeIndex() >= 24) {
+    if (this.getTimeIndex() >= 28) {
       console.log("Date is over")
       date += 7;
     }
@@ -111,8 +111,8 @@ export default class RequestByTimeScreen extends React.Component {
 
     for (thisday in this.state.time) {
       let temp = [];
-      for (j = 0; j < 25; j++) {
-        if (days.indexOf(thisday) == day && thisIndex <= 24 && j <= thisIndex) {
+      for (j = 0; j <= 28; j++) {
+        if (days.indexOf(thisday) == day && thisIndex < 28 && j <= thisIndex) {
           continue;
         }
         if (this.state.time[thisday][j] === 1) {
@@ -133,8 +133,8 @@ export default class RequestByTimeScreen extends React.Component {
 
     for (thisday in this.state.time) {
       let temp = [];
-      for (j = 0; j < 25; j++) {
-        if (days.indexOf(thisday) == day && j <= thisIndex) {
+      for (j = 0; j <= 28; j++) {
+        if (days.indexOf(thisday) == day && thisIndex < 28 && j <= thisIndex) {
           continue;
         }
         if (this.state.time[thisday][j] === 1 && this.state.time[thisday][j+1] === 1) {
