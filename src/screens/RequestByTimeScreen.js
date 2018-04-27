@@ -23,7 +23,7 @@ export default class RequestByTimeScreen extends React.Component {
   state = {};
 
   componentDidMount() {
-    time = this.state.time ? Object.assign(this.state.time) : {};
+    time = {};
     db.collection("users").doc(userID).collection('Freetime').get().then((querySnapshot) => {
       querySnapshot.forEach(function(doc) {
           time[doc.id] = doc.data().Freetime
@@ -36,6 +36,7 @@ export default class RequestByTimeScreen extends React.Component {
             time[doc.id][i] = 0;
           }
         });
+        console.log(time)
         this.setState({time:time});
       })
     });
@@ -113,8 +114,10 @@ export default class RequestByTimeScreen extends React.Component {
       let temp = [];
       for (j = 0; j <= 28; j++) {
         if (days.indexOf(thisday) == day && thisIndex < 28 && j <= thisIndex) {
+          console.log("j = " + j + " is skipped")
           continue;
         }
+
         if (this.state.time[thisday][j] === 1) {
           temp.push({time: this.printTime(j) + "-" + this.printTime(j+1,true), index: j, day: thisday})
         }
@@ -128,8 +131,8 @@ export default class RequestByTimeScreen extends React.Component {
         time1.push({title: diff, data: temp})
     }
 
-    console.log("time1")
-    console.log(time1)
+    // console.log("time1")
+    // console.log(time1)
 
     for (thisday in this.state.time) {
       let temp = [];
