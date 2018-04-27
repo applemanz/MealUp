@@ -155,7 +155,7 @@ export default class RequestsScreen extends React.Component {
     db.collection("users").doc(userID).collection('Sent Group Requests').onSnapshot((querySnapshot) => {
       sentGroupRequests = [];
       querySnapshot.forEach((doc) => {
-        var data = doc.data()
+        let data = doc.data()
         // not expired request
         if (doc.data().DateTime >= new Date()) {
           totalCount = Object.keys(data.members).length
@@ -165,13 +165,11 @@ export default class RequestsScreen extends React.Component {
               acceptedCount++
             }
           }
-          // auotmatically schedule meal
+          // auotmatically schedule meal if everyone has accepted
           if (acceptedCount == totalCount) {
-            console.log('ACCEPT = COUNT')
             data.isGroup = true
-            console.log('adding to meals')
+            // Add to Meals
             db.collection("users").doc(userID).collection('Meals').add(data).then((docRef) => {
-              console.log('MEAL ADDED')
               for (memberID in data.members) {
                 if (memberID != userID) {
                   db.collection("users").doc(memberID).collection('Meals').doc(docRef.id).set(data)
@@ -182,16 +180,18 @@ export default class RequestsScreen extends React.Component {
                 console.error("Error adding document: ", error);
             })
 
+            // Delete request
             db.collection("users").doc(userID).collection('Sent Group Requests').doc(doc.id).delete().then(() =>{
               for (memberID in data.members) {
                 if (memberID != userID)
                   db.collection("users").doc(memberID).collection('Received Group Requests').doc(doc.id).delete()
               }
-
             })
             .catch(function(error) {
               console.error("Error removing document: ", error);
             })
+
+            // TODO Send notification
 
           }
           else {
@@ -224,8 +224,6 @@ export default class RequestsScreen extends React.Component {
                   })
                 })
               }
-              if (memberID != userID)
-                db.collection("users").doc(memberID).collection('Received Group Requests').doc(doc.id).delete()
             }
           }).catch(function(error) {
             console.error("Error removing document: ", error);
@@ -241,6 +239,7 @@ export default class RequestsScreen extends React.Component {
         this.setState({sentGroupRequests: sentGroupRequests});
     })
   }
+
   refreshReceived = () => {
     this.setState({refreshingR: true});
     db.collection("users").doc(userID).collection('Received Requests').onSnapshot((querySnapshot) => {

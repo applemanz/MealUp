@@ -57,7 +57,7 @@ export default class FinalRequestScreen extends React.Component {
         </View>
         </View>);
       }
-    } 
+    }
     else { // not during late meal hours
       if (this.state.location == "Eating Clubs") {
         return (<View>
@@ -239,6 +239,7 @@ export default class FinalRequestScreen extends React.Component {
     data['isGroup'] = true
     if (data['Location'] != "" && data['Location'] != "Custom Location") {
       if (reschedule) {
+        // reschedule meal
         if (sent == 2) {
           prevMealRef = db.collection("users").doc(userID).collection('Meals').doc(reschedule)
           prevMealRef.get().then(function(doc) {

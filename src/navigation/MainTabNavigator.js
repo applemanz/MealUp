@@ -208,6 +208,19 @@ const MealsStack = StackNavigator({
       tabBarVisible: false
     }
   },
+  FreeTime: {
+    screen: FreeTimeScreen,
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: '#f4511e',
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+        fontSize: 25
+      },
+    },
+  },
 },
   {
     initialRouteName: 'Meals',
