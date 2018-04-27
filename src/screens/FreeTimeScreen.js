@@ -9,7 +9,8 @@ const data = [
 {key:5, time: '10:00 AM'}, {key:6, time: '10:30 AM'}, {key:7, time: '11:00 AM'}, {key:8, time: '11:30 AM'}, {key:9, time: '12:00 PM'},
 {key:10, time: '12:30 PM'}, {key:11, time: '1:00 PM'}, {key:12, time: '1:30 PM'}, {key:13, time: '2:00 PM'}, {key:14, time: '2:30 PM'},
 {key:15, time: '3:00 PM'}, {key:16, time: '3:30 PM'}, {key:17, time: '4:00 PM'}, {key:18, time: '4:30 PM'}, {key:19, time: '5:00 PM'},
-{key:20, time: '5:30 PM'}, {key:21, time: '6:00 PM'}, {key:22, time: '6:30 PM'}, {key:23, time: '7:00 PM'}, {key:24, time: '7:30 PM'}
+{key:20, time: '5:30 PM'}, {key:21, time: '6:00 PM'}, {key:22, time: '6:30 PM'}, {key:23, time: '7:00 PM'}, {key:24, time: '7:30 PM'},
+{key:25, time: '8:00 PM'}, {key:26, time: '8:30 PM'}, {key:27, time: '9:00 PM'}, {key:28, time: '9:30 PM'}
 ]
 const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
 
@@ -70,7 +71,7 @@ export default class FreeTimeScreen extends React.Component {
   renderHeader = (today) => {
     daysOfWeek = []
     dates = []
-    if (this.getTimeIndex() >= 24) {
+    if (this.getTimeIndex() >= 28) {
       today = this.addDays(today,1)
       var dayOver = true
     }
@@ -99,7 +100,7 @@ export default class FreeTimeScreen extends React.Component {
   renderDaysofWeek = (today) => {
       daysOfWeek = []
       dates = []
-      if (this.getTimeIndex() >= 24) {
+      if (this.getTimeIndex() >= 28) {
         today = this.addDays(today,1)
         var dayOver = true
       }

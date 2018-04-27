@@ -30,10 +30,10 @@ export default class FinalRequestScreen extends React.Component {
     }
   };
 
-	state = {location: "Wilcox"}
+	state = {location: "Wilcox", initialLocation: true}
 
 
-  renderOptions = ({time}) => {
+  renderOptions = ({time, reschedule}) => {
     if (late_meal_hours.indexOf(time.substring(0,4)) != -1) { // during late meal hours
       if (this.state.location == "Frist" || this.state.location == "Wilcox") {
         return (<Picker
@@ -52,7 +52,9 @@ export default class FinalRequestScreen extends React.Component {
           maxLength = {40}
           placeholder = {"Type your custom location..."}
         />
+        <View style={{marginBottom: 10}}>
         <Button title="< Back" backgroundColor='#f4511e' borderRadius={50} raised onPress={() => {this.setState({location: "Wilcox"})}}/>
+        </View>
         </View>);
       }
     } 
@@ -75,7 +77,9 @@ export default class FinalRequestScreen extends React.Component {
           <Picker.Item label="TI" value="TI" />
           <Picker.Item label="Tower" value="Tower" />
         </Picker>
+        <View style={{marginBottom: 10}}>
         <Button title="< Back" backgroundColor='#f4511e' borderRadius={50} raised onPress={() => {this.setState({location: "Wilcox"})}}/>
+        </View>
         </View>);
       } else if (eating_clubs.indexOf(this.state.location) != -1) {
         return (<View>
@@ -95,7 +99,9 @@ export default class FinalRequestScreen extends React.Component {
           <Picker.Item label="TI" value="TI" />
           <Picker.Item label="Tower" value="Tower" />
         </Picker>
+        <View style={{marginBottom: 10}}>
         <Button title="< Back" backgroundColor='#f4511e' borderRadius={50} raised onPress={() => {this.setState({location: "Wilcox"})}}/>
+        </View>
         </View>);
       } else if (all_options.indexOf(this.state.location) != -1) {
         return (<Picker
@@ -123,11 +129,14 @@ export default class FinalRequestScreen extends React.Component {
           maxLength = {40}
           placeholder = {"Type your custom location..."}
         />
+        <View style={{marginBottom: 10}}>
         <Button title="< Back" backgroundColor='#f4511e' borderRadius={50} raised onPress={() => {this.setState({location: "Wilcox"})}}/>
+        </View>
         </View>);
       }
     }
   }
+
 
 	render() {
 		const { params } = this.props.navigation.state;
@@ -136,7 +145,16 @@ export default class FinalRequestScreen extends React.Component {
     const time = params ? params.time : null;
     const dateobj = params ? params.dateobj : null;
     const length = params ? params.length : null;
+    const reschedule = params ? params.reschedule : null;
     const isGroup = params.isGroup ? true : false;
+    if (reschedule !== undefined && this.state.initialLocation) {
+      mealRef = db.collection("users").doc(userID).collection('Meals').doc(reschedule)
+      mealRef.get().then((doc) => {
+        mealData = doc.data();
+        prevLocation = mealData['Location'];
+        this.setState({location: prevLocation, initialLocation: false})
+      });
+    }
     urls = []
     for (memberID in members) {
       urls.push(`http://graph.facebook.com/${memberID}/picture?type=large`)
@@ -168,8 +186,8 @@ export default class FinalRequestScreen extends React.Component {
           <View style={{justifyContent: "center",alignItems: "center"}}>
                <Text>Select a Location:</Text>
           </View>
-          <View style = {{marginBottom:50}}>
-            { this.renderOptions({time}) }
+          <View>
+            { this.renderOptions({time, reschedule}) }
           </View>
           <Button title="Submit" backgroundColor='#f4511e' borderRadius={50} raised onPress={this.submitGroupRequest}/>
         </View>
@@ -190,8 +208,8 @@ export default class FinalRequestScreen extends React.Component {
     			<View style={{justifyContent: "center",alignItems: "center"}}>
     			     <Text>Select a Location:</Text>
     			</View>
-          <View style = {{marginBottom:50}}>
-            { this.renderOptions({time}) }
+          <View>
+            { this.renderOptions({time, reschedule}) }
           </View>
     			<Button title="Submit" backgroundColor='#f4511e' borderRadius={50} raised onPress={this.submitRequest}/>
   			</View>
@@ -556,6 +574,7 @@ export default class FinalRequestScreen extends React.Component {
                   console.error("Error updating", error);
                 });
               })
+
 
               for (let thisid in prevData['members']) {
                 freetimeRef_other = db.collection("users").doc(thisid).collection('Freetime').doc(weekday);

@@ -13,7 +13,7 @@ const db = firebase.firestore();
 const data_flip = {'7:30 AM': 0, '8:00 AM': 1, '8:30 AM': 2, '9:00 AM': 3, '9:30 AM': 4, '10:00 AM': 5, '10:30 AM': 6,
 '11:00 AM': 7, '11:30 AM': 8, '12:00 PM': 9, '12:30 PM': 10, '1:00 PM': 11, '1:30 PM': 12, '2:00 PM': 13, '2:30 PM': 14,
 '3:00 PM': 15, '3:30 PM': 16, '4:00 PM': 17, '4:30 PM': 18, '5:00 PM': 19, '5:30 PM': 20, '6:00 PM': 21, '6:30 PM': 22,
-'7:00 PM': 23, '7:30 PM': 24}
+'7:00 PM': 23, '7:30 PM': 24, '8:00 PM': 25, '8:30 PM': 26, '9:00 PM': 27, '9:30 PM': 28}
 const weekdays = [
 {key:0, day:'Sunday'}, {key:1, day:'Monday'}, {key:2, day:'Tuesday'}, {key:3, day:'Wednesday'}, {key:4, day:'Thursday'},
 {key:5, day:'Friday'}, {key:6, day:'Saturday'}

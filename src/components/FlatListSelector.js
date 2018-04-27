@@ -63,7 +63,7 @@ export default class FlatListSelector extends React.PureComponent {
   constructor(props) {
     super(props);
 
-    this.state = {selected: [], friends: {}, breakfast: false, latemeal:false, lunch: true, dinner: true}
+    this.state = {selected: [], friends: {}, breakfast: false, lateLunch:false, lunch: true, dinner: true, lateDinner:false}
   }
 
   componentDidMount() {
@@ -104,7 +104,14 @@ export default class FlatListSelector extends React.PureComponent {
   updateState = (id) => {
     // copy the map rather than modifying state.
     selected = this.state.selected.slice(0);
-    if (selected.length == 0) selected = Array.from(Array(25), () => 0);
+    if (selected.length == 0) selected = Array.from(Array(29), () => 0);
+    
+    // if didn't support late dinner, add the late dinner entries
+    if (selected.length == 25) {
+      for (let i = 0; i < 4; i++) {
+        selected.push(0)
+      }
+    }
     if (selected[id] === 0) {
       selected[id] = 1;
     } else if (selected[id] === 1) {
@@ -145,8 +152,12 @@ export default class FlatListSelector extends React.PureComponent {
   onBreakfastPress = () => {
   this.setState({breakfast: !this.state.breakfast})
 }
-  onLateMealPress = () => {
-    this.setState({latemeal: !this.state.latemeal})
+  onLateLunchPress = () => {
+    this.setState({lateLunch: !this.state.lateLunch})
+  }
+
+  onLateDinnerPress = () => {
+    this.setState({lateDinner: !this.state.lateDinner})
   }
 
   render() {
@@ -195,12 +206,12 @@ export default class FlatListSelector extends React.PureComponent {
 
         <Button
           color = {'black'}
-          onPress={this.onLateMealPress}
+          onPress={this.onLateLunchPress}
           transparent
           textStyle={{fontWeight:'normal', fontSize:18}}
           rightIcon={{name: this.state.latemeal ? 'md-arrow-dropdown-circle' : 'md-arrow-dropleft-circle', color:'black', type: 'ionicon'}}
-          title='Late Meal' />
-        {(this.state.latemeal) &&
+          title='Late Lunch' />
+        {(this.state.lateLunch) &&
           <View style={{}}>
             <FlatList
               scrollEnabled = {false}
@@ -226,6 +237,25 @@ export default class FlatListSelector extends React.PureComponent {
               data={this.props.data.slice(19, 25)}
               extraData={this.state}
               scrollEnabled = {false}
+              // keyExtractor={this._keyExtractor}
+              renderItem={this._renderItem}
+            />
+          </View>
+        }
+
+        <Button
+          color = {'black'}
+          onPress={this.onLateDinnerPress}
+          transparent
+          textStyle={{fontWeight:'normal', fontSize:18}}
+          rightIcon={{name: this.state.lateDinner ? 'md-arrow-dropdown-circle' : 'md-arrow-dropleft-circle', color:'black', type: 'ionicon'}}
+          title='Late Dinner' />
+        {(this.state.lateDinner) &&
+          <View style={{}}>
+            <FlatList
+              scrollEnabled = {false}
+              data={this.props.data.slice(25,29)}
+              extraData={this.state}
               // keyExtractor={this._keyExtractor}
               renderItem={this._renderItem}
             />

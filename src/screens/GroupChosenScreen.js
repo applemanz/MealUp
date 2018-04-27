@@ -69,7 +69,7 @@ export default class GroupChosenScreen extends React.Component {
             if (!noNewMatches1) {
               temp = [];
               for (let index in newMatches1) {
-                for (let j = 0; j < 25; j++) {
+                for (let j = 0; j <= 28; j++) {
                   if (newMatches1[index]['matches'][j]) {
                     temp.push(this.printDate(todayMonth,todayDate,todayDay,parseInt(index)) + " " + this.printTime(j) + "-" + this.printTime(j+1,true))
                   }
@@ -81,7 +81,7 @@ export default class GroupChosenScreen extends React.Component {
             if (!noNewMatches2) {
               temp = [];
               for (let index in newMatches2) {
-                for (let j = 0; j < 25; j++) {
+                for (let j = 0; j <= 28; j++) {
                   if (newMatches2[index]['matches'][j]) {
                     temp.push(this.printDate(todayMonth,todayDate,todayDay,parseInt(index)) + " " + this.printTime(j) + "-" + this.printTime(j+2,true))
                   }
@@ -95,7 +95,7 @@ export default class GroupChosenScreen extends React.Component {
       // if there is at least 1 matching time
       for (let index in matches1) {
         temp = [];
-        for (let j = 0; j < 25; j++) {
+        for (let j = 0; j <= 28; j++) {
           if (matches1[index]['matches'][j]) {
             temp.push(this.printTime(j) + "-" + this.printTime(j+1,true))
           }
@@ -105,7 +105,7 @@ export default class GroupChosenScreen extends React.Component {
 
       for (let index in matches2) {
         temp = [];
-        for (let j = 0; j < 25; j++) {
+        for (let j = 0; j <= 28; j++) {
           if (matches2[index]['matches'][j]) {
             temp.push(this.printTime(j) + "-" + this.printTime(j+2,true))
           }
@@ -126,6 +126,10 @@ export default class GroupChosenScreen extends React.Component {
     if (day >= 7) day -= 7;
 
     date += next;
+    if (this.getTimeIndex() >= 28) {
+      console.log("Date is over")
+      date += 7;
+    }
     if (date > numdays[month]) {
       date -= numdays[month];
       month++;
@@ -155,7 +159,7 @@ export default class GroupChosenScreen extends React.Component {
     })
   }
 
-  checkNoMatches = (matches) => {
+  checkNoMatches = (matches) => { 
     for (let index in matches) {
       for (let i = 0; i < matches[index]['matches'].length; i++) {
         if (matches[index]['matches'][i])
@@ -165,14 +169,20 @@ export default class GroupChosenScreen extends React.Component {
     return true
   }
 
+  getTimeIndex = () => {    
+    thisIndex = (todayHour - 7) * 2 + Math.floor(todayMin / 30) - 1;
+    console.log("thisIndex: " + thisIndex)
+    return thisIndex
+  }
+
   match30min = (freeTimeObj) => {
     matches = new Object();
-    thisIndex = (todayHour - 7) * 2 + Math.floor(todayMin / 30) - 1;
+    thisIndex = this.getTimeIndex();
 
     for (const day in freeTimeObj[userID]) {
-      matches[day] = Array.from(Array(25), () => true)
-      for (i=0; i < 25; i++) {
-        if (day === days[todayDay] && i <= thisIndex) {
+      matches[day] = Array.from(Array(29), () => true)
+      for (i=0; i <= 28; i++) {
+        if (day === days[todayDay] && thisIndex < 28 && i <= thisIndex) {
           matches[day][i] = false
           continue;
         }
@@ -188,12 +198,12 @@ export default class GroupChosenScreen extends React.Component {
 
   match1hr = (freeTimeObj) => {
     matches = new Object();
-    thisIndex = (todayHour - 7) * 2 + Math.floor(todayMin / 30) - 1;
+    thisIndex = this.getTimeIndex();
 
     for (const day in freeTimeObj[userID]) {
-      matches[day] = Array.from(Array(24), () => true)
-      for (i=0; i < 25; i++) {
-        if (day === days[todayDay] && i <= thisIndex) {
+      matches[day] = Array.from(Array(28), () => true)
+      for (i=0; i < 28; i++) {
+        if (day === days[todayDay] && thisIndex < 28 && i <= thisIndex) {
           matches[day][i] = false
           continue;
         }

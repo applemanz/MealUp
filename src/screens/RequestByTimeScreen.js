@@ -23,7 +23,7 @@ export default class RequestByTimeScreen extends React.Component {
   state = {};
 
   componentDidMount() {
-    time = this.state.time ? Object.assign(this.state.time) : {};
+    time = {};
     db.collection("users").doc(userID).collection('Freetime').get().then((querySnapshot) => {
       querySnapshot.forEach(function(doc) {
           time[doc.id] = doc.data().Freetime
@@ -31,16 +31,27 @@ export default class RequestByTimeScreen extends React.Component {
       // get the has free friends and then check
       db.collection("users").doc(userID).collection('hasFreeFriends').get().then((querySnapshot) => {
         querySnapshot.forEach(function(doc) {
-          for (let i = 0; i < 25; i++) {
+          for (let i = 0; i <= 28; i++) {
             if (doc.data().hasFreeFriends[i] === false)
             time[doc.id][i] = 0;
           }
         });
+        console.log(time)
         this.setState({time:time});
       })
     });
   }
   
+  getTimeIndex = () => {    
+    today = new Date();
+    thisDay = days[today.getDay()];
+    thisHour = today.getHours();
+    thisMin = today.getMinutes();
+    thisIndex = (thisHour - 7) * 2 + Math.floor(thisMin / 30) - 1;
+    console.log("thisIndex: " + thisIndex)
+    return thisIndex
+  }
+
   printTime = (num, ampm = false) => {
     hour = 7 + Math.floor((num+1)/2)
     min = num%2 === 0 ? "30" : "00"
@@ -55,6 +66,10 @@ export default class RequestByTimeScreen extends React.Component {
     if (day >= 7) day -= 7;
 
     date += next;
+    if (this.getTimeIndex() >= 28) {
+      console.log("Date is over")
+      date += 7;
+    }
     if (date > numdays[month]) {
       date -= numdays[month];
       month++;
@@ -97,10 +112,12 @@ export default class RequestByTimeScreen extends React.Component {
 
     for (thisday in this.state.time) {
       let temp = [];
-      for (j = 0; j < 25; j++) {
-        if (days.indexOf(thisday) == day && thisIndex <= 24 && j <= thisIndex) {
+      for (j = 0; j <= 28; j++) {
+        if (days.indexOf(thisday) == day && thisIndex < 28 && j <= thisIndex) {
+          console.log("j = " + j + " is skipped")
           continue;
         }
+
         if (this.state.time[thisday][j] === 1) {
           temp.push({time: this.printTime(j) + "-" + this.printTime(j+1,true), index: j, day: thisday})
         }
@@ -114,13 +131,13 @@ export default class RequestByTimeScreen extends React.Component {
         time1.push({title: diff, data: temp})
     }
 
-    console.log("time1")
-    console.log(time1)
+    // console.log("time1")
+    // console.log(time1)
 
     for (thisday in this.state.time) {
       let temp = [];
-      for (j = 0; j < 25; j++) {
-        if (days.indexOf(thisday) == day && j <= thisIndex) {
+      for (j = 0; j <= 28; j++) {
+        if (days.indexOf(thisday) == day && thisIndex < 28 && j <= thisIndex) {
           continue;
         }
         if (this.state.time[thisday][j] === 1 && this.state.time[thisday][j+1] === 1) {

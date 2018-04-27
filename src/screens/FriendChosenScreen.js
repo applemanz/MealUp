@@ -36,6 +36,11 @@ export default class FriendChosenScreen extends React.Component {
     if (day >= 7) day -= 7;
 
     date += next;
+    if (this.getTimeIndex() >= 28) {
+      console.log("Date is over")
+      date += 7;
+    }
+
     if (date > numdays[month]) {
       date -= numdays[month];
       month++;
@@ -65,6 +70,16 @@ export default class FriendChosenScreen extends React.Component {
     })
   }
 
+  getTimeIndex = () => {    
+    today = new Date();
+    thisDay = days[today.getDay()];
+    thisHour = today.getHours();
+    thisMin = today.getMinutes();
+    thisIndex = (thisHour - 7) * 2 + Math.floor(thisMin / 30) - 1;
+    console.log("thisIndex: " + thisIndex)
+    return thisIndex
+  }
+  
   async matchFreeTimes(id) {
     freeTimeObj = new Object();
     freeTimeObj[userID] = await this.getFreeTimes(userID);
@@ -77,16 +92,12 @@ export default class FriendChosenScreen extends React.Component {
   match30min = (freeTimeObj) => {
     matches = new Object();
 
-    today = new Date();
-    thisDay = days[today.getDay()];
-    thisHour = today.getHours();
-    thisMin = today.getMinutes();
-    thisIndex = (thisHour - 7) * 2 + Math.floor(thisMin / 30) - 1;
+    thisIndex = this.getTimeIndex();
 
     for (const day in freeTimeObj[userID]) {
-      matches[day] = Array.from(Array(25), () => true)
-      for (i=0; i < 25; i++) {
-        if (day === thisDay && i <= thisIndex) {
+      matches[day] = Array.from(Array(29), () => true)
+      for (i=0; i <= 28; i++) {
+        if (day === thisDay && thisIndex < 28 && i <= thisIndex) {
           matches[day][i] = false
           continue;
         }
@@ -102,16 +113,12 @@ export default class FriendChosenScreen extends React.Component {
   match1hr = (freeTimeObj) => {
     matches = new Object();
 
-    today = new Date();
-    thisDay = days[today.getDay()];
-    thisHour = today.getHours();
-    thisMin = today.getMinutes();
-    thisIndex = (thisHour - 7) * 2 + Math.floor(thisMin / 30) - 1;
+    thisIndex = this.getTimeIndex();
 
     for (const day in freeTimeObj[userID]) {
-      matches[day] = Array.from(Array(24), () => true)
-      for (i=0; i < 25; i++) {
-        if (day === thisDay && i <= thisIndex) {
+      matches[day] = Array.from(Array(28), () => true)
+      for (i=0; i < 28; i++) {
+        if (day === thisDay && thisIndex < 28 && i <= thisIndex) {
           matches[day][i] = false
           continue;
         }
@@ -160,7 +167,7 @@ export default class FriendChosenScreen extends React.Component {
       for (thisday in this.state.matches1) {
         temp = [];
         cur = days.indexOf(thisday);
-        for (j = 0; j < 25; j++) {
+        for (j = 0; j <= 28; j++) {
           if (this.state.matches1[thisday][j]) {
             temp.push(this.printTime(j) + "-" + this.printTime(j+1,true))
           }
@@ -174,7 +181,7 @@ export default class FriendChosenScreen extends React.Component {
 
       for (thisday in this.state.matches2) {
         temp = [];
-        for (j = 0; j < 25; j++) {
+        for (j = 0; j <= 28; j++) {
           if (this.state.matches2[thisday][j]) {
             temp.push(this.printTime(j) + "-" + this.printTime(j+2,true))
           }

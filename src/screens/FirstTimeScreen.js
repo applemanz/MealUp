@@ -65,28 +65,28 @@ export default class FirstTimeScreen extends React.Component {
               {
                 backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/Android/android_welcome.png')}
-                 style={{width:166, height:356, opacity: 0.85, alignItems: 'center'}}/>,
+                 style={{width:148, height:316, opacity: 0.85, alignItems: 'center'}}/>,
                 title: 'Welcome to MealUp!',
                 subtitle: 'Meet up & eat up with friends easily. \n Swipe to learn how.',
               },
               {
                 backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/Android/android_freetime.png')} 
-                  style={{width:166, height:356, opacity: 0.85, alignItems: 'center'}}/>,
+                  style={{width:148, height:316, opacity: 0.85, alignItems: 'center'}}/>,
                 title: 'Manage your free time',
                 subtitle: 'Edit your schedule anytime and anywhere.',
               },
               {
                 backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/Android/android_requests.png')} 
-                  style={{width:268, height:346, opacity: 0.85, alignItems: 'center'}}/>,
+                  style={{width:245, height:316, opacity: 0.85, alignItems: 'center'}}/>,
                 title: 'Schedule meals',
                 subtitle: 'Send and respond to meal requests.',
               },
               {
                 backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/Android/android_groups.png')} 
-                  style={{width:268, height:346, opacity: 0.85, alignItems: 'center'}}/>,
+                  style={{width:245, height:316, opacity: 0.85, alignItems: 'center'}}/>,
                 title: 'Organize groups',
                 subtitle: 'Connect to your friends more with groups.',
               },
