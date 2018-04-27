@@ -15,8 +15,8 @@ const all_options = ["Wilcox", "Wu", "Rocky", "Mathey", "Whitman", "Frist", "For
 const data_flip = {'7:30 AM': 0, '8:00 AM': 1, '8:30 AM': 2, '9:00 AM': 3, '9:30 AM': 4, '10:00 AM': 5, '10:30 AM': 6,
 '11:00 AM': 7, '11:30 AM': 8, '12:00 PM': 9, '12:30 PM': 10, '1:00 PM': 11, '1:30 PM': 12, '2:00 PM': 13, '2:30 PM': 14,
 '3:00 PM': 15, '3:30 PM': 16, '4:00 PM': 17, '4:30 PM': 18, '5:00 PM': 19, '5:30 PM': 20, '6:00 PM': 21, '6:30 PM': 22,
-'7:00 PM': 23, '7:30 PM': 24, '8:00 PM': 25, '8:30 PM': 26, '9:00 PM': 27, '9:30 PM': 28}
-const late_meal_hours = ['2:00', '2:30', '3:00', '3:30', '4:00', '4:30', '8:00', '8:30', '9:00', '9:30']
+'7:00 PM': 23, '7:30 PM': 24}
+const late_meal_hours = ['2:00', '2:30', '3:00', '3:30', '4:00', '4:30']
 const weekdays = [
 {key:0, day:'Sunday'}, {key:1, day:'Monday'}, {key:2, day:'Tuesday'}, {key:3, day:'Wednesday'}, {key:4, day:'Thursday'},
 {key:5, day:'Friday'}, {key:6, day:'Saturday'}
@@ -30,10 +30,10 @@ export default class FinalRequestScreen extends React.Component {
     }
   };
 
-	state = {location: "Wilcox"}
+	state = {location: "Wilcox", initialLocation: true}
 
 
-  renderOptions = ({time}) => {
+  renderOptions = ({time, reschedule}) => {
     if (late_meal_hours.indexOf(time.substring(0,4)) != -1) { // during late meal hours
       if (this.state.location == "Frist" || this.state.location == "Wilcox") {
         return (<Picker
@@ -52,7 +52,9 @@ export default class FinalRequestScreen extends React.Component {
           maxLength = {40}
           placeholder = {"Type your custom location..."}
         />
+        <View style={{marginBottom: 10}}>
         <Button title="< Back" backgroundColor='#f4511e' borderRadius={50} raised onPress={() => {this.setState({location: "Wilcox"})}}/>
+        </View>
         </View>);
       }
     } 
@@ -75,7 +77,9 @@ export default class FinalRequestScreen extends React.Component {
           <Picker.Item label="TI" value="TI" />
           <Picker.Item label="Tower" value="Tower" />
         </Picker>
+        <View style={{marginBottom: 10}}>
         <Button title="< Back" backgroundColor='#f4511e' borderRadius={50} raised onPress={() => {this.setState({location: "Wilcox"})}}/>
+        </View>
         </View>);
       } else if (eating_clubs.indexOf(this.state.location) != -1) {
         return (<View>
@@ -95,7 +99,9 @@ export default class FinalRequestScreen extends React.Component {
           <Picker.Item label="TI" value="TI" />
           <Picker.Item label="Tower" value="Tower" />
         </Picker>
+        <View style={{marginBottom: 10}}>
         <Button title="< Back" backgroundColor='#f4511e' borderRadius={50} raised onPress={() => {this.setState({location: "Wilcox"})}}/>
+        </View>
         </View>);
       } else if (all_options.indexOf(this.state.location) != -1) {
         return (<Picker
@@ -123,11 +129,14 @@ export default class FinalRequestScreen extends React.Component {
           maxLength = {40}
           placeholder = {"Type your custom location..."}
         />
+        <View style={{marginBottom: 10}}>
         <Button title="< Back" backgroundColor='#f4511e' borderRadius={50} raised onPress={() => {this.setState({location: "Wilcox"})}}/>
+        </View>
         </View>);
       }
     }
   }
+
 
 	render() {
 		const { params } = this.props.navigation.state;
@@ -136,7 +145,16 @@ export default class FinalRequestScreen extends React.Component {
     const time = params ? params.time : null;
     const dateobj = params ? params.dateobj : null;
     const length = params ? params.length : null;
+    const reschedule = params ? params.reschedule : null;
     const isGroup = params.isGroup ? true : false;
+    if (reschedule !== undefined && this.state.initialLocation) {
+      mealRef = db.collection("users").doc(userID).collection('Meals').doc(reschedule)
+      mealRef.get().then((doc) => {
+        mealData = doc.data();
+        prevLocation = mealData['Location'];
+        this.setState({location: prevLocation, initialLocation: false})
+      });
+    }
     urls = []
     for (memberID in members) {
       urls.push(`http://graph.facebook.com/${memberID}/picture?type=large`)
@@ -168,8 +186,8 @@ export default class FinalRequestScreen extends React.Component {
           <View style={{justifyContent: "center",alignItems: "center"}}>
                <Text>Select a Location:</Text>
           </View>
-          <View style = {{marginBottom:50}}>
-            { this.renderOptions({time}) }
+          <View>
+            { this.renderOptions({time, reschedule}) }
           </View>
           <Button title="Submit" backgroundColor='#f4511e' borderRadius={50} raised onPress={this.submitGroupRequest}/>
         </View>
@@ -190,8 +208,8 @@ export default class FinalRequestScreen extends React.Component {
     			<View style={{justifyContent: "center",alignItems: "center"}}>
     			     <Text>Select a Location:</Text>
     			</View>
-          <View style = {{marginBottom:50}}>
-            { this.renderOptions({time}) }
+          <View>
+            { this.renderOptions({time, reschedule}) }
           </View>
     			<Button title="Submit" backgroundColor='#f4511e' borderRadius={50} raised onPress={this.submitRequest}/>
   			</View>
@@ -556,6 +574,7 @@ export default class FinalRequestScreen extends React.Component {
                   console.error("Error updating", error);
                 });
               })
+
 
               for (let thisid in prevData['members']) {
                 freetimeRef_other = db.collection("users").doc(thisid).collection('Freetime').doc(weekday);
