@@ -65,11 +65,10 @@ export default class FriendsScreen extends React.Component {
     console.log(friendsList);
     for (var friend of friendsList) {
       if (!this.state.friends.find(item => item.id === friend.id)) {
-        db.collection('users').doc(userID).collection('Friends').doc(friend.id).set({
+        db.collection('users').doc(userID).collection('Friends').doc(friend.id).update({
           Name: friend.name,
           CanViewMe: true,
           CanViewFriend: true,
-          numOfMeals: 0,
         })
         // db.collection('users').doc(friend.id).collection('Friends').doc(userID).get().then((doc)=> {
         //     if (doc.exists) {
@@ -89,18 +88,46 @@ export default class FriendsScreen extends React.Component {
   }
 
   compareFriends = (a,b) => {
-    if (a.Name < b.Name) {
-      return -1;
+    var bCount = 0
+    var aCount = 0
+    if (b.numOfMeals !== undefined) {
+      bCount = b.numOfMeals
     }
-    else
-      return 1
+    if (a.numOfMeals !== undefined) {
+      aCount = a.numOfMeals
+    }
+    mealCount = bCount - aCount
+    if (mealCount != 0) {
+      return mealCount
+    } else {
+      if (a.Name < b.Name) {
+        return -1;
+      }
+      else 
+        return 1
+    }
   }
-  compareGroups = (a,b) => {
-    if (a.groupName < b.groupName) {
-      return -1;
+
+  compareGroups = (a,b) => { 
+  // code copied from functional compareFriends code...
+  // but group names & numOfMeals are not set properly in the first place
+    var bCount = 0
+    var aCount = 0
+    if (b.numOfMeals !== undefined) {
+      bCount = b.numOfMeals
     }
-    else
-      return 1
+    if (a.numOfMeals !== undefined) {
+      aCount = a.numOfMeals
+    }
+    mealCount = bCount - aCount
+    if (mealCount != 0) return mealCount
+    else {
+      if (a.groupName < b.groupName) {
+        return -1;
+      }
+      else
+        return 1
+    }
   }
 
   render() {
