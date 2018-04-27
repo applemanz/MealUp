@@ -236,23 +236,23 @@ export default class FinalRequestScreen extends React.Component {
               index = data_flip[hours]
               console.log(hours)
 
-              // update freetimes
-              freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(weekday);
-              freetimeRef.get().then(function(doc) {
-                freetimeData = doc.data();
-                freetimeData['Freetime'][index] = 1
-                console.log(prevMealRefData['Length'])
-                if (prevMealRefData['Length'] === 1) {
-                  freetimeData['Freetime'][index+1] = 1
-                }
-              // console.log("my data", freetimeData)
-              freetimeRef.update(freetimeData).then(() => {
-                console.log("My Document updated");
-                })
-                .catch(function(error) {
-                  console.error("Error updating", error);
-                });
-              })
+              // // update freetimes
+              // freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(weekday);
+              // freetimeRef.get().then(function(doc) {
+              //   freetimeData = doc.data();
+              //   freetimeData['Freetime'][index] = 1
+              //   console.log(prevMealRefData['Length'])
+              //   if (prevMealRefData['Length'] === 1) {
+              //     freetimeData['Freetime'][index+1] = 1
+              //   }
+              // // console.log("my data", freetimeData)
+              // freetimeRef.update(freetimeData).then(() => {
+              //   console.log("My Document updated");
+              //   })
+              //   .catch(function(error) {
+              //     console.error("Error updating", error);
+              //   });
+              // })
 
               var freetimeRef_other = {};
               var freetimeData_other = {};
@@ -321,16 +321,18 @@ export default class FinalRequestScreen extends React.Component {
             index = data_flip[hours]
 
             // update freetimes
+            console.log("UPDATE MY OWN FREETIME " + userID + " on " + day + " at " + index)
             freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(day);
-            freetimeRef.get().then((doc) => {
+            freetimeRef.get().then(function(doc) {
               freetimeData = doc.data();
               freetimeData['Freetime'][index] = 2
               if (data['Length'] === 1) {
                 freetimeData['Freetime'][index+1] = 2
               }
-              // console.log("my data", freetimeData)
-            freetimeRef.set(freetimeData).then(() => {
-              console.log("My Document updated");
+              console.log("my data", freetimeData)
+            freetimeRef.update(freetimeData).then(() => {
+              console.log("My Document updated with my freetimes for reschedule group request");
+              console.log(freetimeData)
               })
               .catch(function(error) {
                 console.error("Error updating", error);
@@ -341,12 +343,45 @@ export default class FinalRequestScreen extends React.Component {
             console.error("Error adding document: ", error);
         });
       }
-        else {
+        else { // rescheduling sent group request
+          prevMealRef = db.collection("users").doc(userID).collection('Sent Group Requests').doc(reschedule)
+          prevMealRef.get().then(function(doc) {
+            prevMealRefData = doc.data();
+            console.log("PREV MEAL REF DATA IS " + prevMealRefData);
+            if (prevMealRefData && prevMealRefData['DateTime']) {
+              weekday = weekdays[prevMealRefData['DateTime'].getDay()].day
+              console.log("WEEKDAY IS " + weekday)
+              amPM = prevMealRefData['DateTime'].getHours() >= 12 ? "PM" : "AM"
+              hours = (prevMealRefData['DateTime'].getHours() % 12 || 12) + ":" + ("0" + prevMealRefData['DateTime'].getMinutes()).slice(-2) + " " + amPM
+              strTime = hours;
+              index = data_flip[hours]
+              console.log(hours)
+              var freetimeRef_other = {};
+              var freetimeData_other = {};
+              for (let thisid in prevData['members']) {
+                freetimeRef_other[thisid] = db.collection("users").doc(thisid).collection('Freetime').doc(weekday);
+                freetimeRef_other[thisid].get().then(function(doc) {
+                  freetimeData_other[thisid] = doc.data();
+                  freetimeData_other[thisid]['Freetime'][index] = 1
+                  if (prevMealRefData['Length'] === 1) {
+                    freetimeData_other[thisid]['Freetime'][index+1] = 1
+                  }
+                  console.log("UPDATING FREETIME FOR " + thisid + " at " + weekday + " " + index)
+                freetimeRef_other[thisid].update(freetimeData_other[thisid]).then(() => {
+                  console.log("freetime Document updated for " + thisid);
+                  })
+                  .catch(function(error) {
+                    console.error("Error updating", error);
+                  });
+                })
+              }
+
+            }
           db.collection("users").doc(userID).collection('Sent Group Requests').doc(reschedule).set(data)
         .then((docRef) => {
             for (let thisid in prevData['members']) {
               if (thisid != userID) {
-              db.collection("users").doc(thisid).collection('Received Group Requests').doc(docRef.id).set(data)
+              db.collection("users").doc(thisid).collection('Received Group Requests').doc(reschedule).set(data)
               expotoken = "";
             db.collection("users").doc(thisid).get().then(function(doc) {
               expotoken = doc.data().Token;
@@ -379,7 +414,7 @@ export default class FinalRequestScreen extends React.Component {
 
             // update freetimes
             freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(day);
-            freetimeRef.get().then((doc) => {
+            freetimeRef.get().then(function(doc) {
               freetimeData = doc.data();
               freetimeData['Freetime'][index] = 2
               if (data['Length'] === 1) {
@@ -396,7 +431,9 @@ export default class FinalRequestScreen extends React.Component {
         })
         .catch(function(error) {
             console.error("Error adding document: ", error);
-        });}
+        });
+      });
+      }
       }
       else {
         db.collection("users").doc(userID).collection('Sent Group Requests').add(data)
