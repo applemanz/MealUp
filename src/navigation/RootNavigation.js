@@ -4,13 +4,21 @@ import { StackNavigator, SwitchNavigator } from 'react-navigation';
 import MainTabNavigator from './MainTabNavigator';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
 import SignInScreen from '../screens/SignInScreen';
+import FirstTimeScreen from '../screens/FirstTimeScreen';
 
 
-const AuthStack = StackNavigator(
-  { SignIn: {
-    screen: SignInScreen,
-   }
- },
+const AuthStack = StackNavigator({ 
+    SignIn: {
+      screen: SignInScreen,
+    },
+    FirstTime: {
+    screen: FirstTimeScreen,
+    navigationOptions: {
+      header: null,
+      tabBarVisible: false
+      }
+    },
+   },
 );
 
 const RootSwitchNavigator = SwitchNavigator(

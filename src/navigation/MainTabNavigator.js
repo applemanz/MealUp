@@ -171,13 +171,6 @@ const MealsStack = StackNavigator({
       headerLeft: null
     }
   },
-  FirstTime: {
-    screen: FirstTimeScreen,
-    navigationOptions: {
-      header: null,
-      tabBarVisible: false
-    }
-  },
   RequestByFriend: {
     screen: RequestByFriendScreen,
     navigationOptions: {
@@ -225,6 +218,7 @@ const MealsStack = StackNavigator({
   {
     initialRouteName: 'Meals',
     navigationOptions: {
+      headerLeft: null,
       headerStyle: {
         backgroundColor: '#f4511e',
         shadowColor: 'transparent',
