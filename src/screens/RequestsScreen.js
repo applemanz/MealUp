@@ -168,28 +168,30 @@ export default class RequestsScreen extends React.Component {
           // auotmatically schedule meal
           if (acceptedCount == totalCount) {
             console.log('ACCEPT = COUNT')
+            data.isGroup = true
+            console.log('adding to meals')
+            db.collection("users").doc(userID).collection('Meals').add(data).then((docRef) => {
+              console.log('MEAL ADDED')
+              for (memberID in data.members) {
+                if (memberID != userID) {
+                  db.collection("users").doc(memberID).collection('Meals').doc(docRef.id).set(data)
+                }
+              }
+            })
+            .catch(function(error) {
+                console.error("Error adding document: ", error);
+            })
+
             db.collection("users").doc(userID).collection('Sent Group Requests').doc(doc.id).delete().then(() =>{
               for (memberID in data.members) {
                 if (memberID != userID)
                   db.collection("users").doc(memberID).collection('Received Group Requests').doc(doc.id).delete()
               }
-              data.isGroup = true
-              console.log('adding to meals')
-              db.collection("users").doc(userID).collection('Meals').add(data).then((docRef) => {
-                for (memberID in data.members) {
-                  if (memberID != userID) {
-                    db.collection("users").doc(memberID).collection('Meals').doc(docRef.id).set(data)
-                  }
-                }
-              })
-              .catch(function(error) {
-                  console.error("Error adding document: ", error);
-              })
+
             })
             .catch(function(error) {
               console.error("Error removing document: ", error);
             })
-
 
           }
           else {
@@ -1293,7 +1295,7 @@ export default class RequestsScreen extends React.Component {
     console.log(this.state.curUser)
     console.log(this.state.id)
     db.collection('users').doc(this.state.curUser.initiator).collection('Sent Group Requests').doc(this.state.curUser.id).get().then((doc) => {
-      data = doc.data()
+      let data = doc.data()
       data.members[userID].accepted = true
 
       console.log('updating sent group requests')
@@ -1303,29 +1305,29 @@ export default class RequestsScreen extends React.Component {
           if (memberID != this.state.curUser.initiator) {
             db.collection('users').doc(memberID).collection('Received Group Requests').doc(this.state.curUser.id).set(data)
           }
-            if (memberID != userID) {
-                expotoken = "";
-                db.collection("users").doc(memberID).get().then(function(doc) {
-                  expotoken = doc.data().Token;
-                  console.log("got token " + expotoken);
+          if (memberID != userID && data.members[userID].accepted) {
+            expotoken = "";
+            db.collection("users").doc(memberID).get().then(function(doc) {
+              expotoken = doc.data().Token;
+              console.log("got token " + expotoken);
 
-                if (expotoken !== undefined) {
-                  console.log("SENDING NOTIFICATION " + userName + " accepted meal to " + memberID);
+              if (expotoken !== undefined) {
+                console.log("SENDING NOTIFICATION " + userName + " accepted meal to " + memberID);
                 return fetch('https://exp.host/--/api/v2/push/send', {
-                  body: JSON.stringify({
-                    to: expotoken,
-                    //title: "title",
-                    body: `${userName} accepted your group meal request!`,
-                    data: { message: `${userName} accepted your group meal request!` },
-                  }),
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  method: 'POST',
-                });
-                }
-              })
-            }
+                body: JSON.stringify({
+                  to: expotoken,
+                  //title: "title",
+                  body: `${userName} accepted your group meal request!`,
+                  data: { message: `${userName} accepted your group meal request!` },
+                }),
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                method: 'POST',
+              });
+              }
+            })
+          }
         }
 
         day = weekdays[data['DateTime'].getDay()].day
@@ -1364,7 +1366,7 @@ export default class RequestsScreen extends React.Component {
         data.members[userID].declined = true
         db.collection('users').doc(this.state.curUser.initiator).collection('Sent Group Requests').doc(this.state.curUser.id).set(data).then(()=>{
           for (memberID in this.state.curUser.members) {
-            if (memberID != this.state.curUser.initiator && memberID != userID)
+            if (memberID != this.state.curUser.initiator)
               db.collection('users').doc(memberID).collection('Received Group Requests').doc(this.state.curUser.id).set(data)
           }
         })
