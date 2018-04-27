@@ -141,13 +141,15 @@ export default class FinalRequestScreen extends React.Component {
 	render() {
 		const { params } = this.props.navigation.state;
 		const name = params ? params.name : null;
-    const members = params ? params.members : null;
-    const time = params ? params.time : null;
-    const dateobj = params ? params.dateobj : null;
-    const length = params ? params.length : null;
-    const reschedule = params ? params.reschedule : null;
+    const missingPerson = params.missingPerson ? params.missingPerson : null;
+    const members = params.members ? params.members : null;
+    const time = params.time ? params.time : null;
+    const dateobj = params.dateobj ? params.dateobj : null;
+    const length = params.length ? params.length : null;
+    const reschedule = params.reschedule ? params.reschedule : null;
     const isGroup = params.isGroup ? true : false;
-    if (reschedule !== undefined && this.state.initialLocation) {
+
+    if (reschedule !== null && this.state.initialLocation) {
       mealRef = db.collection("users").doc(userID).collection('Meals').doc(reschedule)
       mealRef.get().then((doc) => {
         mealData = doc.data();
@@ -161,6 +163,30 @@ export default class FinalRequestScreen extends React.Component {
     }
     urls.push(`http://graph.facebook.com/${userID}/picture?type=large`)
     if (isGroup) {
+      console.log("NAME")
+      console.log(name)
+      if (name === "") {
+        let names = [];
+        for (var memberID in members) {
+          if (memberID != userID)
+            names.push(members[memberID].split(" ")[0]);
+        }
+        names.sort();
+        displayName = "";
+        for (let n of names) {
+          displayName = displayName + n + ", "
+        }
+        displayName = displayName.slice(0, -2)
+        console.log("IN IF")
+      }
+      else {
+        console.log("IN ELSE")
+        displayName = name
+      }
+
+      if (missingPerson)
+        displayName += missingPerson
+
       return (
         <View style = {{flex:1}}>
           <View style={{justifyContent: "center",alignItems: "center",padding:30}}>
@@ -179,7 +205,7 @@ export default class FinalRequestScreen extends React.Component {
                       source={{uri:urls[2]}}/>
                   </View>
                 </View>
-            <Text style={{fontSize:20, fontWeight:'bold'}}>{name}</Text>
+            <Text style={{fontSize:20, fontWeight:'bold', textAlign:'center'}}>{displayName}</Text>
             <Text style={{fontSize:15}}>{dateobj.substring(0,10)}</Text>
             <Text style={{fontSize:15}}>{time}</Text>
           </View>
@@ -232,6 +258,8 @@ export default class FinalRequestScreen extends React.Component {
     data['members'] = members
     data['initiator'] = userID
     data['groupName'] = prevData['name']
+    if (prevData['missingPerson'])
+      data['missingPerson'] = prevData['missingPerson']
     data['Location'] = this.state.location
     data['DateTime'] = new Date(prevData['dateobj'])
     data['Length'] = prevData['length']

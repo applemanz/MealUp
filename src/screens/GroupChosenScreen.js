@@ -76,7 +76,7 @@ export default class GroupChosenScreen extends React.Component {
                   }
                 }
               }
-              matchFewer1.push({title: "Meal without " + members[friendID], data: temp})
+              matchFewer1.push({title: "Meal without " + members[friendID].split(" ")[0], data: temp})
             }
 
             if (!noNewMatches2) {
@@ -89,7 +89,7 @@ export default class GroupChosenScreen extends React.Component {
                   }
                 }
               }
-              matchFewer2.push({title: "Meal without " + members[friendID], data: temp})
+              matchFewer2.push({title: "Meal without " + members[friendID].split(" ")[0], data: temp})
             }
           }
       }
@@ -160,7 +160,7 @@ export default class GroupChosenScreen extends React.Component {
     })
   }
 
-  checkNoMatches = (matches) => { 
+  checkNoMatches = (matches) => {
     for (let index in matches) {
       for (let i = 0; i < matches[index]['matches'].length; i++) {
         if (matches[index]['matches'][i])
@@ -170,7 +170,7 @@ export default class GroupChosenScreen extends React.Component {
     return true
   }
 
-  getTimeIndex = () => {    
+  getTimeIndex = () => {
     thisIndex = (todayHour - 7) * 2 + Math.floor(todayMin / 30) - 1;
     console.log("thisIndex: " + thisIndex)
     return thisIndex
@@ -237,20 +237,21 @@ export default class GroupChosenScreen extends React.Component {
     const members = params.members
 
 
-    if (groupName == "") {
+    if (groupName === "") {
+      console.log("GROUP NAME EMPTY")
       var names = [];
       for (var memberID in members) {
         if (memberID != userID)
           names.push(members[memberID].split(" ")[0]);
       }
       names.sort()
-      var memberStr = ""
+      displayName = ""
       for (name of names) {
-        memberStr = memberStr + name + ", "
+        displayName = displayName + name + ", "
       }
-      memberStr = memberStr.slice(0, -2)
-      groupName = memberStr
+      displayName = displayName.slice(0, -2)
     }
+    else displayName = groupName
 
     if (this.state.match1) {
       const reschedule = params ? params.reschedule : undefined;
@@ -281,7 +282,7 @@ export default class GroupChosenScreen extends React.Component {
                       source={{uri:urls[2]}}/>
                   </View>
                 </View>
-            <Text style={{fontSize:15, fontWeight:'bold'}}>{groupName}</Text>
+            <Text style={{fontSize:15, fontWeight:'bold'}}>{displayName}</Text>
             <Text style={{fontSize:15}}>{'There is no matching time for your group.'}</Text>
             {matchFewer1.length !== 0 && <Text style={{fontSize:15}}>{'Here are the potential times when one person is gone:'}</Text>}
             </View>
@@ -327,7 +328,8 @@ export default class GroupChosenScreen extends React.Component {
                     reschedule: reschedule,
                     // name: name,
                     // id: id,
-                    name: groupName + " without " + section.title.slice(13),
+                    name: groupName,
+                    missingPerson: " without " + section.title.slice(13),
                     members: membersCopy,
                     dateobj: ymd.toString(),
                     time: arr[2] + " " + arr[3],
@@ -371,7 +373,8 @@ export default class GroupChosenScreen extends React.Component {
                         reschedule: reschedule,
                         // name: name,
                         // id: id,
-                        name: groupName + " without " + section.title.slice(13),
+                        name: groupName,
+                        missingPerson: " without " + section.title.slice(13),
                         members: membersCopy,
                         dateobj: ymd.toString(),
                         time: arr[2] + " " + arr[3],
@@ -387,8 +390,9 @@ export default class GroupChosenScreen extends React.Component {
           </View>
         )
       }
-
       // if yes matching time for group
+      console.log('groupName')
+      console.log(groupName)
       return(
         <View style={{flex:1}}>
           <View style={{alignItems:'center'}}>
@@ -408,7 +412,7 @@ export default class GroupChosenScreen extends React.Component {
                 </View>
               </View>
           <Text style={{fontSize:15}}>{'Choose a time to get a meal with '}</Text>
-          <Text style={{fontSize:15, fontWeight:'bold'}}>{groupName}</Text>
+          <Text style={{fontSize:15, fontWeight:'bold'}}>{displayName}</Text>
           </View>
           <ScrollableTabView
             style={{marginTop: 0, flex:1}}

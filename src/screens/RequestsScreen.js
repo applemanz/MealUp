@@ -653,6 +653,22 @@ export default class RequestsScreen extends React.Component {
     )
   }
   receivedGroupRequestModal() {
+    if (this.state.curUser.groupName === "") {
+      var names = [];
+      for (var memberID in this.state.curUser.members) {
+        if (memberID != userID)
+          names.push(this.state.curUser.members[memberID].name.split(" ")[0]);
+      }
+      names.sort()
+      displayName = ""
+      for (let name of names) {
+        displayName = displayName + name + ", "
+      }
+      displayName = displayName.slice(0, -2)
+    }
+    else {displayName = this.state.curUser.groupName}
+    if (this.state.curUser.missingPerson)
+      displayName += this.state.curUser.missingPerson
     return (
     <Modal
       onRequestClose={() => this.setState({respondGroupReceived: false})}
@@ -672,7 +688,7 @@ export default class RequestsScreen extends React.Component {
         }}>
         <View style={{alignItems:'center'}}>
           <Text>{'Respond to group meal request with'}</Text>
-          <Text style={{fontWeight:'bold', fontSize:20, padding:5}}>{this.state.curUser.groupName}</Text>
+          <Text style={{fontWeight:'bold', fontSize:20, padding:5}}>{displayName}</Text>
           <Text style={{textAlign: 'center'}}>
             {this.state.displayDate + " " + this.state.curUser.TimeString + " at " + this.state.curUser.Location}
           </Text>
@@ -730,6 +746,22 @@ export default class RequestsScreen extends React.Component {
       )
   }
   acceptedGroupRequestModal() {
+    if (this.state.curUser.groupName === "") {
+      var names = [];
+      for (var memberID in this.state.curUser.members) {
+        if (memberID != userID)
+          names.push(this.state.curUser.members[memberID].name.split(" ")[0]);
+      }
+      names.sort()
+      displayName = ""
+      for (let name of names) {
+        displayName = displayName + name + ", "
+      }
+      displayName = displayName.slice(0, -2)
+    }
+    else {displayName = this.state.curUser.groupName}
+    if (this.state.curUser.missingPerson)
+      displayName += this.state.curUser.missingPerson
     return (
     <Modal
       onRequestClose={() => this.setState({acceptedGroupReceived: false})}
@@ -749,7 +781,7 @@ export default class RequestsScreen extends React.Component {
         }}>
         <View style={{alignItems:'center'}}>
           <Text>{'Group meal with'}</Text>
-          <Text style={{fontWeight:'bold', fontSize:20, padding:5}}>{this.state.curUser.groupName}</Text>
+          <Text style={{fontWeight:'bold', fontSize:20, padding:5}}>{displayName}</Text>
           <Text style={{textAlign: 'center'}}>
             {this.state.displayDate + " " + this.state.curUser.TimeString + " at " + this.state.curUser.Location}
           </Text>
@@ -797,6 +829,22 @@ export default class RequestsScreen extends React.Component {
     )
   }
   sentGroupRequestModal() {
+    if (this.state.curUser.groupName === "") {
+      var names = [];
+      for (var memberID in this.state.curUser.members) {
+        if (memberID != userID)
+          names.push(this.state.curUser.members[memberID].name.split(" ")[0]);
+      }
+      names.sort()
+      displayName = ""
+      for (let name of names) {
+        displayName = displayName + name + ", "
+      }
+      displayName = displayName.slice(0, -2)
+    }
+    else {displayName = this.state.curUser.groupName}
+    if (this.state.curUser.missingPerson)
+      displayName += this.state.curUser.missingPerson
     return (
     <Modal
       onRequestClose={() => this.setState({respondGroupSent: false})}
@@ -816,7 +864,7 @@ export default class RequestsScreen extends React.Component {
         }}>
           <View style={{alignItems:'center'}}>
             <Text>{'Group Meal with'}</Text>
-            <Text style={{fontWeight:'bold', fontSize:20, padding:5}}>{this.state.curUser.groupName}</Text>
+            <Text style={{fontWeight:'bold', fontSize:20, padding:5}}>{displayName}</Text>
             <Text style={{textAlign: 'center'}}>
               {this.state.displayDate + " " + this.state.curUser.TimeString + " at " + this.state.curUser.Location}
             </Text>
@@ -1191,14 +1239,33 @@ export default class RequestsScreen extends React.Component {
       urls.push(`http://graph.facebook.com/${memberID}/picture?type=normal`)
     }
     urls.push(`http://graph.facebook.com/${userID}/picture?type=normal`)
+
+    if (item.groupName === "") {
+      var names = [];
+      for (var memberID in item.members) {
+        if (memberID != userID)
+          names.push(item.members[memberID].name.split(" ")[0]);
+      }
+      names.sort()
+      displayName = ""
+      for (let name of names) {
+        displayName = displayName + name + ", "
+      }
+      displayName = displayName.slice(0, -2)
+    }
+    else {displayName = item.groupName}
+
+    if (item.missingPerson)
+      displayName += item.missingPerson
+
     if (item.members[userID].accepted) {
       onPress = () => this.onPressGroupAccepted(item)
-      title = `${item.groupName} - You accepted - ${acceptedCount}/${totalCount}`
+      title = `${displayName} - You accepted - ${acceptedCount}/${totalCount}`
       subtitle = `${item.DateTime.toDateString().substring(0,10)} ${item.TimeString} at ${item.Location}`
     }
     else {
       onPress = () => this._onPressGroupReceived(item)
-      title = `${item.groupName} - ${acceptedCount} out of ${totalCount} accepted`
+      title = `${displayName} - ${acceptedCount} out of ${totalCount} accepted`
       subtitle = `${item.DateTime.toDateString().substring(0,10)} ${item.TimeString} at ${item.Location}`
     }
     return <ListItem
@@ -1228,6 +1295,8 @@ export default class RequestsScreen extends React.Component {
   }
 
   renderSentGroupRequest = ({item, index}) => {
+    console.log("MEMBERS")
+    console.log(item.members)
     urls = []
     totalCount = Object.keys(item.members).length
     acceptedCount = 0
@@ -1238,9 +1307,28 @@ export default class RequestsScreen extends React.Component {
       urls.push(`http://graph.facebook.com/${memberID}/picture?type=normal`)
     }
     urls.push(`http://graph.facebook.com/${userID}/picture?type=normal`)
+
+    if (item.groupName === "") {
+      var names = [];
+      for (var memberID in item.members) {
+        if (memberID != userID)
+          names.push(item.members[memberID].name.split(" ")[0]);
+      }
+      names.sort()
+      displayName = ""
+      for (let name of names) {
+        displayName = displayName + name + ", "
+      }
+      displayName = displayName.slice(0, -2)
+    }
+    else {displayName = item.groupName}
+
+    if (item.missingPerson)
+      displayName += item.missingPerson
+
     return <ListItem
     key={index}
-    title={`${item.groupName} - ${acceptedCount} out of ${totalCount} accepted`}
+    title={`${displayName} - ${acceptedCount} out of ${totalCount} accepted`}
     subtitle={`${item.DateTime.toDateString().substring(0,10)} ${item.TimeString} at ${item.Location}`}
     subtitleNumberOfLines={5}
     leftIcon = {<View style={{flexDirection:'row', overflow: 'hidden', paddingRight:10, borderRadius:25}} >
@@ -1407,7 +1495,8 @@ export default class RequestsScreen extends React.Component {
       reschedule: this.state.curUser.id,
       groupName: this.state.curUser.groupName,
       members: this.state.curUser.members,
-      id: this.state.curUser.id
+      id: this.state.curUser.id,
+      missingPerson: this.state.curUser.missingPerson
     });
   }
 

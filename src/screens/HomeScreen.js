@@ -178,9 +178,27 @@ export default class HomeScreen extends Component {
       mealEntry = new Object()
       // Group
       if (meal['isGroup'] === true) {
+
+        if (meal.groupName === "") {
+          var names = [];
+          for (var memberID in meal.members) {
+            if (memberID != userID)
+              names.push(meal.members[memberID].name.split(" ")[0]);
+          }
+          names.sort()
+          displayName = ""
+          for (let name of names) {
+            displayName = displayName + name + ", "
+          }
+          displayName = displayName.slice(0, -2)
+        }
+        else {displayName = meal.groupName}
+        if (meal.missingPerson)
+          displayName += meal.missingPerson
+
         mealEntry['isGroup'] = true
         mealEntry['members'] = meal['members']
-        mealEntry['text'] = meal['groupName']
+        mealEntry['text'] = displayName
         urls = []
         for (mealID in meal.members) {
           if (meal.members[mealID].accepted == true)
@@ -409,7 +427,24 @@ export default class HomeScreen extends Component {
           title = `Meal with ${meal.FriendName.split(" ")[0]}`
         }
         else {
-          title = `Meal with ${meal.groupName}`
+          if (meal.groupName === "") {
+            var names = [];
+            for (var memberID in meal.members) {
+              if (memberID != userID)
+                names.push(meal.members[memberID].name.split(" ")[0]);
+            }
+            names.sort()
+            displayName = ""
+            for (let name of names) {
+              displayName = displayName + name + ", "
+            }
+            displayName = displayName.slice(0, -2)
+          }
+          else {displayName = meal.groupName}
+          if (meal.missingPerson)
+            displayName += meal.missingPerson
+
+          title = `Meal with ${displayName}`
         }
         let details = Platform.OS === 'ios' ? {
           startDate: meal.DateTime.toISOString(),
@@ -619,6 +654,24 @@ export default class HomeScreen extends Component {
     else if (this.state.mealItem.isGroup)
       height = 275
     else height = 420
+
+    if (this.state.mealItem.groupName === "") {
+      var names = [];
+      for (var memberID in this.state.mealItem.members) {
+        if (memberID != userID)
+          names.push(this.state.mealItem.members[memberID].name.split(" ")[0]);
+      }
+      names.sort()
+      displayName = ""
+      for (let name of names) {
+        displayName = displayName + name + ", "
+      }
+      displayName = displayName.slice(0, -2)
+    }
+    else {displayName = this.state.mealItem.groupName}
+    if (this.state.mealItem.missingPerson)
+      displayName += this.state.mealItem.missingPerson
+
     return (
     <View>
       <Modal
@@ -641,7 +694,7 @@ export default class HomeScreen extends Component {
                 <View style={{flexDirection: 'row', flexWrap:'wrap'}}>
                   {this.renderAvatars()}
                 </View>
-                  <Text style={{fontWeight:'bold', fontSize:20, padding: 10}}>{this.state.mealItem.groupName}</Text>
+                  <Text style={{fontWeight:'bold', fontSize:20, padding: 10}}>{displayName}</Text>
               </View>
             }
             {!this.state.mealItem.isGroup &&
@@ -767,6 +820,7 @@ export default class HomeScreen extends Component {
         sent: 2,
         reschedule: this.state.curMeal,
         groupName: this.state.mealItem.groupName,
+        missingPerson: this.state.mealItem.missingPerson ? this.state.mealItem.missingPerson: null,
         members: this.state.mealItem.members,
         id: this.state.curMeal
       });

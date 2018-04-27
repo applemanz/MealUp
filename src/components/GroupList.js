@@ -24,6 +24,8 @@ const db = firebase.firestore();
 
 class MyListItem extends React.PureComponent {
   _onPress = () => {
+    console.log("NAME")
+    console.log(this.props.name)
     this.props.onPressItem(this.props.name, this.props.members, this.props.id);
   };
 
@@ -97,6 +99,7 @@ export default class MultiSelectList extends React.PureComponent {
   _keyExtractor = (item, index) => item.id;
 
   _onPressItem = (name, members, id) => {
+    console.log(name)
     this.props.navigation.navigate('GroupChosen', {
       groupName: name,
       members: members,

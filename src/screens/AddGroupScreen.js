@@ -27,7 +27,7 @@ export default class AddGroupScreen extends React.Component {
   state = {friends: [], groupName: ""};
 
   componentWillMount() {
-    this.props.navigation.setParams({ DoneButtonPressed: this.DoneButtonPressed, CancelButtonPressed: this.CancelButtonPressed});
+    this.props.navigation.setParams({CancelButtonPressed: this.CancelButtonPressed});
   }
 
   componentDidMount() {
@@ -49,11 +49,6 @@ export default class AddGroupScreen extends React.Component {
   }
 
   CancelButtonPressed = () => {
-    this.props.navigation.goBack(null)
-  }
-
-  DoneButtonPressed = () => {
-    // TODO add group to database
     this.props.navigation.goBack(null)
   }
 
