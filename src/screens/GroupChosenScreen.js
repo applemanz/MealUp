@@ -71,7 +71,8 @@ export default class GroupChosenScreen extends React.Component {
               for (let index in newMatches1) {
                 for (let j = 0; j <= 28; j++) {
                   if (newMatches1[index]['matches'][j]) {
-                    temp.push(this.printDate(todayMonth,todayDate,todayDay,parseInt(index)) + " " + this.printTime(j) + "-" + this.printTime(j+1,true))
+                    let diff = parseInt(index);
+                    temp.push(this.printDate(todayMonth,todayDate,todayDay,diff) + " " + this.printTime(j) + "-" + this.printTime(j+1,true))
                   }
                 }
               }
@@ -83,7 +84,8 @@ export default class GroupChosenScreen extends React.Component {
               for (let index in newMatches2) {
                 for (let j = 0; j <= 28; j++) {
                   if (newMatches2[index]['matches'][j]) {
-                    temp.push(this.printDate(todayMonth,todayDate,todayDay,parseInt(index)) + " " + this.printTime(j) + "-" + this.printTime(j+2,true))
+                    let diff = parseInt(index);
+                    temp.push(this.printDate(todayMonth,todayDate,todayDay,diff) + " " + this.printTime(j) + "-" + this.printTime(j+2,true))
                   }
                 }
               }
@@ -100,7 +102,8 @@ export default class GroupChosenScreen extends React.Component {
             temp.push(this.printTime(j) + "-" + this.printTime(j+1,true))
           }
         }
-        if (temp.length > 0) match1.push({title: this.printDate(todayMonth,todayDate,todayDay,parseInt(index)), data: temp})
+        let diff = parseInt(index);
+        if (temp.length > 0) match1.push({title: this.printDate(todayMonth,todayDate,todayDay,diff), data: temp})
       }
 
       for (let index in matches2) {
@@ -110,7 +113,8 @@ export default class GroupChosenScreen extends React.Component {
             temp.push(this.printTime(j) + "-" + this.printTime(j+2,true))
           }
         }
-        if (temp.length > 0) match2.push({title: this.printDate(todayMonth,todayDate,todayDay,parseInt(index)), data: temp})
+        let diff = parseInt(index);
+        if (temp.length > 0) match2.push({title: this.printDate(todayMonth,todayDate,todayDay,diff), data: temp})
       }
     }
 
@@ -126,10 +130,7 @@ export default class GroupChosenScreen extends React.Component {
     if (day >= 7) day -= 7;
 
     date += next;
-    if (this.getTimeIndex() >= 28 && next == 0) {
-      console.log("Date is over")
-      date += 7;
-    }
+
     if (date > numdays[month]) {
       date -= numdays[month];
       month++;
@@ -223,6 +224,7 @@ export default class GroupChosenScreen extends React.Component {
     for (let thisday in matches) {
       let diff = days.indexOf(thisday) - todayDay
       if (diff < 0) diff += 7;
+      if (this.getTimeIndex() >= 28 && diff == 0) diff += 7;
       sortedMatches[diff] = {day:thisday, matches:matches[thisday]}
     }
     return sortedMatches
