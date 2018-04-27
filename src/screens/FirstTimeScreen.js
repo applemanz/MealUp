@@ -28,34 +28,34 @@ export default class FirstTimeScreen extends React.Component {
               {
                 backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/iOS/ios_welcome.png')}
-                 style={{width:175, height:356, opacity: 0.85, alignItems: 'center'}}/>,
+                 style={{width:165, height:336, opacity: 0.85, alignItems: 'center'}}/>,
                 title: 'Welcome to MealUp!',
                 subtitle: 'Meet up & eat up with friends easily. \n Swipe to learn how.',
               },
               {
                 backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/iOS/ios_freetime.png')} 
-                  style={{width:175, height:356, opacity: 0.85, alignItems: 'center'}}/>,
+                  style={{width:165, height:336, opacity: 0.85, alignItems: 'center'}}/>,
                 title: 'Manage your free time',
                 subtitle: 'Edit your schedule anytime and anywhere.',
               },
               {
                 backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/iOS/ios_requests.png')} 
-                  style={{width:286, height:346, opacity: 0.85, alignItems: 'center'}}/>,
+                  style={{width:273, height:330, opacity: 0.85, alignItems: 'center'}}/>,
                 title: 'Schedule meals',
                 subtitle: 'Send and respond to meal requests.',
               },
               {
                 backgroundColor: '#fff',
                 image: <Image source={require('../../assets/images/iOS/ios_groups.png')} 
-                  style={{width:286, height:346, opacity: 0.85, alignItems: 'center'}}/>,
+                  style={{width:273, height:330, opacity: 0.85, alignItems: 'center'}}/>,
                 title: 'Organize groups',
                 subtitle: 'Connect to your friends more with groups.',
               },
             ]}
-            onDone = {() => {this.props.navigation.navigate('Meals')}}
-            onSkip = {() => {this.props.navigation.navigate('Meals')}}
+            onDone = {() => {this.props.navigation.navigate('FreeTime')}}
+            onSkip = {() => {this.props.navigation.navigate('FreeTime')}}
           />
         )
     } else if (Platform.OS === 'android') {
@@ -91,8 +91,8 @@ export default class FirstTimeScreen extends React.Component {
                 subtitle: 'Connect to your friends more with groups.',
               },
             ]}
-            onDone = {() => {this.props.navigation.navigate('Meals')}}
-            onSkip = {() => {this.props.navigation.navigate('Meals')}}
+            onDone = {() => {this.props.navigation.navigate('FreeTime')}}
+            onSkip = {() => {this.props.navigation.navigate('FreeTime')}}
           />
       )} else {
         console.error("error loading", error);
