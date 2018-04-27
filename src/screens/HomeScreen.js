@@ -63,7 +63,7 @@ export default class HomeScreen extends Component {
         let mealIDs = []
         querySnapshot.forEach((doc) => {
           today = new Date()
-          today.setHours(0, 0, 0, 0)
+          // today.setHours(0, 0, 0, 0)
           if (doc.data().DateTime >= today) {
             if (this.state.calendarPermission === true && this.state.selectedCalendar.hasOwnProperty('id')) {
               if (calendarInfo) {
@@ -80,24 +80,26 @@ export default class HomeScreen extends Component {
           }
           else {
             weekday = weekdays[doc.data().DateTime.getDay()].day
-            // amPM = doc.data().DateTime.getHours() >= 12 ? "PM" : "AM"
-            // hours = (doc.data().DateTime.getHours() % 12 || 12) + ":" + ("0" + doc.data().DateTime.getMinutes()).slice(-2) + " " + amPM
-            // index = data_flip[hours]
+            amPM = doc.data().DateTime.getHours() >= 12 ? "PM" : "AM"
+            hours = (doc.data().DateTime.getHours() % 12 || 12) + ":" + ("0" + doc.data().DateTime.getMinutes()).slice(-2) + " " + amPM
+            index = data_flip[hours]
+
+            // update freetimes
             freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(weekday);
             freetimeRef.get().then(function(doc) {
               freetimeData = doc.data();
-              for (i = 0; i < freetimeData['Freetime'].length; i++) {
-                if (freetimeData['Freetime'][i] === 2) {
-                  freetimeData['Freetime'][i] = 1
+              freetimeData['Freetime'][index] = 1
+                if (doc.data()['Length'] === 1) {
+                  freetimeData['Freetime'][index+1] = 1
                 }
-              }
-            freetimeRef.set(freetimeData).then(() => {
-              // console.log("My Document updated");
+            freetimeRef.update(freetimeData).then(() => {
+              console.log("My Document updated");
               })
               .catch(function(error) {
                 console.error("Error updating", error);
               });
             })
+
             db.collection("users").doc(userID).collection('Meals').doc(doc.id).delete().then(() => {
               // console.log("Document successfully deleted!");
               // db.collection("users").doc(doc.data().FriendID).collection('Meals').doc(doc.id).delete()
@@ -842,7 +844,8 @@ export default class HomeScreen extends Component {
               });
             })
             }
-          } else {
+          }
+           else {
             freetimeRef_other = db.collection("users").doc(curMealRefData["FriendID"]).collection('Freetime').doc(weekday);
             freetimeRef_other.get().then(function(doc) {
               freetimeData_other = doc.data();

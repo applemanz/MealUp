@@ -167,27 +167,30 @@ export default class RequestsScreen extends React.Component {
           }
           // auotmatically schedule meal
           if (acceptedCount == totalCount) {
+            console.log('ACCEPT = COUNT')
             db.collection("users").doc(userID).collection('Sent Group Requests').doc(doc.id).delete().then(() =>{
               for (memberID in data.members) {
                 if (memberID != userID)
                   db.collection("users").doc(memberID).collection('Received Group Requests').doc(doc.id).delete()
               }
+              data.isGroup = true
+              console.log('adding to meals')
+              db.collection("users").doc(userID).collection('Meals').add(data).then((docRef) => {
+                for (memberID in data.members) {
+                  if (memberID != userID) {
+                    db.collection("users").doc(memberID).collection('Meals').doc(docRef.id).set(data)
+                  }
+                }
+              })
+              .catch(function(error) {
+                  console.error("Error adding document: ", error);
+              })
             })
             .catch(function(error) {
               console.error("Error removing document: ", error);
             })
 
-            data.isGroup = true
-            db.collection("users").doc(userID).collection('Meals').add(data).then((docRef) => {
-              for (memberID in data.members) {
-                if (memberID != userID) {
-                  db.collection("users").doc(memberID).collection('Meals').doc(docRef.id).set(data)
-                }
-              }
-            })
-            .catch(function(error) {
-                console.error("Error adding document: ", error);
-            })
+
           }
           else {
             data['id'] = doc.id
@@ -1286,12 +1289,14 @@ export default class RequestsScreen extends React.Component {
   }
 
   acceptGroupRequest = () => {
+    console.log('ACCEPTING GROUP REQUEST')
     console.log(this.state.curUser)
     console.log(this.state.id)
     db.collection('users').doc(this.state.curUser.initiator).collection('Sent Group Requests').doc(this.state.curUser.id).get().then((doc) => {
       data = doc.data()
       data.members[userID].accepted = true
 
+      console.log('updating sent group requests')
       db.collection('users').doc(this.state.curUser.initiator).collection('Sent Group Requests').doc(this.state.curUser.id).set(data).then(()=> {
         data['pending'] = true
         for (memberID in this.state.curUser.members) {

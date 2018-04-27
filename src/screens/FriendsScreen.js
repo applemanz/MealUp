@@ -69,6 +69,7 @@ export default class FriendsScreen extends React.Component {
           Name: friend.name,
           CanViewMe: true,
           CanViewFriend: true,
+          numOfMeals: 0,
         })
         // db.collection('users').doc(friend.id).collection('Friends').doc(userID).get().then((doc)=> {
         //     if (doc.exists) {
@@ -88,26 +89,18 @@ export default class FriendsScreen extends React.Component {
   }
 
   compareFriends = (a,b) => {
-    mealCount = b.numOfMeals - a.numOfMeals
-    if (mealCount != 0) return mealCount
-    else {
-      if (a.Name < b.Name) {
-        return -1;
-      }
-      else
-        return 1
+    if (a.Name < b.Name) {
+      return -1;
     }
+    else
+      return 1
   }
   compareGroups = (a,b) => {
-    mealCount = b.numOfMeals - a.numOfMeals
-    if (mealCount != 0) return mealCount
-    else {
-      if (a.groupName < b.groupName) {
-        return -1;
-      }
-      else
-        return 1
+    if (a.groupName < b.groupName) {
+      return -1;
     }
+    else
+      return 1
   }
 
   render() {
