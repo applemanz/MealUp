@@ -834,6 +834,7 @@ export default class RequestsScreen extends React.Component {
       for (var memberID in this.state.curUser.members) {
         if (memberID != userID)
           names.push(this.state.curUser.members[memberID].name.split(" ")[0]);
+
       }
       names.sort()
       displayName = ""
@@ -842,7 +843,19 @@ export default class RequestsScreen extends React.Component {
       }
       displayName = displayName.slice(0, -2)
     }
-    else {displayName = this.state.curUser.groupName}
+    else {
+      displayName = this.state.curUser.groupName
+    }
+    
+    acceptedMemberCount = 0
+    for (var memberID in this.state.curUser.members) {
+      if (this.state.curUser.members[memberID].accepted === true)
+        acceptedMemberCount++
+    }
+    if (acceptedMemberCount >= 3) {
+      finalizeOn = true
+    } else {finalizeOn = false}
+
     if (this.state.curUser.missingPerson)
       displayName += this.state.curUser.missingPerson
     return (
@@ -901,13 +914,14 @@ export default class RequestsScreen extends React.Component {
               </ScrollView>
             </View>
           </View>
-          <TouchableHighlight
+          {finalizeOn && <TouchableHighlight
             style={{marginTop:10, padding: 10, backgroundColor: "#5cb85c", borderRadius: 5}}
             onPress={this.finalize}>
             <Text style={{fontSize: 15, fontWeight: 'bold', color: 'white', textAlign: 'center'}}>
               Finalize
             </Text>
           </TouchableHighlight>
+        }
           <TouchableHighlight
             style={{marginTop:10, padding: 10, backgroundColor: "#ffbb33", borderRadius: 5}}
             onPress={this.rescheduleGroup}>
