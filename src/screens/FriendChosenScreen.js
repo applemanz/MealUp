@@ -36,7 +36,7 @@ export default class FriendChosenScreen extends React.Component {
     if (day >= 7) day -= 7;
 
     date += next;
-    if (this.getTimeIndex() >= 28) {
+    if (this.getTimeIndex() >= 28 && next == 0) {
       console.log("Date is over")
       date += 7;
     }

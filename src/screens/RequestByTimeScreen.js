@@ -42,6 +42,7 @@ export default class RequestByTimeScreen extends React.Component {
     });
   }
   
+  isToday =
   getTimeIndex = () => {    
     today = new Date();
     thisDay = days[today.getDay()];
@@ -66,7 +67,7 @@ export default class RequestByTimeScreen extends React.Component {
     if (day >= 7) day -= 7;
 
     date += next;
-    if (this.getTimeIndex() >= 28) {
+    if (this.getTimeIndex() >= 28 && next == 0) {
       console.log("Date is over")
       date += 7;
     }
