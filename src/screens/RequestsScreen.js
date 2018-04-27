@@ -688,7 +688,7 @@ export default class RequestsScreen extends React.Component {
         }}>
         <View style={{alignItems:'center'}}>
           <Text>{'Respond to group meal request with'}</Text>
-          <Text style={{fontWeight:'bold', fontSize:20, padding:5}}>{displayName}</Text>
+          <Text style={{fontWeight:'bold', fontSize:20, padding:5, textAlign:'center'}}>{displayName}</Text>
           <Text style={{textAlign: 'center'}}>
             {this.state.displayDate + " " + this.state.curUser.TimeString + " at " + this.state.curUser.Location}
           </Text>
@@ -781,7 +781,7 @@ export default class RequestsScreen extends React.Component {
         }}>
         <View style={{alignItems:'center'}}>
           <Text>{'Group meal with'}</Text>
-          <Text style={{fontWeight:'bold', fontSize:20, padding:5}}>{displayName}</Text>
+          <Text style={{fontWeight:'bold', fontSize:20, padding:5, textAlign:'center'}}>{displayName}</Text>
           <Text style={{textAlign: 'center'}}>
             {this.state.displayDate + " " + this.state.curUser.TimeString + " at " + this.state.curUser.Location}
           </Text>
@@ -864,7 +864,7 @@ export default class RequestsScreen extends React.Component {
         }}>
           <View style={{alignItems:'center'}}>
             <Text>{'Group Meal with'}</Text>
-            <Text style={{fontWeight:'bold', fontSize:20, padding:5}}>{displayName}</Text>
+            <Text style={{fontWeight:'bold', fontSize:20, padding:5, textAlign:'center'}}>{displayName}</Text>
             <Text style={{textAlign: 'center'}}>
               {this.state.displayDate + " " + this.state.curUser.TimeString + " at " + this.state.curUser.Location}
             </Text>

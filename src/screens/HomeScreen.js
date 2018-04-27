@@ -694,7 +694,7 @@ export default class HomeScreen extends Component {
                 <View style={{flexDirection: 'row', flexWrap:'wrap'}}>
                   {this.renderAvatars()}
                 </View>
-                  <Text style={{fontWeight:'bold', fontSize:20, padding: 10}}>{displayName}</Text>
+                  <Text style={{fontWeight:'bold', fontSize:20, padding: 10, textAlign:'center'}}>{displayName}</Text>
               </View>
             }
             {!this.state.mealItem.isGroup &&
