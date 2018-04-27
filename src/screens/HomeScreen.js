@@ -827,17 +827,19 @@ export default class HomeScreen extends Component {
           })
 
           if (curMealRefData["isGroup"] === true) {
+            var freetimeRef_other = {};
+            var freetimeData_other = {};
             for (let thisid in curMealRefData["members"]) {
-              freetimeRef_other = db.collection("users").doc(thisid).collection('Freetime').doc(weekday);
-              freetimeRef_other.get().then(function(doc) {
-              freetimeData_other = doc.data();
-              freetimeData_other['Freetime'][index] = 1
+              freetimeRef_other[thisid] = db.collection("users").doc(thisid).collection('Freetime').doc(weekday);
+              freetimeRef_other[thisid].get().then(function(doc) {
+              freetimeData_other[thisid] = doc.data();
+              console.log("CANCELiNG A GROUP MEAL, FREEING Freetimes for " + thisid + " on " + weekday + " at " + index)
+              freetimeData_other[thisid]['Freetime'][index] = 1
                 if (curMealRefData['Length'] === 1) {
-                  freetimeData_other['Freetime'][index+1] = 1
+                  freetimeData_other[thisid]['Freetime'][index+1] = 1
                 }
-               // console.log(freetimeData_other)
-               freetimeRef_other.update(freetimeData_other).then(() => {
-              console.log("Document updated");
+               freetimeRef_other[thisid].update(freetimeData_other[thisid]).then(() => {
+              console.log("freetime Document updated for " + thisid);
               })
               .catch(function(error) {
                 console.error("Error updating", error);
@@ -853,7 +855,7 @@ export default class HomeScreen extends Component {
                 if (curMealRefData['Length'] === 1) {
                   freetimeData_other['Freetime'][index+1] = 1
                 }
-            // console.log(freetimeData_other)
+
             freetimeRef_other.update(freetimeData_other).then(() => {
               console.log("Document updated");
               })

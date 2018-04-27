@@ -1421,17 +1421,21 @@ export default class RequestsScreen extends React.Component {
     data = Object.assign({}, this.state.curUser)
 
     db.collection("users").doc(userID).collection('Sent Group Requests').doc(this.state.curUser.id).delete().then(() => {
-      console.log("Document successfully deleted!")
-      for (memberID in this.state.curUser.members) {
-        freetimeRef = db.collection("users").doc(memberID).collection('Freetime').doc(day);
-        freetimeRef.get().then((doc) => {
-          freetimeData = doc.data();
-          freetimeData['Freetime'][index] = 1
+      console.log("Document successfully deleted**!")
+      var freetimeRef = {};
+      var freetimeData = {};
+      for (let memberID in this.state.curUser.members) {
+        console.log("FREEING TIME FOR " + memberID)
+        freetimeRef[memberID] = db.collection("users").doc(memberID).collection('Freetime').doc(day);
+        freetimeRef[memberID].get().then(function(doc) {
+          freetimeData[memberID] = doc.data();
+          freetimeData[memberID]['Freetime'][index] = 1
           if (data['Length'] === 1) {
-            freetimeData['Freetime'][index+1] = 1
+            freetimeData[memberID]['Freetime'][index+1] = 1
           }
-        freetimeRef.set(freetimeData).then(() => {
-          console.log("My Document updated");
+        freetimeRef[memberID].update(freetimeData[memberID]).then(() => {
+          console.log("My Document updated for " + memberID + " at " + day + " " + index);
+          console.log(freetimeData[memberID]);
           })
           .catch(function(error) {
             console.error("Error updating", error);

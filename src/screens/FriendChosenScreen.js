@@ -36,10 +36,6 @@ export default class FriendChosenScreen extends React.Component {
     if (day >= 7) day -= 7;
 
     date += next;
-    if (this.getTimeIndex() >= 28) {
-      console.log("Date is over")
-      date += 7;
-    }
 
     if (date > numdays[month]) {
       date -= numdays[month];
@@ -175,7 +171,8 @@ export default class FriendChosenScreen extends React.Component {
 
         diff = days.indexOf(thisday) - day;
         if (diff < 0) diff += 7;
-
+        if (this.getTimeIndex() >= 28 && diff == 0) diff += 7;
+        
         if (temp.length > 0) match1.push({title: diff, data: temp})
       }
 
@@ -189,6 +186,7 @@ export default class FriendChosenScreen extends React.Component {
 
         diff = days.indexOf(thisday) - day;
         if (diff < 0) diff += 7;
+        if (this.getTimeIndex() >= 28 && diff == 0) diff += 7;
 
         if (temp.length > 0) match2.push({title: diff, data: temp})
       }

@@ -43,6 +43,7 @@ export default class AddGroupScreen extends React.Component {
               numOfMeals: doc.data().numOfMeals
             })
         });
+        friends.sort();
         this.setState({friends:friends});
     });
   }
