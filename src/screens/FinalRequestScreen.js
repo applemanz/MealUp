@@ -269,13 +269,14 @@ export default class FinalRequestScreen extends React.Component {
       if (reschedule) {
         // reschedule meal
         if (sent == 2) {
+          console.log("RESCHEDULING A GROUP MEAL****************** " + reschedule)
           prevMealRef = db.collection("users").doc(userID).collection('Meals').doc(reschedule)
           prevMealRef.get().then(function(doc) {
             prevMealRefData = doc.data();
-            console.log(prevMealRefData);
+            console.log("PREV MEAL REF DATA IS " + prevMealRefData);
             if (prevMealRefData && prevMealRefData['DateTime']) {
               weekday = weekdays[prevMealRefData['DateTime'].getDay()].day
-              console.log(weekday)
+              console.log("WEEKDAY IS " + weekday)
               amPM = prevMealRefData['DateTime'].getHours() >= 12 ? "PM" : "AM"
               hours = (prevMealRefData['DateTime'].getHours() % 12 || 12) + ":" + ("0" + prevMealRefData['DateTime'].getMinutes()).slice(-2) + " " + amPM
               strTime = hours;
@@ -300,17 +301,19 @@ export default class FinalRequestScreen extends React.Component {
                 });
               })
 
+              var freetimeRef_other = {};
+              var freetimeData_other = {};
               for (let thisid in prevData['members']) {
-                freetimeRef_other = db.collection("users").doc(thisid).collection('Freetime').doc(weekday);
-                freetimeRef_other.get().then(function(doc) {
-                  freetimeData_other = doc.data();
-                  freetimeData_other['Freetime'][index] = 1
+                freetimeRef_other[thisid] = db.collection("users").doc(thisid).collection('Freetime').doc(weekday);
+                freetimeRef_other[thisid].get().then(function(doc) {
+                  freetimeData_other[thisid] = doc.data();
+                  freetimeData_other[thisid]['Freetime'][index] = 1
                   if (prevMealRefData['Length'] === 1) {
-                    freetimeData_other['Freetime'][index+1] = 1
+                    freetimeData_other[thisid]['Freetime'][index+1] = 1
                   }
-                // console.log(freetimeData_other)
-                freetimeRef_other.update(freetimeData_other).then(() => {
-                  console.log("Document updated");
+                  console.log("UPDATING FREETIME FOR " + thisid + " at " + weekday + " " + index)
+                freetimeRef_other[thisid].update(freetimeData_other[thisid]).then(() => {
+                  console.log("freetime Document updated for " + thisid);
                   })
                   .catch(function(error) {
                     console.error("Error updating", error);
@@ -318,15 +321,16 @@ export default class FinalRequestScreen extends React.Component {
                 })
               }
             }
-          });
-          db.collection("users").doc(userID).collection('Meals').doc(reschedule).delete().then(() => {
-            console.log("Document successfully deleted!");
-            for (let thisid in prevData['members']) {
-              if (thisid != userID) {
-              db.collection("users").doc(thisid).collection('Meals').doc(reschedule).delete()
+            db.collection("users").doc(userID).collection('Meals').doc(reschedule).delete().then(() => {
+              console.log("Document successfully deleted!");
+              for (let thisid in prevData['members']) {
+                if (thisid != userID) {
+                db.collection("users").doc(thisid).collection('Meals').doc(reschedule).delete()
+                }
               }
-            }
+            });
           });
+          
           db.collection("users").doc(userID).collection('Sent Group Requests').add(data)
           .then(function(docRef) {
             for (let thisid in prevData['members']) {

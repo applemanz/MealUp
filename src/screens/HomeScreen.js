@@ -930,7 +930,9 @@ export default class HomeScreen extends Component {
 
           db.collection("users").doc(thisid).collection('Meals').doc(curMeal).delete()
           expotoken = "";
-          if (thisid !== userID) {
+          let accepted = curMealRefData["members"][thisid].accepted;
+          console.log("VALUE OF ACCEPTED FOR " + thisid + " is " + accepted)
+          if (thisid !== userID && accepted == true) {
                   db.collection("users").doc(thisid).get().then(function(doc) {
                     expotoken = doc.data().Token;
                     console.log("got token " + expotoken);
