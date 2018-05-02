@@ -43,9 +43,30 @@ export default class AddGroupScreen extends React.Component {
               numOfMeals: doc.data().numOfMeals
             })
         });
-        friends.sort();
+        friends.sort(this.compareFriends);
         this.setState({friends:friends});
     });
+  }
+
+  compareFriends = (a,b) => {
+    var bCount = 0
+    var aCount = 0
+    if (b.numOfMeals !== undefined) {
+      bCount = b.numOfMeals
+    }
+    if (a.numOfMeals !== undefined) {
+      aCount = a.numOfMeals
+    }
+    mealCount = bCount - aCount
+    if (mealCount != 0) {
+      return mealCount
+    } else {
+      if (a.Name < b.Name) {
+        return -1;
+      }
+      else 
+        return 1
+    }
   }
 
   CancelButtonPressed = () => {
