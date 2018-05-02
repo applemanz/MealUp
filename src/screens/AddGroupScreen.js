@@ -57,7 +57,7 @@ export default class AddGroupScreen extends React.Component {
       <View style={{flex:1}}>
         <TextInput
           underlineColorAndroid = 'transparent'
-          placeholder = {'Name this group'}
+          placeholder = {'Name this group (optional)'}
           onChangeText = {(text) => {this.setState({groupName:text})}}
           style={{height: 30, fontSize: 20, color: 'black', marginTop:20, marginBottom:20, marginLeft:20}}
         />

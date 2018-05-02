@@ -812,19 +812,17 @@ export default class HomeScreen extends Component {
   }
 
   rescheduleGroupMeal = () => {
-    // console.log("reschedule " + this.state.curMeal);
     this.setState({mealModal: false});
     db.collection('users').doc(userID).get().then((doc)=>{
-      // let mealID = doc.data().Calendar[this.state.curMeal].eventID;
       this.props.navigation.navigate('GroupChosen', {
         sent: 2,
         reschedule: this.state.curMeal,
         groupName: this.state.mealItem.groupName,
-        missingPerson: this.state.mealItem.missingPerson ? this.state.mealItem.missingPerson: null,
+        // missingPerson: this.state.mealItem.missingPerson ? this.state.mealItem.missingPerson: null,
         members: this.state.mealItem.members,
-        id: this.state.curMeal
+        id: this.state.curMeal,
       });
-    })
+    });
   }
 
   cancelMeal = () => {

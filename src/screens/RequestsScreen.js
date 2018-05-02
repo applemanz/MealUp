@@ -846,13 +846,13 @@ export default class RequestsScreen extends React.Component {
     else {
       displayName = this.state.curUser.groupName
     }
-    
+
     acceptedMemberCount = 0
     for (var memberID in this.state.curUser.members) {
       if (this.state.curUser.members[memberID].accepted === true)
         acceptedMemberCount++
     }
-    if (acceptedMemberCount >= 3) {
+    if (acceptedMemberCount >= 2) {
       finalizeOn = true
     } else {finalizeOn = false}
 
