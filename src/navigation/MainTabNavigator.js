@@ -205,7 +205,7 @@ const MealsStack = StackNavigator({
   {
     initialRouteName: 'Meals',
     navigationOptions: {
-      headerLeft: null,
+      //headerLeft: null,
       headerStyle: {
         backgroundColor: '#f4511e',
         shadowColor: 'transparent',
