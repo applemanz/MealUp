@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Text, TouchableHighlight, Avatar, Picker, TextInput } from 'react-native';
+import { View, Image, Text, TouchableHighlight, Avatar, Picker, TextInput, ScrollView } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
 import {Button} from 'react-native-elements';
 import { StackNavigator } from 'react-navigation';
@@ -188,7 +188,7 @@ export default class FinalRequestScreen extends React.Component {
         displayName += missingPerson
 
       return (
-        <View style = {{flex:1}}>
+        <ScrollView style = {{flex:1}}>
           <View style={{justifyContent: "center",alignItems: "center",padding:30}}>
             <View style={{flexDirection:'row', overflow: 'hidden', paddingRight:10, borderRadius:50}} >
                   <View style={{overflow: 'hidden', borderTopLeftRadius: 50, borderBottomLeftRadius: 50}}>
@@ -216,12 +216,12 @@ export default class FinalRequestScreen extends React.Component {
             { this.renderOptions({time, reschedule}) }
           </View>
           <Button title="Submit" backgroundColor='#f4511e' borderRadius={50} raised onPress={this.submitGroupRequest}/>
-        </View>
+        </ScrollView>
       )
     }
     else {
       return (
-  			<View style = {{flex:1}}>
+  			<ScrollView style = {{flex:1}}>
     			<View style={{justifyContent: "center",alignItems: "center",padding:30}}>
       			<Image
                		style={{width: 100, height: 100, borderRadius: 50}}
@@ -238,7 +238,7 @@ export default class FinalRequestScreen extends React.Component {
             { this.renderOptions({time, reschedule}) }
           </View>
     			<Button title="Submit" backgroundColor='#f4511e' borderRadius={50} raised onPress={this.submitRequest}/>
-  			</View>
+  			</ScrollView>
   		)
     }
 	}
