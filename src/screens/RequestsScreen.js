@@ -686,6 +686,7 @@ export default class RequestsScreen extends React.Component {
           backgroundColor: '#fff',
           padding: 30
         }}>
+        <ScrollView>
         <View style={{alignItems:'center'}}>
           <Text>{'Respond to group meal request with'}</Text>
           <Text style={{fontWeight:'bold', fontSize:20, padding:5, textAlign:'center'}}>{displayName}</Text>
@@ -740,6 +741,7 @@ export default class RequestsScreen extends React.Component {
           onPress={() => this.setState({respondGroupReceived: false})}>
           <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Cancel</Text>
         </TouchableHighlight>
+        </ScrollView>
         </View>
       </View>
     </Modal>
@@ -779,6 +781,7 @@ export default class RequestsScreen extends React.Component {
           backgroundColor: '#fff',
           padding: 30
         }}>
+        <ScrollView>
         <View style={{alignItems:'center'}}>
           <Text>{'Group meal with'}</Text>
           <Text style={{fontWeight:'bold', fontSize:20, padding:5, textAlign:'center'}}>{displayName}</Text>
@@ -823,6 +826,7 @@ export default class RequestsScreen extends React.Component {
           onPress={() => this.setState({acceptedGroupReceived: false})}>
           <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Close</Text>
         </TouchableHighlight>
+        </ScrollView>
         </View>
       </View>
     </Modal>
@@ -871,10 +875,11 @@ export default class RequestsScreen extends React.Component {
       }}>
         <View style={{
           width: 300,
-          height: 530,
+          height: 510,
           backgroundColor: '#fff',
           padding: 30
         }}>
+        <ScrollView>
           <View style={{alignItems:'center'}}>
             <Text>{'Group Meal with'}</Text>
             <Text style={{fontWeight:'bold', fontSize:20, padding:5, textAlign:'center'}}>{displayName}</Text>
@@ -943,6 +948,7 @@ export default class RequestsScreen extends React.Component {
               Cancel
             </Text>
           </TouchableHighlight>
+          </ScrollView>
         </View>
       </View>
     </Modal>
