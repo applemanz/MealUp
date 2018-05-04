@@ -11,7 +11,10 @@ import {
   Alert,
   AlertIOS,
   Modal,
-  Platform } from 'react-native';
+  Platform,
+  TouchableNativeFeedback,
+  Vibration
+  } from 'react-native';
 import NavigationBar from 'navigationbar-react-native';
 import { Avatar, Card, ListItem, Button, ButtonGroup, Icon } from 'react-native-elements';
 import firebase from "../config/firebase";
@@ -49,9 +52,11 @@ class MyListItem extends React.PureComponent {
 
     urls = []
     for (memberID in this.props.members) {
-      urls.push(`http://graph.facebook.com/${memberID}/picture?type=normal`)
+      if (memberID != userID)
+        urls.push(`http://graph.facebook.com/${memberID}/picture?type=normal`)
     }
-    urls.push(`http://graph.facebook.com/${userID}/picture?type=normal`)
+    if (Object.keys(this.props.members).length == 3)
+      urls.push(`http://graph.facebook.com/${userID}/picture?type=normal`)
 
     if (this.props.name == "") {
       title = memberStr
@@ -164,6 +169,20 @@ export default class MultiSelectList extends React.PureComponent {
   }
 
   renderModal() {
+    if (this.state.name === "") {
+      var names = [];
+      for (var memberID in this.state.members) {
+        if (memberID != userID)
+          names.push(this.state.members[memberID].split(" ")[0]);
+      }
+      names.sort()
+      displayName = ""
+      for (let name of names) {
+        displayName = displayName + name + ", "
+      }
+      displayName = displayName.slice(0, -2)
+    }
+    else {displayName = this.state.name}
     return (
       <Modal
         transparent={true}
@@ -176,9 +195,29 @@ export default class MultiSelectList extends React.PureComponent {
             justifyContent: 'center',
             alignItems: 'center',
             backgroundColor: '#00000080'}}>
-          <View style={{width: 300, height: 300, backgroundColor: 'transparent',}}>
+          <View style={{width: 300, height: 300, backgroundColor: 'transparent'}}>
+            <TouchableNativeFeedback>
+               <View>
+               <Text>
+               Button!
+               </Text>
+               </View>
+           </TouchableNativeFeedback>
+            <Button
+              title= {displayName}
+              backgroundColor = "white"
+              color = "black"
+              fontSize = {20}
+              disabledTextStyle = {{color:'black', textAlign: 'right'}}
+              disabledStyle = {{backgroundColor:'white'}}
+              disabled
+              onPress={()=> {}}
+              />
             <Button
               title="Leave Group"
+              backgroundColor = "white"
+              color = "black"
+              textStyle = {{textAlign:'left'}}
               onPress={()=> {
                 Alert.alert(
                   'Leave Group?',
@@ -194,6 +233,9 @@ export default class MultiSelectList extends React.PureComponent {
               />
             <Button
               title="Rename Group"
+              backgroundColor = "white"
+              color = "black"
+              textStyle = {{textAlign:'left'}}
               onPress = {() => {
                 this.setState({modalVisible: false})
                 this.setState({promptVisible: true});
@@ -201,6 +243,9 @@ export default class MultiSelectList extends React.PureComponent {
               />
             <Button
               title="Add Members"
+              backgroundColor = "white"
+              color = "black"
+              textStyle = {{textAlign:'left'}}
               onPress = {()=>{
                 this.setState({modalVisible: false})
                 this.addMember(this.state.name, this.state.members, this.state.id)}}
@@ -213,6 +258,7 @@ export default class MultiSelectList extends React.PureComponent {
 
 
   _onLongPress = (name, members, id, numOfMeals) => {
+    Vibration.vibrate(30)
     if (Platform.OS === 'ios') {
       ActionSheetIOS.showActionSheetWithOptions({
         options: ['Cancel', 'Leave Group', 'Rename Group', 'Add Members'],
@@ -241,7 +287,6 @@ export default class MultiSelectList extends React.PureComponent {
         }
       )
     }
-    // Android Code
     else {
       this.setState({
         name:name,

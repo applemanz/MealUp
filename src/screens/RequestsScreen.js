@@ -956,6 +956,7 @@ export default class RequestsScreen extends React.Component {
   }
   renderAvatars = (s) => {
     selectedURLs = []
+
     if (s == 'accepted') {
       for (memberID in this.state.curUser.members) {
         if (this.state.curUser.members[memberID].accepted == true) {
@@ -1256,9 +1257,11 @@ export default class RequestsScreen extends React.Component {
       if (item.members[memberID].accepted == true) {
         acceptedCount++
       }
-      urls.push(`http://graph.facebook.com/${memberID}/picture?type=normal`)
+      if (memberID != userID)
+        urls.push(`http://graph.facebook.com/${memberID}/picture?type=normal`)
     }
-    urls.push(`http://graph.facebook.com/${userID}/picture?type=normal`)
+    if (urls.length == 2)
+      urls.push(`http://graph.facebook.com/${userID}/picture?type=normal`)
 
     if (item.groupName === "") {
       var names = [];
@@ -1324,9 +1327,11 @@ export default class RequestsScreen extends React.Component {
       if (item.members[memberID].accepted == true) {
         acceptedCount++
       }
-      urls.push(`http://graph.facebook.com/${memberID}/picture?type=normal`)
+      if (memberID != userID)
+        urls.push(`http://graph.facebook.com/${memberID}/picture?type=normal`)
     }
-    urls.push(`http://graph.facebook.com/${userID}/picture?type=normal`)
+    if (urls.length == 2)
+      urls.push(`http://graph.facebook.com/${userID}/picture?type=normal`)
 
     if (item.groupName === "") {
       var names = [];
@@ -1402,64 +1407,81 @@ export default class RequestsScreen extends React.Component {
     console.log(this.state.curUser)
     console.log(this.state.id)
     db.collection('users').doc(this.state.curUser.initiator).collection('Sent Group Requests').doc(this.state.curUser.id).get().then((doc) => {
-      let data = doc.data()
-      data.members[userID].accepted = true
 
-      console.log('updating sent group requests')
-      db.collection('users').doc(this.state.curUser.initiator).collection('Sent Group Requests').doc(this.state.curUser.id).set(data).then(()=> {
-        data['pending'] = true
-        for (memberID in this.state.curUser.members) {
-          if (memberID != this.state.curUser.initiator) {
-            db.collection('users').doc(memberID).collection('Received Group Requests').doc(this.state.curUser.id).set(data)
+      if (doc.exists) {
+        let data = doc.data()
+        data.members[userID].accepted = true
+
+        db.collection('users').doc(this.state.curUser.initiator).collection('Sent Group Requests').doc(this.state.curUser.id).set(data).then(()=> {
+          data['pending'] = true
+          for (memberID in this.state.curUser.members) {
+            if (memberID != this.state.curUser.initiator) {
+              db.collection('users').doc(memberID).collection('Received Group Requests').doc(this.state.curUser.id).set(data)
+            }
+            if (memberID != userID && data.members[userID].accepted) {
+              expotoken = "";
+              db.collection("users").doc(memberID).get().then(function(doc) {
+                expotoken = doc.data().Token;
+                console.log("got token " + expotoken);
+
+                if (expotoken !== undefined) {
+                  console.log("SENDING NOTIFICATION " + userName + " accepted meal to " + memberID);
+                  return fetch('https://exp.host/--/api/v2/push/send', {
+                  body: JSON.stringify({
+                    to: expotoken,
+                    //title: "title",
+                    body: `${userName} accepted your group meal request!`,
+                    data: { message: `${userName} accepted your group meal request!` },
+                  }),
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  method: 'POST',
+                });
+                }
+              })
+            }
           }
-          if (memberID != userID && data.members[userID].accepted) {
-            expotoken = "";
-            db.collection("users").doc(memberID).get().then(function(doc) {
-              expotoken = doc.data().Token;
-              console.log("got token " + expotoken);
 
-              if (expotoken !== undefined) {
-                console.log("SENDING NOTIFICATION " + userName + " accepted meal to " + memberID);
-                return fetch('https://exp.host/--/api/v2/push/send', {
-                body: JSON.stringify({
-                  to: expotoken,
-                  //title: "title",
-                  body: `${userName} accepted your group meal request!`,
-                  data: { message: `${userName} accepted your group meal request!` },
-                }),
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                method: 'POST',
-              });
-              }
+          day = weekdays[data['DateTime'].getDay()].day
+          amPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
+          hours = (data['DateTime'].getHours() % 12 || 12) + ":" + ("0" + data['DateTime'].getMinutes()).slice(-2) + " " + amPM
+          index = data_flip[hours]
+
+          // update freetimes
+          freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(day);
+          freetimeRef.get().then((doc) => {
+            freetimeData = doc.data();
+            freetimeData['Freetime'][index] = 2
+            if (data['Length'] === 1) {
+              freetimeData['Freetime'][index+1] = 2
+            }
+            // console.log("my data", freetimeData)
+          freetimeRef.set(freetimeData).then(() => {
+            console.log("My Document updated");
             })
-          }
-        }
-
-        day = weekdays[data['DateTime'].getDay()].day
-        amPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
-        hours = (data['DateTime'].getHours() % 12 || 12) + ":" + ("0" + data['DateTime'].getMinutes()).slice(-2) + " " + amPM
-        index = data_flip[hours]
-
-        // update freetimes
-        freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(day);
-        freetimeRef.get().then((doc) => {
-          freetimeData = doc.data();
-          freetimeData['Freetime'][index] = 2
-          if (data['Length'] === 1) {
-            freetimeData['Freetime'][index+1] = 2
-          }
-          // console.log("my data", freetimeData)
-        freetimeRef.set(freetimeData).then(() => {
-          console.log("My Document updated");
+            .catch(function(error) {
+              console.error("Error updating", error);
+            });
           })
-          .catch(function(error) {
-            console.error("Error updating", error);
-          });
-        })
 
-      })
+        })
+      }
+      else {
+        db.collection('users').doc(this.state.curUser.initiator).collection('Meals').doc(this.state.curUser.id).get().then((doc) => {
+          if (doc.exists) {
+            let data = doc.data()
+            for (memberID in data.members) {
+              if (data.members[memberID].accepted == true)
+                db.collection("users").doc(memberID).collection('Meals').doc(doc.id).update({
+                  [`members.${userID}.accepted`]: true
+                })
+            }
+          }
+          db.collection("users").doc(userID).collection('Received Group Requests').doc(this.state.curUser.id).delete()
+        })
+      }
+
     })
     this.setState({respondGroupReceived: false})
   }
@@ -1487,25 +1509,22 @@ export default class RequestsScreen extends React.Component {
     for (memberID in this.state.curUser.members) {
       if (memberID == userID)
         db.collection("users").doc(userID).collection('Sent Group Requests').doc(this.state.curUser.id).delete()
-      else
+      else if (this.state.curUser.members[memberID].accepted == true)
         db.collection("users").doc(memberID).collection('Received Group Requests').doc(this.state.curUser.id).delete()
     }
     data = Object.assign({}, this.state.curUser)
     data.isGroup = true
 
-    db.collection("users").doc(userID).collection('Meals').add(data).then((docRef) => {
-      console.log("Document written with ID: ", docRef.id)
+    db.collection("users").doc(userID).collection('Meals').doc(this.state.curUser.id).set(data)
+    .then((docRef) => {
       for (memberID in this.state.curUser.members) {
-        if (this.state.curUser.members[memberID].accepted == true && memberID != userID) {
+        if (this.state.curUser.members[memberID].accepted == true && memberID != userID)
           db.collection("users").doc(memberID).collection('Meals').doc(docRef.id).set(data)
-        }
       }
     })
     .catch(function(error) {
         console.error("Error adding document: ", error);
     })
-
-    // TODO Notify members that meal was scheduled
   }
 
   rescheduleGroup = () => {

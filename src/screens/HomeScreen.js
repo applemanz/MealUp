@@ -818,7 +818,6 @@ export default class HomeScreen extends Component {
         sent: 2,
         reschedule: this.state.curMeal,
         groupName: this.state.mealItem.groupName,
-        // missingPerson: this.state.mealItem.missingPerson ? this.state.mealItem.missingPerson: null,
         members: this.state.mealItem.members,
         id: this.state.curMeal,
       });
