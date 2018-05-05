@@ -241,7 +241,7 @@ export default class GroupChosenScreen extends React.Component {
       var names = [];
       for (var memberID in members) {
         if (memberID != userID)
-          names.push(members[memberID].split(" ")[0]);
+          names.push(members[memberID].name.split(" ")[0]);
       }
       names.sort()
       displayName = ""
