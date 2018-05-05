@@ -178,8 +178,9 @@ export default class FinalRequestScreen extends React.Component {
           if (memberID != userID)
             if (members[memberID].name)
               names.push(members[memberID].name.split(" ")[0]);
-            else
+            else {
               names.push(members[memberID].split(" ")[0]);
+            }
         }
         names.sort();
         displayName = "";
