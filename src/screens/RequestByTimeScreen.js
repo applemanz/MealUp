@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Image, Text, TouchableHighlight, SectionList, StyleSheet } from 'react-native';
-import NavigationBar from 'navigationbar-react-native';
 import { Avatar, Card, ListItem, Button, ButtonGroup} from 'react-native-elements';
 import ScrollableTabView, {DefaultTabBar, } from 'react-native-scrollable-tab-view';
 import firebase from "../config/firebase";
@@ -41,8 +40,8 @@ export default class RequestByTimeScreen extends React.Component {
       })
     });
   }
-  
-  getTimeIndex = () => {    
+
+  getTimeIndex = () => {
     today = new Date();
     thisDay = days[today.getDay()];
     thisHour = today.getHours();
@@ -150,10 +149,10 @@ export default class RequestByTimeScreen extends React.Component {
       if (temp.length > 0)
         time2.push({title: diff, data: temp})
     }
-    
+
     time1.sort((a,b) => a.title - b.title)
     time2.sort((a,b) => a.title - b.title)
-    
+
     for (i of time1) {
       i.title = this.printDate(month,date,day,i.title)
     }
@@ -173,7 +172,7 @@ export default class RequestByTimeScreen extends React.Component {
           tabBarUnderlineStyle = {{backgroundColor:'white'}}
         >
           {(this.state.time && time1.length === 0) ? (<Text tabLabel = '30 minutes' style={{textAlign: 'center', padding: 30}}>No friend is free for any of your selected time...{"\n"}
-              Make sure you've selected your availability for meals in the Free Time tab!</Text>) : 
+              Make sure you've selected your availability for meals in the Free Time tab!</Text>) :
               (<SectionList
             tabLabel='30 minutes'
             sections={time1}
@@ -187,7 +186,7 @@ export default class RequestByTimeScreen extends React.Component {
           />)}
 
           {(this.state.time && time2.length === 0) ? (<Text tabLabel = '1 hour' style={{textAlign: 'center', padding: 30}}>No friend is free for any of your selected time...{"\n"}
-              Make sure you've selected your availability for meals in the Free Time tab!</Text>) : 
+              Make sure you've selected your availability for meals in the Free Time tab!</Text>) :
               (<SectionList
             tabLabel='1 hour'
             sections={time2}

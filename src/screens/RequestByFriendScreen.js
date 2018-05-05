@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Image, Text, StyleSheet, Button } from 'react-native';
-import NavigationBar from 'navigationbar-react-native';
 import { Avatar, Card, ListItem, ButtonGroup } from 'react-native-elements';
 import firebase from "../config/firebase";
 import HeaderButtons from 'react-navigation-header-buttons'

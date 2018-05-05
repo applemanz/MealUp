@@ -15,7 +15,6 @@ import {
   TouchableNativeFeedback,
   Vibration
   } from 'react-native';
-import NavigationBar from 'navigationbar-react-native';
 import { Avatar, Card, ListItem, Button, ButtonGroup, Icon } from 'react-native-elements';
 import firebase from "../config/firebase";
 import { Ionicons } from '@expo/vector-icons';

@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Image, Text, TouchableHighlight, Avatar, Picker, TextInput, ScrollView } from 'react-native';
-import NavigationBar from 'navigationbar-react-native';
 import {Button} from 'react-native-elements';
 import { StackNavigator } from 'react-navigation';
 import firebase from "../config/firebase";

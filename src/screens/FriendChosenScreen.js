@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Image, Text, TouchableHighlight, SectionList, StyleSheet, ActivityIndicator } from 'react-native';
-import NavigationBar from 'navigationbar-react-native';
 import {ListItem, Button, Avatar, ButtonGroup} from 'react-native-elements';
 import firebase from "../config/firebase";
 import { userName, userID } from '../screens/SignInScreen';
@@ -66,7 +65,7 @@ export default class FriendChosenScreen extends React.Component {
     })
   }
 
-  getTimeIndex = () => {    
+  getTimeIndex = () => {
     today = new Date();
     thisDay = days[today.getDay()];
     thisHour = today.getHours();
@@ -75,7 +74,7 @@ export default class FriendChosenScreen extends React.Component {
     console.log("thisIndex: " + thisIndex)
     return thisIndex
   }
-  
+
   async matchFreeTimes(id) {
     freeTimeObj = new Object();
     freeTimeObj[userID] = await this.getFreeTimes(userID);
@@ -172,7 +171,7 @@ export default class FriendChosenScreen extends React.Component {
         diff = days.indexOf(thisday) - day;
         if (diff < 0) diff += 7;
         if (this.getTimeIndex() >= 28 && diff == 0) diff += 7;
-        
+
         if (temp.length > 0) match1.push({title: diff, data: temp})
       }
 

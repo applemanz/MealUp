@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
-import {Text, View, StyleSheet, Platform, TouchableHighlight, Modal, Button, Image, ScrollView, SectionList, AsyncStorage} from 'react-native';
+import {Text, View, StyleSheet, Platform, TouchableHighlight, Modal, Button, Image, SectionList, AsyncStorage} from 'react-native';
 import { Avatar, ListItem, Divider } from 'react-native-elements';
 import {Agenda} from 'react-native-calendars';
-import firebase from "../config/firebase";
 import { Ionicons } from '@expo/vector-icons';
 import { Calendar, Permissions } from 'expo';
-import { userName, userID } from './SignInScreen';
 import NavigationBar from 'react-native-navbar';
 var moment = require('moment');
+import firebase from "../config/firebase";
 const db = firebase.firestore();
+import { userName, userID } from './SignInScreen';
 
 const data_flip = {'7:30 AM': 0, '8:00 AM': 1, '8:30 AM': 2, '9:00 AM': 3, '9:30 AM': 4, '10:00 AM': 5, '10:30 AM': 6,
 '11:00 AM': 7, '11:30 AM': 8, '12:00 PM': 9, '12:30 PM': 10, '1:00 PM': 11, '1:30 PM': 12, '2:00 PM': 13, '2:30 PM': 14,
@@ -1035,6 +1035,25 @@ const styles = StyleSheet.create({
     justifyContent:'center'
   },
 });
+
+// UPDATEFREETIMES = () => {
+//   db.collection("users").get().then((querySnapshot) => {
+//     querySnapshot.forEach((doc) => {
+//         db.collection('users').doc(doc.id).collection('Freetime').get().then((snapshot) => {
+//           snapshot.forEach((doc1) => {
+//             let freetimeArray = doc1.data().Freetime
+//             for (let i=0; i<freetimeArray.length; i++) {
+//               if (freetimeArray[i] == 2)
+//                 freetimeArray[i] = 1
+//             }
+//             db.collection('users').doc(doc.id).collection('Freetime').doc(doc1.id).update({
+//               Freetime: freetimeArray
+//             });
+//           });
+//         });
+//     });
+//   });
+// }
 
 // onRefresh = () => {
 //   this.setState({refreshing: true});

@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Image, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView } from 'react-native';
-import NavigationBar from 'navigationbar-react-native';
 import { Avatar, Card, ListItem, Button, ButtonGroup, Icon, CheckBox } from 'react-native-elements';
 import firebase from "../config/firebase";
 import Swiper from 'react-native-swiper';

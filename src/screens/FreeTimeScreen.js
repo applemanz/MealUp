@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList,StyleSheet, ScrollView} from 'react-native';
 import { Button, Divider } from 'react-native-elements';
-import NavigationBar from 'navigationbar-react-native';
 import FlatListSelector from '../components/FlatListSelector';
 
 const data = [

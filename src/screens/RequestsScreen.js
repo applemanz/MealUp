@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Button, Text, SectionList, Modal, TouchableHighlight, Image, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
-import NavigationBar from 'navigationbar-react-native';
 import { ListItem, Avatar } from 'react-native-elements';
 import HeaderButtons from 'react-navigation-header-buttons'
 import Icon from 'react-native-vector-icons/Ionicons';

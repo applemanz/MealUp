@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Image, Text, TouchableOpacity, FlatList } from 'react-native';
-import NavigationBar from 'navigationbar-react-native';
 import {Button} from 'react-native-elements';
 
 class MyListItem extends React.PureComponent {

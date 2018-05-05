@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Image, Text, TouchableHighlight, SectionList, StyleSheet, ActivityIndicator } from 'react-native';
-import NavigationBar from 'navigationbar-react-native';
 import {ListItem, Button, Avatar, ButtonGroup} from 'react-native-elements';
 import firebase from "../config/firebase";
 import { userName, userID } from '../screens/SignInScreen';
