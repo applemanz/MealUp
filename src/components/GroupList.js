@@ -39,7 +39,10 @@ class MyListItem extends React.PureComponent {
     var names = [];
     for (var memberID in this.props.members) {
       if (memberID != userID)
-        names.push(this.props.members[memberID].split(" ")[0]);
+        if (this.props.members[memberID].name)
+          names.push(this.props.members[memberID].name.split(" ")[0]);
+        else
+          names.push(this.props.members[memberID].split(" ")[0]);
     }
     names.sort()
 

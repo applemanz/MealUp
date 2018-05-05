@@ -86,7 +86,10 @@ export default class FriendsScreen extends React.Component {
       var names = [];
       for (let memberID in a.members) {
         if (memberID != userID)
-          names.push(a.members[memberID].split(" ")[0]);
+          if (a.members[memberID].name)
+            names.push(a.members[memberID].name.split(" ")[0]);
+          else
+            names.push(a.members[memberID].split(" ")[0]);
       }
       names.sort()
       displayNameA = ""
