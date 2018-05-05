@@ -152,7 +152,8 @@ export default class FinalRequestScreen extends React.Component {
       mealRef = db.collection("users").doc(userID).collection('Meals').doc(reschedule)
       mealRef.get().then((doc) => {
         mealData = doc.data();
-        prevLocation = mealData['Location'];
+        if (mealData != undefined) prevLocation = mealData['Location'];
+        else prevLocation = null
         this.setState({location: prevLocation, initialLocation: false})
       });
     }
@@ -362,18 +363,18 @@ export default class FinalRequestScreen extends React.Component {
           }
             }
             day = weekdays[data['DateTime'].getDay()].day
-            amPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
-            hours = (data['DateTime'].getHours() % 12 || 12) + ":" + ("0" + data['DateTime'].getMinutes()).slice(-2) + " " + amPM
-            index = data_flip[hours]
+            AMPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
+            hours1 = (data['DateTime'].getHours() % 12 || 12) + ":" + ("0" + data['DateTime'].getMinutes()).slice(-2) + " " + AMPM
+            index1 = data_flip[hours1]
 
             // update freetimes
-            console.log("UPDATE MY OWN FREETIME " + userID + " on " + day + " at " + index)
+            console.log("UPDATE MY OWN FREETIME " + userID + " on " + day + " at " + index1)
             freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(day);
             freetimeRef.get().then(function(doc) {
               freetimeData = doc.data();
-              freetimeData['Freetime'][index] = 2
+              freetimeData['Freetime'][index1] = 2
               if (data['Length'] === 1) {
-                freetimeData['Freetime'][index+1] = 2
+                freetimeData['Freetime'][index1+1] = 2
               }
               console.log("my data", freetimeData)
             freetimeRef.update(freetimeData).then(() => {
@@ -454,17 +455,17 @@ export default class FinalRequestScreen extends React.Component {
           }
             }
             day = weekdays[data['DateTime'].getDay()].day
-            amPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
-            hours = (data['DateTime'].getHours() % 12 || 12) + ":" + ("0" + data['DateTime'].getMinutes()).slice(-2) + " " + amPM
-            index = data_flip[hours]
+            AMPM = data['DateTime'].getHours() >= 12 ? "PM" : "AM"
+            hours1 = (data['DateTime'].getHours() % 12 || 12) + ":" + ("0" + data['DateTime'].getMinutes()).slice(-2) + " " + AMPM
+            index1 = data_flip[hours1]
 
             // update freetimes
             freetimeRef = db.collection("users").doc(userID).collection('Freetime').doc(day);
             freetimeRef.get().then(function(doc) {
               freetimeData = doc.data();
-              freetimeData['Freetime'][index] = 2
+              freetimeData['Freetime'][index1] = 2
               if (data['Length'] === 1) {
-                freetimeData['Freetime'][index+1] = 2
+                freetimeData['Freetime'][index1+1] = 2
               }
               // console.log("my data", freetimeData)
             freetimeRef.set(freetimeData).then(() => {
