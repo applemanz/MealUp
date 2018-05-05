@@ -147,13 +147,20 @@ export default class FinalRequestScreen extends React.Component {
     const length = params.length ? params.length : null;
     const reschedule = params.reschedule ? params.reschedule : null;
     const isGroup = params.isGroup ? true : false;
+    const sent = params.sent ? params.sent : false;
 
     if (reschedule !== null && this.state.initialLocation) {
+      if (sent == 2)
       mealRef = db.collection("users").doc(userID).collection('Meals').doc(reschedule)
+      else if (sent == true)
+      mealRef = db.collection("users").doc(userID).collection('Sent Requests').doc(reschedule)
+      else
+      mealRef = db.collection("users").doc(userID).collection('Received Requests').doc(reschedule)
+
       mealRef.get().then((doc) => {
         mealData = doc.data();
         if (mealData != undefined) prevLocation = mealData['Location'];
-        else prevLocation = null
+        else prevLocation = "Wilcox"
         this.setState({location: prevLocation, initialLocation: false})
       });
     }
@@ -169,7 +176,7 @@ export default class FinalRequestScreen extends React.Component {
         let names = [];
         for (var memberID in members) {
           if (memberID != userID)
-            names.push(members[memberID].split(" ")[0]);
+            names.push(members[memberID].name.split(" ")[0]);
         }
         names.sort();
         displayName = "";
@@ -251,9 +258,9 @@ export default class FinalRequestScreen extends React.Component {
     members = prevData['members']
     for (memberID in members) {
       if (memberID != userID)
-        members[memberID] = {name: members[memberID], accepted: false, declined: false}
+        members[memberID] = {name: members[memberID].name, accepted: false, declined: false}
       else
-        members[memberID] = {name: members[memberID], accepted: true, declined: false}
+        members[memberID] = {name: members[memberID].name, accepted: true, declined: false}
     }
     data['members'] = members
     data['initiator'] = userID
