@@ -176,7 +176,10 @@ export default class FinalRequestScreen extends React.Component {
         let names = [];
         for (var memberID in members) {
           if (memberID != userID)
-            names.push(members[memberID].name.split(" ")[0]);
+            if (members[memberID].name)
+              names.push(members[memberID].name.split(" ")[0]);
+            else
+              names.push(members[memberID].split(" ")[0]);
         }
         names.sort();
         displayName = "";
@@ -258,9 +261,9 @@ export default class FinalRequestScreen extends React.Component {
     members = prevData['members']
     for (memberID in members) {
       if (memberID != userID)
-        members[memberID] = {name: members[memberID].name, accepted: false, declined: false}
+        members[memberID] = {name: members[memberID], accepted: false, declined: false}
       else
-        members[memberID] = {name: members[memberID].name, accepted: true, declined: false}
+        members[memberID] = {name: members[memberID], accepted: true, declined: false}
     }
     data['members'] = members
     data['initiator'] = userID
