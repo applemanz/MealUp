@@ -111,9 +111,22 @@ class MyListItem extends React.PureComponent {
     db.collection('users').doc(userID).collection('Friends').doc(id).set({
       CanViewMe: bool
     }, {merge:true})
-    db.collection('users').doc(id).collection('Friends').doc(userID).set({
-      CanViewFriend: bool
-    }, {merge:true})
+    friendRef = db.collection('users').doc(id).collection('Friends').doc(userID)
+    friendRef.get().then((doc) => {
+      friendData = doc.data();
+      if (friendData) {
+        friendRef.set({
+          CanViewFriend: bool
+        }, {merge:true})
+      } else {
+        friendRef.set({
+          Name: userName,
+          CanViewMe: true,
+          CanViewFriend: bool,
+          numOfMeals: 0
+        }, {merge:true})
+      }
+      });
   }
 }
 
