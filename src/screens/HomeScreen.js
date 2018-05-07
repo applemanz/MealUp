@@ -799,7 +799,9 @@ export default class HomeScreen extends Component {
         cal = doc.data().Calendar
         if (cal.hasOwnProperty(this.state.curMeal))
           mealID = cal[this.state.curMeal].eventID;
+        else mealID = null
       }
+      else mealID = null
       this.props.navigation.navigate('FriendChosen', {
         sent: 2,
         reschedule: this.state.curMeal,

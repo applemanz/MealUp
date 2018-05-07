@@ -29,6 +29,7 @@
     },
     "notification": {
       "icon": "./assets/images/notificationIcon.png",
+      "color": "#f4511e"
     }
   }
 }
