@@ -59,7 +59,7 @@ export default class FriendsScreen extends React.Component {
     const friendsList = userData.friends.data;
     for (var friend of friendsList) {
       if (!this.state.friends.find(item => item.id === friend.id)) {
-        db.collection('users').doc(userID).collection('Friends').doc(friend.id).update({
+        db.collection('users').doc(userID).collection('Friends').doc(friend.id).set({
           Name: friend.name,
           CanViewMe: true,
           CanViewFriend: true,

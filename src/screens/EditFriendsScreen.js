@@ -53,10 +53,24 @@ export default class EditFriendsScreen extends React.Component {
     this.props.navigation.goBack(null)
   }
 
+  compareFriends = (a,b) => {
+    var nameA = a.Name.toUpperCase();
+    var nameB = b.Name.toUpperCase();
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+    return 0;
+  }
+
   render() {
+    var obj = [...this.state.friends];
+    obj.sort(this.compareFriends);
     return (
       <View style={{flex:1}}>
-        <FriendList data = {this.state.friends} navigation = {this.props.navigation} editOn = {true} />
+        <FriendList data = {obj} navigation = {this.props.navigation} editOn = {true} />
       </View>
     );
   }

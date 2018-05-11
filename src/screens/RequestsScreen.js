@@ -1515,10 +1515,10 @@ export default class RequestsScreen extends React.Component {
     data.isGroup = true
 
     db.collection("users").doc(userID).collection('Meals').doc(this.state.curUser.id).set(data)
-    .then((docRef) => {
+    .then(() => {
       for (memberID in this.state.curUser.members) {
         if (this.state.curUser.members[memberID].accepted == true && memberID != userID)
-          db.collection("users").doc(memberID).collection('Meals').doc(docRef.id).set(data)
+          db.collection("users").doc(memberID).collection('Meals').doc(this.state.curUser.id).set(data)
       }
     })
     .catch(function(error) {
