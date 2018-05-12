@@ -15,7 +15,7 @@ May Jiang (mayjiang@princeton.edu)</p>
   <i>MealUp</i> is a cross-platform mobile app that helps Princeton students schedule meals with their friends. Input your availability for meals over the next week and MealUp will find a time for you to meet up with your friends over a meal. Easily request meals with friends and groups of friends and keep track of who you plan to eat with by exporting to your calendar app. Login to MealUp using Facebook to immediately start scheduling meals with all your friends! </p>
 
 <p><b><a id="DESIGN_DOC">Design Document:</a></b><br>
-<a href="https://docs.google.com/document/d/1GPfhzhxrPHMtjBBoCb7iB1u68ViAyvan_g5S9pweFVA/edit?usp=sharing" target="_blank">click here</a></p>
+<a href="https://github.com/applemanz/MealUp/raw/master/Design%20Document.pdf" target="_blank">click here</a></p>
 
 <p><b><a id="TIMELINE">Timeline:</a></b><br>
 Week 1 (3/17 - 3/24 [spring break]):<br>
