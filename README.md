@@ -7,7 +7,7 @@ COS 333 Spring 2018
 Andrew Zeng (andrewz@princeton.edu) - LEADER<br>
 Annie Zou (azou@princeton.edu)<br>
 Chi Yu (cfyu@princeton.edu)<br>
-May Jiang (mayjiang@princeton.edu)</p>
+May Jiang (myjiang@princeton.edu)</p>
 
 <p><b>TA: Jeremie</b></p>
 
